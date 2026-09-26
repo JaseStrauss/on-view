@@ -4,9 +4,23 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>On View — Virtual Exhibitions</title>
     <meta
       name="description"
-      content="On View — catalogue artworks and publish shareable virtual exhibitions."
+      content="Catalogue artworks, curate exhibitions, and share them online."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="On View" />
+    <meta property="og:title" content="On View — Virtual Exhibitions" />
+    <meta
+      property="og:description"
+      content="Catalogue artworks, curate exhibitions, and share them online."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="On View — Virtual Exhibitions" />
+    <meta
+      name="twitter:description"
+      content="Catalogue artworks, curate exhibitions, and share them online."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,9 +28,18 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap"
       rel="stylesheet"
     />
-    <title>On View</title>
   </head>
   <body>
+    <script>
+      (function () {
+        var stored = localStorage.getItem("on-view-theme");
+        var dark =
+          stored === "dark" ||
+          (!stored &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+        if (dark) document.documentElement.classList.add("dark");
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
