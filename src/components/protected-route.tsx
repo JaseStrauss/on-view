@@ -1,15 +1,12 @@
 import { Navigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
+import { AppLoader } from '@/components/app-loader'
+import { useAuth } from '@/contexts/auth-context'
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center text-muted">
-        Loading…
-      </div>
-    )
+    return <AppLoader layout="page" />
   }
 
   if (!user) {

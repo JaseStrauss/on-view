@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
+import { PageBackLink } from '@/components/page-back-link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -37,10 +38,13 @@ export function LoginPage() {
 
   return (
     <div className="mx-auto max-w-md px-6 py-16">
+      <PageBackLink to="/" className="mb-4">
+        Home
+      </PageBackLink>
       <Card>
         <CardHeader>
           <CardTitle className="font-serif text-3xl italic">Sign in</CardTitle>
-          <CardDescription>Welcome back to your studio.</CardDescription>
+          <CardDescription>Welcome back.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
