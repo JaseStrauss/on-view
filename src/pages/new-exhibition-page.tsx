@@ -5,7 +5,11 @@ import { DemoStudioBanner } from "@/components/demo-studio-banner";
 import { PageBackLink } from "@/components/page-back-link";
 import { useAuth } from "@/contexts/auth-context";
 import { useExhibitions } from "@/hooks/use-exhibitions";
-import { showDemoOnlyToast } from "@/lib/public-demo";
+import {
+  createEmptySandboxState,
+  DEMO_BUILDER_PATH,
+  initSandboxState,
+} from "@/lib/demo-sandbox";
 import {
   getDefaultRoomConfig,
   getRoomTemplateMeta,
@@ -40,7 +44,14 @@ export function NewExhibitionPage({ demoMode = false }: NewExhibitionPageProps) 
     if (!title.trim()) return;
 
     if (demoMode) {
-      showDemoOnlyToast();
+      initSandboxState(
+        createEmptySandboxState(
+          title.trim(),
+          roomId,
+          getDefaultRoomConfig(roomId),
+        ),
+      );
+      navigate(DEMO_BUILDER_PATH);
       return;
     }
     if (!user) return;
@@ -79,8 +90,8 @@ export function NewExhibitionPage({ demoMode = false }: NewExhibitionPageProps) 
               New exhibition
             </CardTitle>
             <CardDescription>
-              Start with a title and gallery space. You can fine-tune the room
-              and hang works after creating the show.
+              Choose a title and gallery space, then open the demo builder to
+              hang works and walk the room in 3D.
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -41,6 +41,12 @@ const NewExhibitionPage = lazy(() =>
   })),
 )
 
+const DemoSandboxEditorPage = lazy(() =>
+  import('@/pages/demo-sandbox-editor-page').then((module) => ({
+    default: module.DemoSandboxEditorPage,
+  })),
+)
+
 function RouteFallback() {
   return <AppLoader />
 }
@@ -92,6 +98,18 @@ export default function App() {
                         <NewExhibitionPage demoMode />
                       </Suspense>
                     }
+                  />
+                  <Route
+                    path="/studio/demo/build"
+                    element={
+                      <Suspense fallback={<RouteFallback />}>
+                        <DemoSandboxEditorPage />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/studio/demo/sandbox"
+                    element={<Navigate to="/studio/demo/build" replace />}
                   />
                   <Route
                     path="/studio"

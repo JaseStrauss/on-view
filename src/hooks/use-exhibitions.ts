@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { DEMO_SLUG, getDemoPublicShow } from "@/data/demo-exhibition";
+import {
+  DEMO_BUILDER_SLUG,
+  getDemoSandboxPublicShow,
+} from "@/lib/demo-sandbox";
 import { supabase } from "@/lib/supabase";
 import { buildRoomTemplate, slugify } from "@/rooms/templates";
 import { mergeRoomConfig, type RoomConfig } from "@/rooms/room-config";
@@ -287,6 +291,10 @@ export function useExhibitionDetail(exhibitionId: string | undefined) {
 export async function fetchPublicExhibition(slug: string) {
   if (slug === DEMO_SLUG) {
     return getDemoPublicShow();
+  }
+
+  if (slug === DEMO_BUILDER_SLUG || slug === "sandbox") {
+    return getDemoSandboxPublicShow();
   }
 
   const { data: exhibition, error } = await supabase

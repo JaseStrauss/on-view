@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, LayoutGrid, ScanEye } from "lucide-react";
 import { DEMO_SLUG } from "@/data/demo-exhibition";
-import { DEMO_STUDIO_PATH } from "@/lib/public-demo";
 import { cn } from "@/lib/utils";
 
 const demos = [
@@ -17,13 +16,13 @@ const demos = [
   },
   {
     id: "studio",
-    title: "Demo studio",
+    title: "Demo builder",
     subtitle: "What you use to build a show",
     description:
-      "Browse exhibitions and your catalogue: search, filter, and explore the curator workflow.",
-    href: DEMO_STUDIO_PATH,
+      "Hang demo works on the walls, walk your show in 3D, and open a preview link—no login.",
+    href: "/studio/demo/build",
     icon: LayoutGrid,
-    cta: "Open demo studio",
+    cta: "Open demo builder",
   },
 ] as const;
 

@@ -13,7 +13,8 @@ Virtual exhibition platform for independent curators and small galleries. Catalo
 |                     |                                                                                                                |
 | ------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **Demo exhibition** | [`/show/demo`](/show/demo) — walk the 3D gallery and browse the catalogue                                      |
-| **Demo studio**     | [`/studio/demo`](/studio/demo) — browse exhibitions and catalogue (no login)                                   |
+| **Demo builder**    | [`/studio/demo/build`](/studio/demo/build) — hang works in 3D and preview your show (saved in the browser tab) |
+| **Demo studio**     | [`/studio/demo`](/studio/demo) — hub for the builder and sample catalogue (no login)                           |
 | **Local**           | Run `npm install && npm run dev`, then open [http://localhost:5173/show/demo](http://localhost:5173/show/demo) |
 | **Deployed**        | After you deploy to Vercel, add your URL here: `https://your-app.vercel.app/show/demo`                         |
 
