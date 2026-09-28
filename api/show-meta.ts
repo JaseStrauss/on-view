@@ -1,4 +1,4 @@
-import { renderShowMetaHtml } from "./_lib/fetch-show-meta";
+import { renderShowMetaHtml } from "./_lib/fetch-show-meta.js";
 
 export const config = { runtime: "edge" };
 

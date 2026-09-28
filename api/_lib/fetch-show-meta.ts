@@ -1,15 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
-import { DEMO_EXHIBITION_TITLE } from "../../src/data/demo-exhibition";
 import {
   buildExhibitionShareMeta,
   DEFAULT_OG_IMAGE,
   renderShareMetaHtml,
+  SITE_NAME,
   type ExhibitionShareMeta,
-} from "../../src/lib/exhibition-social-meta";
-import type { Artwork } from "../../src/types/artwork";
-import type { Exhibition, PlacementWithArtwork } from "../../src/types";
+} from "./share-meta.js";
 
 const DEMO_SLUG = "demo";
+const DEMO_EXHIBITION_TITLE = "Surface Studies";
 const DEMO_DESCRIPTION =
   "A sample contemporary hang. Explore the 3D gallery, then build your own.";
 
@@ -29,11 +28,11 @@ function getSupabaseClient() {
 
 function demoShareMeta(origin: string): ExhibitionShareMeta {
   return {
-    title: `${DEMO_EXHIBITION_TITLE} — On View`,
+    title: `${DEMO_EXHIBITION_TITLE} — ${SITE_NAME}`,
     description: `${DEMO_DESCRIPTION} · Virtual exhibition on On View`,
-    imageUrl: DEFAULT_OG_IMAGE,
+    imageUrl: `${origin}${DEFAULT_OG_IMAGE}`,
     url: `${origin}/show/${DEMO_SLUG}`,
-    siteName: "On View",
+    siteName: SITE_NAME,
   };
 }
 
@@ -82,9 +81,11 @@ export async function fetchShowShareMeta(
     .map((row) => {
       const artwork = row.artwork;
       if (!artwork || Array.isArray(artwork)) return null;
-      return artwork as Artwork;
+      return artwork;
     })
-    .filter((artwork): artwork is Artwork => artwork !== null);
+    .filter(
+      (artwork): artwork is NonNullable<typeof artwork> => artwork !== null,
+    );
 
   const presenterName =
     profileResult.data?.studio_name?.trim() ||
@@ -92,8 +93,8 @@ export async function fetchShowShareMeta(
     null;
 
   return buildExhibitionShareMeta({
-    exhibition: exhibition as Exhibition,
-    placements: (placements ?? []) as PlacementWithArtwork[],
+    exhibition,
+    placements: placements ?? [],
     catalogueArtworks,
     presenterName,
     origin,
