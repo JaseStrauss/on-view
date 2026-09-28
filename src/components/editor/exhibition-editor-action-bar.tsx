@@ -18,6 +18,8 @@ interface ExhibitionEditorActionBarProps {
   publishing: boolean;
   onPublish: () => void;
   onPreview: () => void;
+  /** Base path for studio links (e.g. `/studio/demo` in the demo builder). */
+  studioBasePath?: string;
 }
 
 export function ExhibitionEditorActionBar({
@@ -28,6 +30,7 @@ export function ExhibitionEditorActionBar({
   publishing,
   onPublish,
   onPreview,
+  studioBasePath = "/studio",
 }: ExhibitionEditorActionBarProps) {
   const publicUrl = getPublicExhibitionUrl(exhibition.slug);
 
@@ -73,7 +76,9 @@ export function ExhibitionEditorActionBar({
             variant="ghost"
             size="sm"
             render={
-              <Link to={`/studio/artworks/new?exhibition=${exhibition.id}`} />
+              <Link
+                to={`${studioBasePath}/artworks/new?exhibition=${exhibition.id}`}
+              />
             }
           >
             Add artwork
@@ -82,7 +87,9 @@ export function ExhibitionEditorActionBar({
             variant="ghost"
             size="sm"
             render={
-              <Link to={`/studio/artworks/bulk?exhibition=${exhibition.id}`} />
+              <Link
+                to={`${studioBasePath}/artworks/bulk?exhibition=${exhibition.id}`}
+              />
             }
           >
             Bulk import
