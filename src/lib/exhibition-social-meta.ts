@@ -1,4 +1,4 @@
-import { SAMPLE_ARTWORKS } from "@/data/sample-artworks";
+import { DEMO_CATALOGUE_KEYS, SAMPLE_ARTWORKS } from "@/data/sample-artworks";
 import {
   deriveExhibitionArtists,
   formatExhibitionDates,
@@ -13,7 +13,9 @@ export const DEFAULT_SITE_DESCRIPTION =
   "Catalogue artworks, curate exhibitions, and share them online.";
 
 /** Fallback when an exhibition has no cover image. */
-export const DEFAULT_OG_IMAGE = SAMPLE_ARTWORKS[0]?.image_path ?? "";
+export const DEFAULT_OG_IMAGE =
+  SAMPLE_ARTWORKS.find((work) => work.key === DEMO_CATALOGUE_KEYS[0])
+    ?.image_path ?? "";
 
 export interface ExhibitionShareMeta {
   title: string;

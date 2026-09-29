@@ -39,7 +39,9 @@ export function deriveExhibitionArtists(
   if (catalogueIsScoped) {
     return uniqueArtistsFromArtworks(catalogueArtworks);
   }
-  return uniqueArtistsFromArtworks(placements.map((placement) => placement.artwork));
+  return uniqueArtistsFromArtworks(
+    placements.map((placement) => placement.artwork),
+  );
 }
 
 export function resolveFeaturingLine(

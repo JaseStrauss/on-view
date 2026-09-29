@@ -115,15 +115,15 @@ After deploy, update the **Live demo** URL in [README.md](./README.md).
 
 ## Troubleshooting
 
-| Issue                   | Fix                                                         |
-| ----------------------- | ----------------------------------------------------------- |
-| Studio login fails      | Check `.env` values and that `schema.sql` ran               |
-| Image upload fails      | Confirm `artwork-images` bucket + storage policies          |
-| Public show 404         | Exhibition must be **published** and slug must match        |
-| Demo show broken images | Demo uses external Unsplash URLs; check network/ad blockers |
+| Issue                   | Fix                                                                |
+| ----------------------- | ------------------------------------------------------------------ |
+| Studio login fails      | Check `.env` values and that `schema.sql` ran                      |
+| Image upload fails      | Confirm `artwork-images` bucket + storage policies                 |
+| Public show 404         | Exhibition must be **published** and slug must match               |
+| Demo show broken images | Confirm `public/demo/samples/*.jpg` exists in your deploy artifact |
 
 ---
 
 ## What runs without Supabase
 
-The **demo exhibition** (`/show/demo`) uses in-app demo data from `src/data/demo-exhibition.ts`. Images are hosted URLs in the starter catalogue. No database or storage is required, so visitors can try the product without any setup.
+The **demo exhibition** (`/show/demo`) uses in-app demo data from `src/data/demo-exhibition.ts`. Sample images are static files under `public/demo/samples/`. No database or storage is required, so visitors can try the product without any setup.

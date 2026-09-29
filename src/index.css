@@ -86,7 +86,7 @@
   }
 }
 
-/* Landing page — restrained motion; disabled when user prefers reduced motion */
+/* Landing page: restrained motion; disabled when user prefers reduced motion */
 @keyframes landing-light-drift {
   0%,
   100% {

@@ -22,21 +22,16 @@ export function CatalogueWorkEntry({
   const { artwork } = placement;
   const imageUrl = getArtworkImageUrl(artwork.image_path);
 
+  const entryLabel = String(index + 1).padStart(2, "0");
+
   return (
     <article
       className={cn(
-        "group border-b border-border/60 pb-16 last:border-b-0 last:pb-0 md:pb-24",
+        "group border-b border-border/60 pt-12 pb-16 first:pt-0 last:border-b-0 last:pb-0 md:pb-24",
         isSelected && "rounded-lg ring-1 ring-foreground/10",
       )}
       aria-labelledby={`work-${placement.id}-label`}
     >
-      <p
-        id={`work-${placement.id}-label`}
-        className="mb-8 font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground"
-      >
-        {String(index + 1).padStart(2, "0")}
-      </p>
-
       <div className="relative mx-auto w-full max-w-4xl">
         {imageUrl ? (
           <div className="relative flex min-h-[280px] items-center justify-center bg-muted/40 px-6 py-10 md:min-h-[420px] md:px-12 md:py-16">
@@ -73,7 +68,17 @@ export function CatalogueWorkEntry({
       </div>
 
       <div className="mx-auto mt-0 max-w-4xl px-2 md:px-6">
-        <ArtworkCaption artwork={artwork} variant="catalogue" />
+        <div className="flex gap-5 md:gap-8">
+          <p
+            id={`work-${placement.id}-label`}
+            className="w-7 shrink-0 pt-6 font-sans text-xs tabular-nums text-muted-foreground md:w-8"
+          >
+            {entryLabel}
+          </p>
+          <div className="min-w-0 flex-1">
+            <ArtworkCaption artwork={artwork} variant="catalogue" />
+          </div>
+        </div>
       </div>
     </article>
   );

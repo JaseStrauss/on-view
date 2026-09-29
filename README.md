@@ -19,7 +19,7 @@ Live demo: [on-view-seven.vercel.app/show/demo](https://on-view-seven.vercel.app
 
 Visitors on the demo exhibition or demo studio **do not need Supabase**. Demo data is bundled in the app.
 
-Set `VITE_PUBLIC_DEMO_ONLY=true` on Vercel to hide sign-up and show demo-only navigation.
+The app defaults to demo-only navigation (no sign-up in the header). Set `VITE_PUBLIC_DEMO_ONLY=false` in `.env` or on the host when you run or deploy the full studio with Supabase.
 
 To create your own exhibitions (sign up, upload works, publish links), configure Supabase on your host. See **[SETUP.md](./SETUP.md)**.
 
@@ -74,11 +74,11 @@ npm run dev
 
 Copy `.env.example` → `.env`. Values are public (embedded in the client); no secrets in this file.
 
-| Variable                 | Where to find it                                                 |
-| ------------------------ | ---------------------------------------------------------------- |
-| `VITE_SUPABASE_URL`      | Supabase → Project Settings → API                                |
-| `VITE_SUPABASE_ANON_KEY` | Same page (`anon` key)                                           |
-| `VITE_PUBLIC_DEMO_ONLY`  | Optional; `true` on the host hides sign-up (see Live demo above) |
+| Variable                 | Where to find it                                                                   |
+| ------------------------ | ---------------------------------------------------------------------------------- |
+| `VITE_SUPABASE_URL`      | Supabase → Project Settings → API                                                  |
+| `VITE_SUPABASE_ANON_KEY` | Same page (`anon` key)                                                             |
+| `VITE_PUBLIC_DEMO_ONLY`  | Optional; defaults to demo-only nav. Set `false` for full studio (local or hosted) |
 
 ### How it fits together
 

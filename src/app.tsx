@@ -56,7 +56,7 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public exhibition — no studio nav */}
+          {/* Public exhibition: no studio nav */}
           <Route
             path="/show/:slug"
             element={

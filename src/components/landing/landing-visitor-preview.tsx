@@ -9,7 +9,7 @@ interface LandingVisitorPreviewProps {
   className?: string;
 }
 
-/** What visitors see — room + catalogue in one page (not another 3D room illustration). */
+/** What visitors see: room + catalogue in one page (not another 3D room illustration). */
 export function LandingVisitorPreview({ className }: LandingVisitorPreviewProps) {
   const [hero, ...catalogue] = VISITOR_PREVIEW_ARTWORKS;
 

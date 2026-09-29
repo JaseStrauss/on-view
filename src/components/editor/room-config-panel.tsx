@@ -22,7 +22,7 @@ interface RoomConfigPanelProps {
   templateId: string;
   value: RoomConfig;
   onChange: (config: RoomConfig) => void;
-  /** Saved template id — used to detect layout-type changes in the editor. */
+  /** Saved template id: used to detect layout-type changes in the editor. */
   savedTemplateId?: string;
   onTemplateChange?: (templateId: string) => void;
   showTemplatePicker?: boolean;
@@ -30,7 +30,7 @@ interface RoomConfigPanelProps {
   applyLabel?: string;
   showApplyButton?: boolean;
   disabled?: boolean;
-  /** Collapse behind a clickable header — useful in the exhibition editor. */
+  /** Collapse behind a clickable header: useful in the exhibition editor. */
   collapsible?: boolean;
   defaultExpanded?: boolean;
 }

@@ -28,7 +28,7 @@ function VisualFrame({
   );
 }
 
-/** Studio catalogue — list of works with metadata */
+/** Studio catalogue: list of works with metadata */
 export function CatalogueFeatureVisual() {
   const rows = LANDING_ARTWORKS.slice(0, 3);
 
@@ -84,7 +84,7 @@ export function CatalogueFeatureVisual() {
 
 const COMPACT_HANG_HEIGHT_REM = 4.25;
 const LARGE_HANG_HEIGHT_REM = 7;
-/** Salon hang — flanking works shorter, centre piece tallest. */
+/** Salon hang: flanking works shorter, centre piece tallest. */
 const SALON_HEIGHT_SCALE = [0.84, 1, 0.9] as const;
 
 function galleryFrameStyle(
@@ -107,7 +107,7 @@ function galleryFrameStyle(
   return undefined;
 }
 
-/** Gallery space — wall plan with hung works */
+/** Gallery space: wall plan with hung works */
 export function GallerySpaceFeatureVisual({
   artworks = LANDING_ARTWORKS.slice(0, 3),
   size = "compact",
@@ -181,7 +181,7 @@ export function GallerySpaceFeatureVisual({
   );
 }
 
-/** Share link — public exhibition URL preview */
+/** Share link: public exhibition URL preview */
 export function ShareLinkFeatureVisual() {
   return (
     <VisualFrame className="items-stretch justify-stretch">
