@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, LayoutGrid, ScanEye } from "lucide-react";
 import { DEMO_SLUG } from "@/data/demo-exhibition";
+import { isPublicDemoOnly } from "@/lib/public-demo";
 import { cn } from "@/lib/utils";
 
 const demos = [
@@ -19,7 +20,7 @@ const demos = [
     title: "Demo builder",
     subtitle: "What you use to build a show",
     description:
-      "Hang demo works on the walls, walk your show in 3D, and open a preview link—no login.",
+      "Hang demo works on the walls, walk your show in 3D, and preview in this tab—no login.",
     href: "/studio/demo/build",
     icon: LayoutGrid,
     cta: "Open demo builder",
@@ -31,6 +32,8 @@ interface LandingTryLiveProps {
 }
 
 export function LandingTryLive({ className }: LandingTryLiveProps) {
+  const publicDemoOnly = isPublicDemoOnly();
+
   return (
     <section className={cn("mx-auto max-w-6xl px-6 py-20 md:py-24", className)}>
       <div className="max-w-2xl">
@@ -39,6 +42,20 @@ export function LandingTryLive({ className }: LandingTryLiveProps) {
           Two demos, no account. Explore the visitor experience and the curator
           studio side by side.
         </p>
+        {publicDemoOnly && (
+          <p className="mt-4 text-sm text-muted-foreground">
+            This demo has no cloud save or publish. Run the full studio from the{" "}
+            <a
+              href="https://github.com/JaseStrauss/on-view"
+              target="_blank"
+              rel="noreferrer"
+              className="text-foreground underline-offset-4 hover:underline"
+            >
+              GitHub repo
+            </a>
+            .
+          </p>
+        )}
       </div>
 
       <ul className="mt-12 grid gap-6 md:grid-cols-2">
@@ -80,19 +97,6 @@ export function LandingTryLive({ className }: LandingTryLiveProps) {
           );
         })}
       </ul>
-
-      <p className="mt-8 text-center text-sm text-muted-foreground">
-        Browse-only on the live site. Full save and publish is in the{" "}
-        <a
-          href="https://github.com/JaseStrauss/on-view"
-          target="_blank"
-          rel="noreferrer"
-          className="text-foreground underline-offset-4 hover:underline"
-        >
-          GitHub repo
-        </a>
-        .
-      </p>
     </section>
   );
 }
