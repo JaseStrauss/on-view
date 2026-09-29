@@ -36,6 +36,8 @@ const CITYSCAPE_ATTRIBUTION = `Photo: Jene Stephaniuk, "Cityscape" (Unsplash Lic
 
 const COLOR_BLOCK_MURAL_ATTRIBUTION = `Photo: Robert Keane (Unsplash License). ${FICTIONAL_CATALOGUE_NOTE}`;
 
+const CHROMATIC_PATCHWORK_ATTRIBUTION = `Photo: Chase Clark, "Abstract painting" (Unsplash License). ${FICTIONAL_CATALOGUE_NOTE}`;
+
 export const SAMPLE_ARTWORKS: SampleArtwork[] = [
   {
     key: "chromatic-drift",
@@ -191,6 +193,20 @@ export const SAMPLE_ARTWORKS: SampleArtwork[] = [
     attribution: COLOR_BLOCK_MURAL_ATTRIBUTION,
     isSample: true,
   },
+  {
+    key: "chromatic-patchwork",
+    title: "Chromatic Patchwork",
+    artist: "Nadia Okoro",
+    year: 2021,
+    medium: "Acrylic on canvas",
+    width_cm: 120,
+    height_cm: 90,
+    image_path: sampleImagePath("chromatic-patchwork"),
+    description:
+      "Interlocking color blocks and drawn contours turn the surface into a map of gesture, with warm pinks and sharp primaries held in balance.",
+    attribution: CHROMATIC_PATCHWORK_ATTRIBUTION,
+    isSample: true,
+  },
 ];
 
 /** Full sample inventory (studio seed, browse catalogue). */
@@ -206,6 +222,7 @@ export const DEMO_STUDIO_POOL_KEYS = [
   "terracotta-arch",
   "cityscape",
   "color-block-mural",
+  "chromatic-patchwork",
 ] as const;
 
 /** Works hung in the public /show/demo exhibition ("Surface Studies"). */
@@ -218,6 +235,7 @@ export const DEMO_CATALOGUE_KEYS = [
   "soft-vertex",
   "terracotta-arch",
   "cityscape",
+  "chromatic-patchwork",
 ] as const;
 
 /** Landing page visuals (subset of the public demo hang). */

@@ -40,18 +40,26 @@ export const DEMO_PLACEMENT_SPECS: DemoPlacementSpec[] = [
   {
     artworkKey: "negative-space-vii",
     wall_id: "north",
-    position_x: -1.05,
+    position_x: -1.85,
     position_y: 1.4,
-    scale: 1,
+    scale: 0.82,
     sort_order: 0,
+  },
+  {
+    artworkKey: "chromatic-patchwork",
+    wall_id: "north",
+    position_x: 0,
+    position_y: 1.4,
+    scale: 0.82,
+    sort_order: 1,
   },
   {
     artworkKey: "portfolio-red",
     wall_id: "north",
-    position_x: 1.05,
+    position_x: 1.85,
     position_y: 1.4,
-    scale: 1,
-    sort_order: 1,
+    scale: 0.82,
+    sort_order: 2,
   },
   {
     artworkKey: "soft-vertex",
@@ -59,7 +67,7 @@ export const DEMO_PLACEMENT_SPECS: DemoPlacementSpec[] = [
     position_x: 1.5,
     position_y: 1.35,
     scale: 1,
-    sort_order: 2,
+    sort_order: 3,
   },
   {
     artworkKey: "cityscape",
@@ -67,7 +75,7 @@ export const DEMO_PLACEMENT_SPECS: DemoPlacementSpec[] = [
     position_x: -1.5,
     position_y: 1.45,
     scale: 0.92,
-    sort_order: 3,
+    sort_order: 4,
   },
   {
     artworkKey: "halation",
@@ -75,7 +83,7 @@ export const DEMO_PLACEMENT_SPECS: DemoPlacementSpec[] = [
     position_x: -2,
     position_y: 1.35,
     scale: 1,
-    sort_order: 4,
+    sort_order: 5,
   },
   {
     artworkKey: "terracotta-arch",
@@ -83,7 +91,7 @@ export const DEMO_PLACEMENT_SPECS: DemoPlacementSpec[] = [
     position_x: 1.8,
     position_y: 1.4,
     scale: 1,
-    sort_order: 5,
+    sort_order: 6,
   },
   {
     artworkKey: "blue-grid",
@@ -91,7 +99,7 @@ export const DEMO_PLACEMENT_SPECS: DemoPlacementSpec[] = [
     position_x: -1.2,
     position_y: 1.35,
     scale: 1,
-    sort_order: 6,
+    sort_order: 7,
   },
   {
     artworkKey: "primary-interval",
@@ -99,7 +107,7 @@ export const DEMO_PLACEMENT_SPECS: DemoPlacementSpec[] = [
     position_x: 1.2,
     position_y: 1.4,
     scale: 1,
-    sort_order: 7,
+    sort_order: 8,
   },
 ];
 
