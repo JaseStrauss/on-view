@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils";
 
 interface LandingRoomSceneProps {
   className?: string;
-  /** [sideWall, backLeft, backCenter, backRight] — each index must be unique */
+  /** [sideWall, backLeft, backCenter, backRight]: each index must be unique */
   artworkIndices?: [number, number, number, number];
   /** Ambient drift on light and focal work */
   motion?: boolean;
-  /** Subtle pointer tilt — use on the hero scene only */
+  /** Subtle pointer tilt: use on the hero scene only */
   interactive?: boolean;
 }
 

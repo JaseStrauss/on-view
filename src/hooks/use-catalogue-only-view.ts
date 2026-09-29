@@ -75,7 +75,7 @@ interface UseCatalogueOnlyViewOptions {
   slug?: string;
   /** Demo show: default 3D; session is stored separately from other exhibitions. */
   preferGalleryDefault?: boolean;
-  /** From `?view=` — wins over session; null if absent or unrecognized. */
+  /** From `?view=`: wins over session; null if absent or unrecognized. */
   viewOverride?: boolean | null;
 }
 
