@@ -1,5 +1,6 @@
 import {
   DEMO_CATALOGUE_KEYS,
+  DEMO_STUDIO_POOL_KEYS,
   SAMPLE_ARTWORKS,
   type SampleArtwork,
 } from "@/data/sample-artworks";
@@ -12,10 +13,19 @@ export const DEMO_EXHIBITION_TITLE = "Surface Studies";
 
 export type DemoArtworkDefinition = SampleArtwork;
 
+function definitionsForKeys(keys: readonly string[]): DemoArtworkDefinition[] {
+  return keys
+    .map((key) => SAMPLE_ARTWORKS.find((work) => work.key === key))
+    .filter((work): work is DemoArtworkDefinition => work !== undefined);
+}
+
+/** Works on the walls and in the public demo catalogue. */
 export const DEMO_ARTWORK_DEFINITIONS: DemoArtworkDefinition[] =
-  SAMPLE_ARTWORKS.filter((work) =>
-    (DEMO_CATALOGUE_KEYS as readonly string[]).includes(work.key),
-  );
+  definitionsForKeys(DEMO_CATALOGUE_KEYS);
+
+/** Full sample inventory for studio seed and browse demos. */
+export const DEMO_STUDIO_ARTWORK_DEFINITIONS: DemoArtworkDefinition[] =
+  definitionsForKeys(DEMO_STUDIO_POOL_KEYS);
 
 export interface DemoPlacementSpec {
   artworkKey: string;
@@ -28,36 +38,20 @@ export interface DemoPlacementSpec {
 
 export const DEMO_PLACEMENT_SPECS: DemoPlacementSpec[] = [
   {
-    artworkKey: "chromatic-drift",
+    artworkKey: "negative-space-vii",
     wall_id: "north",
-    position_x: -2.4,
+    position_x: -1.05,
     position_y: 1.4,
     scale: 1,
     sort_order: 0,
   },
   {
-    artworkKey: "negative-space-vii",
+    artworkKey: "portfolio-red",
     wall_id: "north",
-    position_x: 2.4,
+    position_x: 1.05,
     position_y: 1.4,
     scale: 1,
     sort_order: 1,
-  },
-  {
-    artworkKey: "portfolio-red",
-    wall_id: "north",
-    position_x: 0,
-    position_y: 1.45,
-    scale: 0.95,
-    sort_order: 2,
-  },
-  {
-    artworkKey: "harvest-table",
-    wall_id: "east",
-    position_x: -1.5,
-    position_y: 1.5,
-    scale: 1,
-    sort_order: 3,
   },
   {
     artworkKey: "soft-vertex",
@@ -65,7 +59,15 @@ export const DEMO_PLACEMENT_SPECS: DemoPlacementSpec[] = [
     position_x: 1.5,
     position_y: 1.35,
     scale: 1,
-    sort_order: 4,
+    sort_order: 2,
+  },
+  {
+    artworkKey: "cityscape",
+    wall_id: "east",
+    position_x: -1.5,
+    position_y: 1.45,
+    scale: 0.92,
+    sort_order: 3,
   },
   {
     artworkKey: "halation",
@@ -73,13 +75,21 @@ export const DEMO_PLACEMENT_SPECS: DemoPlacementSpec[] = [
     position_x: -2,
     position_y: 1.35,
     scale: 1,
-    sort_order: 5,
+    sort_order: 4,
   },
   {
     artworkKey: "terracotta-arch",
     wall_id: "south",
     position_x: 1.8,
     position_y: 1.4,
+    scale: 1,
+    sort_order: 5,
+  },
+  {
+    artworkKey: "blue-grid",
+    wall_id: "west",
+    position_x: -1.2,
+    position_y: 1.35,
     scale: 1,
     sort_order: 6,
   },
@@ -90,14 +100,6 @@ export const DEMO_PLACEMENT_SPECS: DemoPlacementSpec[] = [
     position_y: 1.4,
     scale: 1,
     sort_order: 7,
-  },
-  {
-    artworkKey: "blue-grid",
-    wall_id: "west",
-    position_x: -1.2,
-    position_y: 1.35,
-    scale: 1,
-    sort_order: 8,
   },
 ];
 
@@ -151,7 +153,7 @@ export function getDemoPublicShow(): {
     user_id: userId,
     title: DEMO_EXHIBITION_TITLE,
     description:
-      "A sample contemporary hang.\nExplore the 3D gallery, then build your own.",
+      "A curated hang of contemporary surfaces and color.\nExplore the 3D gallery, then build your own.",
     slug: DEMO_SLUG,
     room_template_id: "white-cube",
     room_config: {},
@@ -205,7 +207,16 @@ export function getDemoStudioData(): {
   exhibitions: Exhibition[];
   artworks: Artwork[];
 } {
-  const { exhibition, catalogueArtworks } = getDemoPublicShow();
+  const { exhibition } = getDemoPublicShow();
+  const userId = "00000000-0000-0000-0000-000000000001";
+
+  const artworks = DEMO_STUDIO_ARTWORK_DEFINITIONS.map((definition, index) =>
+    buildDemoArtwork(
+      definition,
+      `00000000-0000-0000-0000-${String(index + 1).padStart(12, "0")}`,
+      userId,
+    ),
+  );
 
   return {
     exhibitions: [
@@ -214,11 +225,11 @@ export function getDemoStudioData(): {
         id: DEMO_STUDIO_EXHIBITION_ID,
         title: "Sample Exhibition",
         description:
-          "A starter show with sample works. Preview the hang in the demo exhibition.",
+          "Starter inventory with sample works. Preview the curated hang in the demo exhibition.",
         is_published: false,
         slug: "sample-demo-draft",
       },
     ],
-    artworks: catalogueArtworks,
+    artworks,
   };
 }

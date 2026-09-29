@@ -1,9 +1,9 @@
-import { unsplashImageUrl } from "@/lib/unsplash-image";
-
 /**
  * Fictional sample works for the public demo show and landing visuals.
- * Images via Unsplash License — not real inventory.
+ * Photos are vendored under public/demo/samples/ (Unsplash License).
+ * Catalogue titles and artists are fictional, not real inventory.
  */
+
 export interface SampleArtwork {
   key: string;
   title: string;
@@ -19,8 +19,22 @@ export interface SampleArtwork {
   isSample: true;
 }
 
-const SAMPLE_ATTRIBUTION =
-  "Demo placeholder via Unsplash. Fictional catalogue entry, not real inventory.";
+const SAMPLE_IMAGE_DIR = "/demo/samples";
+
+function sampleImagePath(key: string): string {
+  return `${SAMPLE_IMAGE_DIR}/${key}.jpg`;
+}
+
+const FICTIONAL_CATALOGUE_NOTE =
+  "Fictional catalogue entry, not real inventory.";
+
+const SAMPLE_ATTRIBUTION = `Demo placeholder photo (Unsplash License). ${FICTIONAL_CATALOGUE_NOTE}`;
+
+const CHROMATIC_DRIFT_ATTRIBUTION = `Photo: Jene Stephaniuk, "Cityscape" (Unsplash License). ${FICTIONAL_CATALOGUE_NOTE}`;
+
+const CITYSCAPE_ATTRIBUTION = `Photo: Jene Stephaniuk, "Cityscape" (Unsplash License). Sample work; artist and title match the photographed painting.`;
+
+const COLOR_BLOCK_MURAL_ATTRIBUTION = `Photo: Robert Keane (Unsplash License). ${FICTIONAL_CATALOGUE_NOTE}`;
 
 export const SAMPLE_ARTWORKS: SampleArtwork[] = [
   {
@@ -31,10 +45,10 @@ export const SAMPLE_ARTWORKS: SampleArtwork[] = [
     medium: "Acrylic and resin on linen",
     width_cm: 140,
     height_cm: 110,
-    image_path: unsplashImageUrl("1745355918854-f22165edab57"),
+    image_path: sampleImagePath("chromatic-drift"),
     description:
       "Layered resin and acrylic let color shift with the viewer's angle, turning the surface into a slow-moving field of hue.",
-    attribution: SAMPLE_ATTRIBUTION,
+    attribution: CHROMATIC_DRIFT_ATTRIBUTION,
     isSample: true,
   },
   {
@@ -43,9 +57,9 @@ export const SAMPLE_ARTWORKS: SampleArtwork[] = [
     artist: "Elias Chen",
     year: 2022,
     medium: "Oil and graphite on canvas",
-    width_cm: 160,
-    height_cm: 120,
-    image_path: unsplashImageUrl("1622542796254-5b9c46ab0d2f"),
+    width_cm: 120,
+    height_cm: 160,
+    image_path: sampleImagePath("negative-space-vii"),
     description:
       "Graphite halos frame a restrained oil field, withholding the center so the edges carry the emotional weight.",
     attribution: SAMPLE_ATTRIBUTION,
@@ -59,7 +73,7 @@ export const SAMPLE_ARTWORKS: SampleArtwork[] = [
     medium: "Mixed media on cotton duck",
     width_cm: 100,
     height_cm: 130,
-    image_path: unsplashImageUrl("1533157950006-c38844053d55"),
+    image_path: sampleImagePath("portfolio-red"),
     description:
       "A saturated red ground anchors layered marks that read as both collage and painting.",
     attribution: SAMPLE_ATTRIBUTION,
@@ -73,7 +87,7 @@ export const SAMPLE_ARTWORKS: SampleArtwork[] = [
     medium: "Watercolor and ink on paper",
     width_cm: 76,
     height_cm: 56,
-    image_path: unsplashImageUrl("1760292343687-670782e53dd3"),
+    image_path: sampleImagePath("halation"),
     description:
       "Transparent washes bleed into ink lines, suggesting backlight without depicting a light source.",
     attribution: SAMPLE_ATTRIBUTION,
@@ -87,7 +101,7 @@ export const SAMPLE_ARTWORKS: SampleArtwork[] = [
     medium: "Acrylic on canvas",
     width_cm: 100,
     height_cm: 80,
-    image_path: unsplashImageUrl("1676200832719-35b267832b04"),
+    image_path: sampleImagePath("blue-grid"),
     description:
       "A measured grid of blue tones tests repetition and variation across a square format.",
     attribution: SAMPLE_ATTRIBUTION,
@@ -101,7 +115,7 @@ export const SAMPLE_ARTWORKS: SampleArtwork[] = [
     medium: "Oil on canvas",
     width_cm: 76,
     height_cm: 61,
-    image_path: unsplashImageUrl("1701979397910-a711c541f622"),
+    image_path: sampleImagePath("harvest-table"),
     description:
       "Warm earth tones and flattened perspective recall domestic still life while keeping the composition deliberately modern.",
     attribution: SAMPLE_ATTRIBUTION,
@@ -115,7 +129,7 @@ export const SAMPLE_ARTWORKS: SampleArtwork[] = [
     medium: "Acrylic on canvas",
     width_cm: 150,
     height_cm: 100,
-    image_path: unsplashImageUrl("1532949293134-3eb646d213f1"),
+    image_path: sampleImagePath("primary-interval"),
     description:
       "Three bands of pure color negotiate rhythm and rest, echoing post-war abstraction with contemporary restraint.",
     attribution: SAMPLE_ATTRIBUTION,
@@ -129,7 +143,7 @@ export const SAMPLE_ARTWORKS: SampleArtwork[] = [
     medium: "Pastel and charcoal on paper",
     width_cm: 90,
     height_cm: 70,
-    image_path: unsplashImageUrl("1551554781-c46200ea959d"),
+    image_path: sampleImagePath("soft-vertex"),
     description:
       "Charcoal edges soften into pastel fields, suggesting volume without fully resolving into form.",
     attribution: SAMPLE_ATTRIBUTION,
@@ -143,16 +157,44 @@ export const SAMPLE_ARTWORKS: SampleArtwork[] = [
     medium: "Oil on linen",
     width_cm: 120,
     height_cm: 95,
-    image_path: unsplashImageUrl("1541961017774-22349e4a1262"),
+    image_path: sampleImagePath("terracotta-arch"),
     description:
       "Warm mineral pigments and a single curved motif anchor an otherwise open field of muted tone.",
     attribution: SAMPLE_ATTRIBUTION,
     isSample: true,
   },
+  {
+    key: "cityscape",
+    title: "Cityscape",
+    artist: "Jene Stephaniuk",
+    year: 2020,
+    medium: "Acrylic on canvas",
+    width_cm: 140,
+    height_cm: 110,
+    image_path: sampleImagePath("cityscape"),
+    description:
+      "Thick impasto and stacked color fields read as an abstract horizon, with knife and brush marks catching light across the surface.",
+    attribution: CITYSCAPE_ATTRIBUTION,
+    isSample: true,
+  },
+  {
+    key: "color-block-mural",
+    title: "Primary Fault",
+    artist: "Devon Ellis",
+    year: 2022,
+    medium: "Acrylic mural on masonry",
+    width_cm: 120,
+    height_cm: 180,
+    image_path: sampleImagePath("color-block-mural"),
+    description:
+      "Hard-edged geometry and saturated primaries collide across a textured wall plane, with black spikes and a single yellow disc anchoring the composition.",
+    attribution: COLOR_BLOCK_MURAL_ATTRIBUTION,
+    isSample: true,
+  },
 ];
 
-/** Works used in the public /show/demo exhibition */
-export const DEMO_CATALOGUE_KEYS = [
+/** Full sample inventory (studio seed, browse catalogue). */
+export const DEMO_STUDIO_POOL_KEYS = [
   "chromatic-drift",
   "negative-space-vii",
   "portfolio-red",
@@ -162,4 +204,28 @@ export const DEMO_CATALOGUE_KEYS = [
   "primary-interval",
   "soft-vertex",
   "terracotta-arch",
+  "cityscape",
+  "color-block-mural",
+] as const;
+
+/** Works hung in the public /show/demo exhibition ("Surface Studies"). */
+export const DEMO_CATALOGUE_KEYS = [
+  "negative-space-vii",
+  "portfolio-red",
+  "halation",
+  "blue-grid",
+  "primary-interval",
+  "soft-vertex",
+  "terracotta-arch",
+  "cityscape",
+] as const;
+
+/** Landing page visuals (subset of the public demo hang). */
+export const LANDING_ARTWORK_KEYS = [
+  "negative-space-vii",
+  "portfolio-red",
+  "halation",
+  "cityscape",
+  "blue-grid",
+  "primary-interval",
 ] as const;

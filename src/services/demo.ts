@@ -1,6 +1,6 @@
 import {
-  DEMO_ARTWORK_DEFINITIONS,
   DEMO_PLACEMENT_SPECS,
+  DEMO_STUDIO_ARTWORK_DEFINITIONS,
 } from "@/data/demo-exhibition";
 import { supabase } from "@/lib/supabase";
 
@@ -24,7 +24,7 @@ export async function seedDemoForUser(userId: string): Promise<void> {
   const { data: artworks, error: artworkError } = await supabase
     .from("artworks")
     .insert(
-      DEMO_ARTWORK_DEFINITIONS.map((definition) => ({
+      DEMO_STUDIO_ARTWORK_DEFINITIONS.map((definition) => ({
         user_id: userId,
         title: definition.title,
         artist: definition.artist,
@@ -44,7 +44,7 @@ export async function seedDemoForUser(userId: string): Promise<void> {
   if (!artworks?.length) return;
 
   const artworksByKey = new Map(
-    DEMO_ARTWORK_DEFINITIONS.map((definition, index) => [
+    DEMO_STUDIO_ARTWORK_DEFINITIONS.map((definition, index) => [
       definition.key,
       artworks[index],
     ]),

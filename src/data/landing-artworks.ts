@@ -1,4 +1,4 @@
-import { DEMO_CATALOGUE_KEYS, SAMPLE_ARTWORKS } from "@/data/sample-artworks";
+import { LANDING_ARTWORK_KEYS, SAMPLE_ARTWORKS } from "@/data/sample-artworks";
 
 export interface LandingArtwork {
   title: string;
@@ -24,17 +24,16 @@ function toLandingArtwork(
   };
 }
 
-const demoCatalogueArtworks = DEMO_CATALOGUE_KEYS.map((key) =>
+const landingArtworkDefinitions = LANDING_ARTWORK_KEYS.map((key) =>
   SAMPLE_ARTWORKS.find((work) => work.key === key),
 ).filter(
   (work): work is (typeof SAMPLE_ARTWORKS)[number] => work !== undefined,
 );
 
-/** Landing visuals — same works as the public demo catalogue. */
+/** Landing visuals: curated subset of the public demo hang. */
 export const LANDING_ARTWORKS: LandingArtwork[] =
-  demoCatalogueArtworks.map(toLandingArtwork);
+  landingArtworkDefinitions.map(toLandingArtwork);
 
-/** Visitor preview mockup — distinct slice from the demo catalogue. */
-export const VISITOR_PREVIEW_ARTWORKS: LandingArtwork[] = demoCatalogueArtworks
-  .slice(3, 6)
-  .map(toLandingArtwork);
+/** Visitor preview mockup: middle slice of landing picks. */
+export const VISITOR_PREVIEW_ARTWORKS: LandingArtwork[] =
+  landingArtworkDefinitions.slice(2, 5).map(toLandingArtwork);
