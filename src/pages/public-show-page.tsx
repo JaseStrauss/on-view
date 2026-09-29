@@ -245,7 +245,11 @@ export function PublicShowPage() {
           ) : (
             <div className="space-y-0">
               {sortedPlacements.map((placement, index) => (
-                <div key={placement.id} id={`work-${placement.id}`}>
+                <div
+                  key={placement.id}
+                  id={`work-${placement.id}`}
+                  className="scroll-mt-24"
+                >
                   <CatalogueWorkEntry
                     placement={placement}
                     index={index}

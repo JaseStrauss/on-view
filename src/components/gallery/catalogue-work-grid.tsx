@@ -64,7 +64,7 @@ export function CatalogueWorkGrid({
                 </button>
               )}
               <span
-                className="pointer-events-none absolute top-3 left-3 font-sans text-[0.65rem] uppercase tracking-[0.25em] text-muted-foreground"
+                className="pointer-events-none absolute top-3 left-3 font-sans text-[0.65rem] tabular-nums text-muted-foreground"
                 aria-hidden
               >
                 {String(index + 1).padStart(2, "0")}
