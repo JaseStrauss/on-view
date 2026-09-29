@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/show/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|WhatsApp|Discordbot|TelegramBot|Applebot|Pinterest|Embedly|preview).*"
+        }
+      ],
+      "destination": "/api/show-meta?slug=:slug"
+    },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}
