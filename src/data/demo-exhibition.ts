@@ -9,6 +9,9 @@ import type { Exhibition, PlacementWithArtwork } from "@/types";
 
 export const DEMO_SLUG = "demo";
 
+/** Landing hero still (`public/demo/surface-studies-hero.png`). */
+export const DEMO_HERO_SNAPSHOT_SRC = "/demo/surface-studies-hero.png";
+
 export const DEMO_EXHIBITION_TITLE = "Surface Studies";
 
 export type DemoArtworkDefinition = SampleArtwork;

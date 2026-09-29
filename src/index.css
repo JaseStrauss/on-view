@@ -87,18 +87,6 @@
 }
 
 /* Landing page: restrained motion; disabled when user prefers reduced motion */
-@keyframes landing-light-drift {
-  0%,
-  100% {
-    opacity: 0.55;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    opacity: 0.72;
-    transform: translate3d(1.5%, -0.5%, 0) scale(1.02);
-  }
-}
-
 @keyframes landing-art-breathe {
   0%,
   100% {
@@ -133,10 +121,6 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .landing-room-light {
-    animation: landing-light-drift 14s ease-in-out infinite;
-  }
-
   .landing-art-breathe {
     animation: landing-art-breathe 20s ease-in-out infinite;
   }
