@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { ArtworkDetailContent } from "@/components/gallery/artwork-detail-content";
+import { ArtworkDetailContent } from "@/components/gallery/artwork/artwork-detail-content";
 import type { PlacementWithArtwork } from "@/types";
 import { Button } from "@/components/ui/button";
 

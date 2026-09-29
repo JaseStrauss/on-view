@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   GALLERY_VIEWPORT_CLASS,
   LazyGalleryRoom,
-} from "@/components/gallery/lazy-gallery-room";
+} from "@/components/gallery/room/lazy-gallery-room";
 import { ExhibitionEditorActionBar } from "@/components/editor/exhibition-editor-action-bar";
 import { PageBackLink } from "@/components/page-back-link";
 import { WallEditor } from "@/components/editor/wall-editor";

@@ -1,11 +1,11 @@
 import { lazy, Suspense } from "react";
-import type { GalleryRoomProps } from "@/components/gallery/gallery-room-types";
-import { GALLERY_VIEWPORT_CLASS } from "@/components/gallery/gallery-viewport";
+import type { GalleryRoomProps } from "@/components/gallery/room/gallery-room-types";
+import { GALLERY_VIEWPORT_CLASS } from "@/components/gallery/room/gallery-viewport";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 const GalleryRoom = lazy(() =>
-  import("@/components/gallery/gallery-room").then((module) => ({
+  import("@/components/gallery/room/gallery-room").then((module) => ({
     default: module.GalleryRoom,
   })),
 );
@@ -27,4 +27,4 @@ export function LazyGalleryRoom(props: GalleryRoomProps) {
   );
 }
 
-export { GALLERY_VIEWPORT_CLASS } from "@/components/gallery/gallery-viewport";
+export { GALLERY_VIEWPORT_CLASS } from "@/components/gallery/room/gallery-viewport";

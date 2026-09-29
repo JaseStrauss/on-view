@@ -1,5 +1,5 @@
 import { Maximize2 } from "lucide-react";
-import { ArtworkCaption } from "@/components/gallery/artwork-caption";
+import { ArtworkCaption } from "@/components/gallery/artwork/artwork-caption";
 import { getArtworkImageUrl } from "@/services/artworks";
 import type { PlacementWithArtwork } from "@/types";
 import { Button } from "@/components/ui/button";
