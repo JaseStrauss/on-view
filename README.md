@@ -28,9 +28,11 @@ To create your own exhibitions (sign up, upload works, publish links), configure
 ## Features
 
 - **Demo exhibition**: public `/show/demo` with 3D gallery and catalogue (no login)
-- **Demo studio**: public `/studio/demo` browse-only studio (no login, no Supabase)
+- **Demo studio**: public `/studio/demo` hub for the sample catalogue and demo builder (no login, no Supabase)
+- **Demo builder**: `/studio/demo/build` hang works in 3D with progress saved in the browser tab
 - Auth (email/password via Supabase)
 - Artwork catalogue with image upload, dimensions, medium, status, private condition notes
+- Bulk artwork import (CSV)
 - Exhibitions with room templates: White Cube, Narrow Salon, Gallery Corridor, L-shaped Gallery, Two-room Suite
 - 2D wall-plan editor and 3D gallery preview
 - PDF catalogue export
@@ -82,7 +84,7 @@ Copy `.env.example` → `.env`. Values are public (embedded in the client); no s
 
 ### How it fits together
 
-- **Demo** (`/show/demo`, `/studio/demo`): bundled data in `src/data/` (no Supabase).
+- **Demo** (`/show/demo`, `/studio/demo`, `/studio/demo/build`): bundled data in `src/data/` (no Supabase); builder state stays in the browser.
 - **Studio**: Postgres + Auth + Storage via Supabase; run **`supabase/schema.sql`** once on a new project.
 - **Public shows** (`/show/:slug`): React SPA for visitors; link previews use **`api/show-meta`** (bot user-agents only, via `vercel.json`).
 

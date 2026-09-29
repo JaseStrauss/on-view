@@ -39,7 +39,9 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 
 Find both values in Supabase → **Project Settings → API**.
 
-> **Note:** Without valid env vars, `/show/demo` still works. Studio features (login, artworks, exhibitions) require Supabase.
+For the full studio locally (sign-up in the nav, authenticated routes), also set `VITE_PUBLIC_DEMO_ONLY=false` in `.env` (see `.env.example`).
+
+> **Note:** Without valid env vars, `/show/demo` and the demo builder still work. Studio features (login, artworks, exhibitions) require Supabase.
 
 ---
 
@@ -79,12 +81,12 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173)
 
-| Route                      | Requires Supabase?              |
-| -------------------------- | ------------------------------- |
-| `/`                        | No (landing page)               |
-| `/show/demo`               | **No**: static demo exhibition  |
-| `/studio/demo`             | **No**: browse-only demo studio |
-| `/signup`, `/studio`, etc. | **Yes**                         |
+| Route                                | Requires Supabase?                             |
+| ------------------------------------ | ---------------------------------------------- |
+| `/`                                  | No (landing page)                              |
+| `/show/demo`                         | **No**: bundled demo exhibition                |
+| `/studio/demo`, `/studio/demo/build` | **No**: demo studio hub and in-browser builder |
+| `/signup`, `/studio`, etc.           | **Yes**                                        |
 
 ---
 
@@ -106,8 +108,9 @@ npm run build
 ```
 
 1. Import the repo in [Vercel](https://vercel.com)
-2. Add the same env vars: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
-3. Deploy. `vercel.json` handles SPA routing and social preview meta for `/show/:slug`
+2. Add env vars: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
+3. For the full studio (not demo-only nav), set `VITE_PUBLIC_DEMO_ONLY=false`
+4. Deploy. `vercel.json` handles SPA routing and social preview meta for `/show/:slug`
 
 After deploy, update the **Live demo** URL in [README.md](./README.md).
 
@@ -126,4 +129,4 @@ After deploy, update the **Live demo** URL in [README.md](./README.md).
 
 ## What runs without Supabase
 
-The **demo exhibition** (`/show/demo`) uses in-app demo data from `src/data/demo-exhibition.ts`. Sample images are static files under `public/demo/samples/`. No database or storage is required, so visitors can try the product without any setup.
+The **demo exhibition** (`/show/demo`) and **demo builder** (`/studio/demo/build`) use in-app demo data from `src/data/demo-exhibition.ts`. Sample images are static files under `public/demo/samples/`. Builder progress is stored in the browser tab only. No database or storage is required, so visitors can try the product without any setup.
