@@ -97,7 +97,7 @@ Schema, storage policies, deploy, troubleshooting: **[SETUP.md](./SETUP.md)**
 ```
 src/
   app.tsx
-  components/       # gallery, editor, landing, studio, ui
+  components/       # gallery (room, catalogue, artwork, public-show), editor, landing, studio, ui
   contexts/         # auth, theme
   data/             # demo exhibition + starter catalogue
   hooks/
