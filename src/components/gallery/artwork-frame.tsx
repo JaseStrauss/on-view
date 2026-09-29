@@ -1,5 +1,6 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
+import { artworkPlaneSizeM } from "@/lib/artwork-plane-size";
 import { getWallPlacementTransform } from "@/lib/wall-rotation";
 import type { WallDefinition } from "@/types";
 
@@ -26,13 +27,51 @@ export function ArtworkFrame({
   rotationDeg = 0,
   onSelect,
 }: ArtworkFrameProps) {
-  const texture = useMemo(() => {
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+  const [imageSize, setImageSize] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
+  useEffect(() => {
     const loader = new THREE.TextureLoader();
     loader.setCrossOrigin("anonymous");
-    const tex = loader.load(imageUrl);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    return tex;
+    let active = true;
+    let loadedTexture: THREE.Texture | null = null;
+
+    loader.load(imageUrl, (tex) => {
+      if (!active) {
+        tex.dispose();
+        return;
+      }
+      tex.colorSpace = THREE.SRGBColorSpace;
+      loadedTexture = tex;
+      setTexture(tex);
+      setImageSize({
+        width: tex.image.width,
+        height: tex.image.height,
+      });
+    });
+
+    return () => {
+      active = false;
+      loadedTexture?.dispose();
+      setTexture(null);
+      setImageSize(null);
+    };
   }, [imageUrl]);
+
+  const planeSize = useMemo(() => {
+    if (!imageSize) {
+      return { width, height };
+    }
+    return artworkPlaneSizeM(
+      width,
+      height,
+      imageSize.width,
+      imageSize.height,
+    );
+  }, [width, height, imageSize]);
 
   const frameDepth = 0.04;
   const frameBorder = 0.06;
@@ -46,11 +85,19 @@ export function ArtworkFrame({
     [wall, localX, localY, degrees],
   );
 
+  if (!texture) {
+    return null;
+  }
+
   return (
     <group position={position} quaternion={quaternion}>
       <mesh position={[0, 0, -frameDepth / 2]}>
         <boxGeometry
-          args={[width + frameBorder, height + frameBorder, frameDepth]}
+          args={[
+            planeSize.width + frameBorder,
+            planeSize.height + frameBorder,
+            frameDepth,
+          ]}
         />
         <meshStandardMaterial color="#1c1917" roughness={0.6} />
       </mesh>
@@ -68,8 +115,8 @@ export function ArtworkFrame({
           document.body.style.cursor = "auto";
         }}
       >
-        <planeGeometry args={[width, height]} />
-        <meshStandardMaterial map={texture} roughness={0.8} />
+        <planeGeometry args={[planeSize.width, planeSize.height]} />
+        <meshBasicMaterial map={texture} toneMapped={false} />
       </mesh>
     </group>
   );
