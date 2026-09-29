@@ -126,4 +126,4 @@ After deploy, update the **Live demo** URL in [README.md](./README.md).
 
 ## What runs without Supabase
 
-The **demo exhibition** (`/show/demo`) uses in-app demo data from `src/data/demo-exhibition.ts`. Images are hosted URLs in the starter catalogue — no database or storage required. This is intentional so recruiters and visitors can try the product instantly.
+The **demo exhibition** (`/show/demo`) uses in-app demo data from `src/data/demo-exhibition.ts`. Images are hosted URLs in the starter catalogue. No database or storage is required, so visitors can try the product without any setup.

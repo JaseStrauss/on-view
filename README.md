@@ -1,35 +1,34 @@
 # On View
 
-Virtual exhibition platform for independent curators and small galleries. Catalogue artworks, hang them in 3D gallery templates, and publish shareable online shows.
+**Plan the hang. Preview in 3D. Share the show.** On View is a personal side project for independent curators and small galleries: catalogue artworks, lay out walls, preview exhibitions in 3D, and publish shareable links (plus PDF catalogues). v0.1, active development.
 
-**Stack:** React · TypeScript · Tailwind CSS · Supabase · React Three Fiber
+Live demo: [on-view-seven.vercel.app/show/demo](https://on-view-seven.vercel.app/show/demo)
 
 ---
 
 ## Live demo
 
-**Try it now — no account or setup required:**
+**Try it now (no account or setup):**
 
-|                     |                                                                                                                |
-| ------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **Demo exhibition** | [`/show/demo`](/show/demo) — walk the 3D gallery and browse the catalogue                                      |
-| **Demo builder**    | [`/studio/demo/build`](/studio/demo/build) — hang works in 3D and preview your show (saved in the browser tab) |
-| **Demo studio**     | [`/studio/demo`](/studio/demo) — hub for the builder and sample catalogue (no login)                           |
-| **Local**           | Run `npm install && npm run dev`, then open [http://localhost:5173/show/demo](http://localhost:5173/show/demo) |
-| **Deployed**        | After you deploy to Vercel, add your URL here: `https://your-app.vercel.app/show/demo`                         |
+|                     |                                                                                                                                                                     |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Demo exhibition** | [on-view-seven.vercel.app/show/demo](https://on-view-seven.vercel.app/show/demo): walk the 3D gallery and browse the catalogue                                      |
+| **Demo builder**    | [on-view-seven.vercel.app/studio/demo/build](https://on-view-seven.vercel.app/studio/demo/build): hang works in 3D and preview your show (saved in the browser tab) |
+| **Demo studio**     | [on-view-seven.vercel.app/studio/demo](https://on-view-seven.vercel.app/studio/demo): hub for the builder and sample catalogue (no login)                           |
+| **Local**           | Run `npm install && npm run dev`, then open [http://localhost:5173/show/demo](http://localhost:5173/show/demo)                                                      |
 
-Visitors viewing the demo exhibition or demo studio **do not need Supabase** — demo data is bundled in the app.
+Visitors on the demo exhibition or demo studio **do not need Supabase**. Demo data is bundled in the app.
 
 Set `VITE_PUBLIC_DEMO_ONLY=true` on Vercel to hide sign-up and show demo-only navigation.
 
-To create your own exhibitions (sign up, upload works, publish links), you need a hosted instance with Supabase configured — see **[SETUP.md](./SETUP.md)** for developers.
+To create your own exhibitions (sign up, upload works, publish links), configure Supabase on your host. See **[SETUP.md](./SETUP.md)**.
 
 ---
 
 ## Features
 
-- **Demo exhibition** — public `/show/demo` with 3D gallery + catalogue (no login)
-- **Demo studio** — public `/studio/demo` browse-only studio (no login, no Supabase)
+- **Demo exhibition**: public `/show/demo` with 3D gallery and catalogue (no login)
+- **Demo studio**: public `/studio/demo` browse-only studio (no login, no Supabase)
 - Auth (email/password via Supabase)
 - Artwork catalogue with image upload, dimensions, medium, status, private condition notes
 - Exhibitions with room templates: White Cube, Narrow Salon, Gallery Corridor, L-shaped Gallery, Two-room Suite
@@ -40,7 +39,22 @@ To create your own exhibitions (sign up, upload works, publish links), you need 
 
 ---
 
+## Tech stack
+
+| Part    | What it uses                                                         |
+| ------- | -------------------------------------------------------------------- |
+| App     | React 19, TypeScript, Vite, React Router                             |
+| UI      | Tailwind CSS, shadcn-style components, lucide icons                  |
+| 3D      | React Three Fiber, drei, three.js                                    |
+| Backend | Supabase (Postgres, Auth, Storage)                                   |
+| PDF     | jsPDF                                                                |
+| Hosting | Vercel (`vercel.json` SPA routing + edge meta for shared show links) |
+
+---
+
 ## Quick start (developers)
+
+Prerequisites: Node.js 20+, npm. Full studio setup also needs a Supabase project (see SETUP.md).
 
 ```bash
 git clone https://github.com/JaseStrauss/on-view.git
@@ -50,7 +64,13 @@ cp .env.example .env   # add Supabase credentials for studio features
 npm run dev
 ```
 
-Full Supabase setup, database schema, storage policies, and deployment: **[SETUP.md](./SETUP.md)**
+| Command           | What it does                              |
+| ----------------- | ----------------------------------------- |
+| `npm run dev`     | Start the dev server                      |
+| `npm run build`   | Typecheck and production build to `dist/` |
+| `npm run preview` | Serve the production build locally        |
+
+Database schema, storage policies, and deployment details: **[SETUP.md](./SETUP.md)**
 
 ---
 
@@ -72,18 +92,6 @@ api/                # Vercel serverless (social preview meta)
 
 ---
 
-## Portfolio / OfferZen
-
-**One-liner:** Fullstack exhibition platform — catalogue artworks, preview hangs in 3D, publish shareable show links. React, TypeScript, Tailwind, Supabase.
-
-**Problem:** Small galleries and curators need to preview and share exhibitions online without enterprise CMS tooling.
-
-**Solution:** On View — catalogue → wall editor → 3D preview → public link + PDF export.
-
-**Live:** [Add deployed URL after Vercel deploy] · **GitHub:** [github.com/JaseStrauss/on-view](https://github.com/JaseStrauss/on-view)
-
----
-
 ## License
 
-Private portfolio project — all rights reserved unless otherwise noted.
+Personal project. All rights reserved unless otherwise noted.
