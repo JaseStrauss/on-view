@@ -10,4 +10,6 @@ export interface GalleryRoomProps {
   selectedPlacementId?: string | null;
   onSelectPlacement?: (placementId: string | null) => void;
   showWallPresets?: boolean;
+  /** Fired when the visitor drags or zooms the 3D camera */
+  onOrbitInteract?: () => void;
 }

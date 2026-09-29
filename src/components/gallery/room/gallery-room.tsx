@@ -5,15 +5,15 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import type { PlacementWithArtwork, RoomTemplate } from "@/types";
 import { useTheme } from "@/contexts/theme-context";
 import { getArtworkImageUrl } from "@/services/artworks";
-import type { GalleryRoomProps } from "@/components/gallery/gallery-room-types";
+import type { GalleryRoomProps } from "@/components/gallery/room/gallery-room-types";
 import { cn } from "@/lib/utils";
 import { ArtworkFrame } from "./artwork-frame";
 import { GalleryCamera } from "./gallery-camera";
 import { RoomShell } from "./room-shell";
 import { WallCameraControls } from "./wall-camera-controls";
 
-export { GALLERY_VIEWPORT_CLASS } from "@/components/gallery/gallery-viewport";
-export type { GalleryRoomProps } from "@/components/gallery/gallery-room-types";
+export { GALLERY_VIEWPORT_CLASS } from "@/components/gallery/room/gallery-viewport";
+export type { GalleryRoomProps } from "@/components/gallery/room/gallery-room-types";
 
 const CANVAS_BACKGROUND = {
   light: "#d6d3d1",
@@ -116,6 +116,7 @@ export function GalleryRoom({
   selectedPlacementId = null,
   onSelectPlacement,
   showWallPresets = false,
+  onOrbitInteract,
 }: GalleryRoomProps) {
   const { theme } = useTheme();
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
@@ -210,6 +211,7 @@ export function GalleryRoom({
             maxDistance={8}
             maxPolarAngle={Math.PI / 2.05}
             minPolarAngle={Math.PI / 4}
+            onStart={() => onOrbitInteract?.()}
           />
         )}
       </Canvas>
