@@ -1,4 +1,4 @@
-import { SAMPLE_ARTWORKS } from "@/data/sample-artworks";
+import { DEMO_CATALOGUE_KEYS, SAMPLE_ARTWORKS } from "@/data/sample-artworks";
 
 export interface LandingArtwork {
   title: string;
@@ -24,14 +24,17 @@ function toLandingArtwork(
   };
 }
 
-/** Landing visuals — subset of the sample demo artworks. */
-export const LANDING_ARTWORKS: LandingArtwork[] = SAMPLE_ARTWORKS.slice(
-  0,
-  5,
-).map(toLandingArtwork);
+const demoCatalogueArtworks = DEMO_CATALOGUE_KEYS.map((key) =>
+  SAMPLE_ARTWORKS.find((work) => work.key === key),
+).filter(
+  (work): work is (typeof SAMPLE_ARTWORKS)[number] => work !== undefined,
+);
 
-/** Visitor preview mockup — distinct from hero/showcase/catalogue cards. */
-export const VISITOR_PREVIEW_ARTWORKS: LandingArtwork[] = SAMPLE_ARTWORKS.slice(
-  4,
-  7,
-).map(toLandingArtwork);
+/** Landing visuals — same works as the public demo catalogue. */
+export const LANDING_ARTWORKS: LandingArtwork[] =
+  demoCatalogueArtworks.map(toLandingArtwork);
+
+/** Visitor preview mockup — distinct slice from the demo catalogue. */
+export const VISITOR_PREVIEW_ARTWORKS: LandingArtwork[] = demoCatalogueArtworks
+  .slice(3, 6)
+  .map(toLandingArtwork);

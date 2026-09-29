@@ -82,13 +82,17 @@ export function LandingPage() {
               <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">
                 For artists, curators & small galleries
               </p>
-              <h1 className="mt-5 font-serif text-5xl leading-[1.05] italic md:text-6xl">
-                Preview and share
-                <span className="block text-foreground/80">your show.</span>
+              <h1 className="mt-5 font-serif text-4xl leading-[1.08] italic sm:text-5xl md:text-6xl">
+                Catalogue artworks.
+                <span className="block">Curate exhibitions.</span>
+                <span className="block text-foreground/80">
+                  Share them online.
+                </span>
               </h1>
               <p className="mt-6 text-base leading-relaxed text-muted-foreground md:text-lg">
-                Catalogue your works, hang them in a gallery space, and send
-                visitors one link.
+                Manage your collection and publish shareable virtual
+                exhibitions—a side project by a developer who previously managed
+                galleries.
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <LandingTooltipButton tooltip="Walk the 3D show your audience receives">
@@ -103,11 +107,24 @@ export function LandingPage() {
                     size="lg"
                     render={<Link to="/signup" />}
                   >
-                    Get started
+                    Start your studio
+                    <ArrowRight className="size-4" />
                   </Button>
                 )}
               </div>
               <p className="mt-5 text-sm text-muted-foreground">
+                {!publicDemoOnly && (
+                  <>
+                    Already have an account?{" "}
+                    <Link
+                      to="/login"
+                      className="text-foreground underline-offset-4 hover:underline"
+                    >
+                      Sign in
+                    </Link>
+                    {" · "}
+                  </>
+                )}
                 Building a show?{" "}
                 <Link
                   to={DEMO_STUDIO_PATH}
@@ -115,18 +132,6 @@ export function LandingPage() {
                 >
                   Open the demo studio
                 </Link>
-                {!publicDemoOnly && (
-                  <>
-                    {" "}
-                    ·{" "}
-                    <Link
-                      to="/login"
-                      className="text-foreground underline-offset-4 hover:underline"
-                    >
-                      Sign in
-                    </Link>
-                  </>
-                )}
               </p>
             </div>
 

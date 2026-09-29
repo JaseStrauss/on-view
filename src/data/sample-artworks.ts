@@ -121,13 +121,45 @@ export const SAMPLE_ARTWORKS: SampleArtwork[] = [
     attribution: SAMPLE_ATTRIBUTION,
     isSample: true,
   },
+  {
+    key: "soft-vertex",
+    title: "Soft Vertex",
+    artist: "Renée Dubois",
+    year: 2020,
+    medium: "Pastel and charcoal on paper",
+    width_cm: 90,
+    height_cm: 70,
+    image_path: unsplashImageUrl("1551554781-c46200ea959d"),
+    description:
+      "Charcoal edges soften into pastel fields, suggesting volume without fully resolving into form.",
+    attribution: SAMPLE_ATTRIBUTION,
+    isSample: true,
+  },
+  {
+    key: "terracotta-arch",
+    title: "Terracotta Arch",
+    artist: "Tomás Álvarez",
+    year: 2019,
+    medium: "Oil on linen",
+    width_cm: 120,
+    height_cm: 95,
+    image_path: unsplashImageUrl("1541961017774-22349e4a1262"),
+    description:
+      "Warm mineral pigments and a single curved motif anchor an otherwise open field of muted tone.",
+    attribution: SAMPLE_ATTRIBUTION,
+    isSample: true,
+  },
 ];
 
 /** Works used in the public /show/demo exhibition */
 export const DEMO_CATALOGUE_KEYS = [
   "chromatic-drift",
   "negative-space-vii",
-  "harvest-table",
+  "portfolio-red",
   "halation",
+  "blue-grid",
+  "harvest-table",
   "primary-interval",
+  "soft-vertex",
+  "terracotta-arch",
 ] as const;
