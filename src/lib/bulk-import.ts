@@ -196,12 +196,15 @@ export function parseArtworkCsv(text: string): CsvParseResult {
     }
 
     const statusResult = parseStatus(row.status, rowNumber);
-    if (typeof statusResult === "string") {
+    if (
+      typeof statusResult === "string" &&
+      !STATUS_VALUES.has(statusResult as ArtworkStatus)
+    ) {
       errors.push(statusResult);
       continue;
     }
 
-    row.status = statusResult;
+    row.status = statusResult as ArtworkStatus;
     rows.push(row);
 
     if (rows.length > MAX_CSV_ROW_COUNT) {
