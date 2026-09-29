@@ -63,29 +63,31 @@ export function CatalogueWorkGrid({
                   No image
                 </button>
               )}
-              <span
-                className="pointer-events-none absolute top-3 left-3 font-sans text-[0.65rem] tabular-nums text-muted-foreground"
-                aria-hidden
-              >
-                {String(index + 1).padStart(2, "0")}
-              </span>
             </div>
             <button
               type="button"
               onClick={() => onSelect(placement.id)}
               className={cn(
-                "w-full space-y-1 p-5 text-left",
+                "flex w-full gap-3 p-5 text-left",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
               )}
             >
-              <p className="font-medium leading-snug">{artwork.title}</p>
-              {(artwork.artist || artwork.year) && (
-                <p className="text-sm text-muted-foreground">
-                  {[artwork.artist, artwork.year?.toString()]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </p>
-              )}
+              <span
+                className="w-6 shrink-0 pt-0.5 font-sans text-xs tabular-nums text-muted-foreground"
+                aria-hidden
+              >
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div className="min-w-0 flex-1 space-y-1">
+                <p className="font-medium leading-snug">{artwork.title}</p>
+                {(artwork.artist || artwork.year) && (
+                  <p className="text-sm text-muted-foreground">
+                    {[artwork.artist, artwork.year?.toString()]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                )}
+              </div>
             </button>
           </article>
         );
