@@ -4,7 +4,7 @@ export interface GalleryRoomProps {
   room: RoomTemplate;
   placements: PlacementWithArtwork[];
   interactive?: boolean;
-  /** Slow orbit for ambient previews (e.g. landing hero) */
+  /** Slow orbit for ambient previews */
   autoRotate?: boolean;
   className?: string;
   selectedPlacementId?: string | null;

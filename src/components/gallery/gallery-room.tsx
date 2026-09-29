@@ -141,12 +141,15 @@ export function GalleryRoom({
     [onSelectPlacement],
   );
 
+  const shellBackground = CANVAS_BACKGROUND[theme];
+
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border border-border bg-muted",
+        "relative overflow-hidden rounded-xl border border-border",
         className,
       )}
+      style={{ backgroundColor: shellBackground }}
     >
       {showWallPresets && (
         <div className="pointer-events-none absolute inset-x-0 bottom-3 z-10 px-3">
@@ -160,7 +163,7 @@ export function GalleryRoom({
         </div>
       )}
       <Canvas
-        className="absolute inset-0 touch-none"
+        className="absolute inset-x-0 top-0 bottom-[-1px] block h-[calc(100%+1px)] w-full touch-none"
         shadows
         resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
         camera={{
