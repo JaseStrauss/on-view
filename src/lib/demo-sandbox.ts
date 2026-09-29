@@ -14,15 +14,19 @@ export const DEMO_SANDBOX_SLUG = DEMO_BUILDER_SLUG;
 /** @deprecated Use DEMO_BUILDER_PATH */
 export const DEMO_SANDBOX_PATH = DEMO_BUILDER_PATH;
 
-const STORAGE_KEY = "on-view-demo-sandbox-v1";
+const LEGACY_STORAGE_KEY = "on-view-demo-sandbox-v1";
+const STORAGE_KEY = "on-view-demo-sandbox-v2";
+
+/** Bump when demo catalogue / starter hang changes so stale session saves are dropped. */
+export const SANDBOX_PERSIST_VERSION = 2;
 const SANDBOX_USER_ID = "00000000-0000-0000-0000-000000000099";
-export const SANDBOX_EXHIBITION_ID =
-  "00000000-0000-0000-0000-000000000098";
+export const SANDBOX_EXHIBITION_ID = "00000000-0000-0000-0000-000000000098";
 
 export interface DemoSandboxState {
   exhibition: Exhibition;
   placements: PlacementWithArtwork[];
   catalogueArtworkIds: string[];
+  persistVersion?: number;
 }
 
 function nowIso(): string {
@@ -31,6 +35,36 @@ function nowIso(): string {
 
 export function getDemoSandboxArtworks(): Artwork[] {
   return getDemoPublicShow().catalogueArtworks;
+}
+
+function getDemoSandboxCatalogueArtworkIds(): string[] {
+  return getDemoSandboxArtworks().map((artwork) => artwork.id);
+}
+
+/**
+ * Older sandbox saves added artwork ids to the catalogue on each placement, which
+ * scoped the palette to only placed works. Restore the full demo catalogue instead.
+ */
+function repairSandboxCatalogue(state: DemoSandboxState): DemoSandboxState {
+  const demoCatalogueIds = getDemoSandboxCatalogueArtworkIds();
+  const placedIds = new Set(state.placements.map((p) => p.artwork_id));
+  const { catalogueArtworkIds } = state;
+
+  if (catalogueArtworkIds.length === 0) {
+    return { ...state, catalogueArtworkIds: demoCatalogueIds };
+  }
+
+  const catalogueMatchesPlacedOnly =
+    catalogueArtworkIds.length === placedIds.size &&
+    catalogueArtworkIds.length > 0 &&
+    catalogueArtworkIds.every((id) => placedIds.has(id)) &&
+    catalogueArtworkIds.length < demoCatalogueIds.length;
+
+  if (catalogueMatchesPlacedOnly) {
+    return { ...state, catalogueArtworkIds: demoCatalogueIds };
+  }
+
+  return state;
 }
 
 function buildExhibition(
@@ -71,7 +105,8 @@ export function createEmptySandboxState(
       room_config: mergeRoomConfig(roomTemplateId, roomConfig),
     }),
     placements: [],
-    catalogueArtworkIds: [],
+    catalogueArtworkIds: getDemoSandboxCatalogueArtworkIds(),
+    persistVersion: SANDBOX_PERSIST_VERSION,
   };
 }
 
@@ -94,26 +129,48 @@ export function createSampleSandboxState(): DemoSandboxState {
     }),
   );
 
-  const catalogueArtworkIds = [
-    ...new Set(sample.placements.map((placement) => placement.artwork_id)),
-  ];
+  const catalogueArtworkIds = sample.catalogueArtworks.map(
+    (artwork) => artwork.id,
+  );
 
   return {
     exhibition,
     placements,
     catalogueArtworkIds,
+    persistVersion: SANDBOX_PERSIST_VERSION,
   };
+}
+
+function hydrateSandboxPlacements(
+  placements: PlacementWithArtwork[],
+): PlacementWithArtwork[] {
+  const catalogueById = new Map(
+    getDemoSandboxArtworks().map((artwork) => [artwork.id, artwork]),
+  );
+
+  return placements.map((placement) => ({
+    ...placement,
+    artwork: catalogueById.get(placement.artwork_id) ?? placement.artwork,
+  }));
 }
 
 export function loadSandboxState(): DemoSandboxState | null {
   if (typeof sessionStorage === "undefined") return null;
 
   try {
+    sessionStorage.removeItem(LEGACY_STORAGE_KEY);
+
     const raw = sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as DemoSandboxState;
     if (!parsed.exhibition?.id) return null;
-    return {
+
+    if ((parsed.persistVersion ?? 1) < SANDBOX_PERSIST_VERSION) {
+      sessionStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+
+    return repairSandboxCatalogue({
       exhibition: {
         ...parsed.exhibition,
         room_config: mergeRoomConfig(
@@ -121,15 +178,18 @@ export function loadSandboxState(): DemoSandboxState | null {
           parsed.exhibition.room_config ?? {},
         ),
       },
-      placements: parsed.placements.map((placement) => ({
-        ...placement,
-        position_x: Number(placement.position_x),
-        position_y: Number(placement.position_y),
-        scale: Number(placement.scale) || 1,
-        rotation_deg: Number(placement.rotation_deg) || 0,
-      })),
+      placements: hydrateSandboxPlacements(
+        parsed.placements.map((placement) => ({
+          ...placement,
+          position_x: Number(placement.position_x),
+          position_y: Number(placement.position_y),
+          scale: Number(placement.scale) || 1,
+          rotation_deg: Number(placement.rotation_deg) || 0,
+        })),
+      ),
       catalogueArtworkIds: parsed.catalogueArtworkIds ?? [],
-    };
+      persistVersion: parsed.persistVersion ?? SANDBOX_PERSIST_VERSION,
+    });
   } catch {
     return null;
   }
@@ -141,6 +201,7 @@ export function saveSandboxState(state: DemoSandboxState): void {
     STORAGE_KEY,
     JSON.stringify({
       ...state,
+      persistVersion: SANDBOX_PERSIST_VERSION,
       exhibition: {
         ...state.exhibition,
         updated_at: nowIso(),
@@ -152,6 +213,7 @@ export function saveSandboxState(state: DemoSandboxState): void {
 export function clearSandboxState(): void {
   if (typeof sessionStorage === "undefined") return;
   sessionStorage.removeItem(STORAGE_KEY);
+  sessionStorage.removeItem(LEGACY_STORAGE_KEY);
 }
 
 export function ensureSandboxState(

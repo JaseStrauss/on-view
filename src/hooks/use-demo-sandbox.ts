@@ -64,12 +64,6 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
 
         if (!catalogueArtwork) return current;
 
-        const catalogueArtworkIds = current.catalogueArtworkIds.includes(
-          artworkId,
-        )
-          ? current.catalogueArtworkIds
-          : [...current.catalogueArtworkIds, artworkId];
-
         const placement = {
           id: crypto.randomUUID(),
           exhibition_id: current.exhibition.id,
@@ -86,7 +80,6 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
 
         const next: DemoSandboxState = {
           ...current,
-          catalogueArtworkIds,
           placements: [...current.placements, placement],
         };
         saveSandboxState(next);
