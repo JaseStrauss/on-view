@@ -6,7 +6,11 @@ import {
   type CsvArtworkRow,
 } from "@/lib/bulk-artwork/parse";
 import type { Artwork, ArtworkFormData } from "@/types/artwork";
-import type { BulkArtworkFailure } from "@/services/artworks";
+import type {
+  BulkArtworkFailure,
+  BulkImageImportInput,
+} from "@/services/artworks";
+import { artworkFormToDbFields } from "@/lib/artwork/form";
 import {
   createSampleSandboxState,
   ensureSandboxState,
@@ -29,17 +33,7 @@ function nowIso(): string {
 }
 
 function formToArtworkFields(form: ArtworkFormData) {
-  return {
-    title: form.title.trim(),
-    artist: form.artist.trim(),
-    year: form.year ? Number(form.year) : null,
-    medium: form.medium.trim() || null,
-    width_cm: form.width_cm ? Number(form.width_cm) : null,
-    height_cm: form.height_cm ? Number(form.height_cm) : null,
-    status: form.status,
-    description: form.description.trim() || null,
-    condition_notes: form.condition_notes.trim() || null,
-  };
+  return artworkFormToDbFields(form);
 }
 
 async function fileToDataUrl(file: File): Promise<string> {
@@ -153,6 +147,8 @@ export async function addDemoSandboxCustomArtwork(
   form: ArtworkFormData,
   imageFile: File | null,
 ): Promise<Artwork> {
+  artworkFormToDbFields(form);
+
   let imagePath: string | null = null;
   if (imageFile) {
     imagePath = await fileToDataUrl(imageFile);
@@ -164,9 +160,9 @@ export async function addDemoSandboxCustomArtwork(
 }
 
 export async function importDemoSandboxImageFiles(
-  files: File[],
+  items: BulkImageImportInput[],
 ): Promise<DemoBulkArtworkResult> {
-  if (files.length > MAX_DEMO_BULK_IMAGE_COUNT) {
+  if (items.length > MAX_DEMO_BULK_IMAGE_COUNT) {
     return {
       artworks: [],
       failures: [
@@ -181,28 +177,25 @@ export async function importDemoSandboxImageFiles(
   const artworks: Artwork[] = [];
   const failures: BulkArtworkFailure[] = [];
 
-  for (const file of files) {
+  for (const item of items) {
     try {
-      const imagePath = await fileToDataUrl(file);
-      artworks.push(
-        createDemoArtworkRecord(
-          {
-            title: titleFromFilename(file.name),
-            artist: "",
-            year: "",
-            medium: "",
-            width_cm: "",
-            height_cm: "",
-            status: "available",
-            description: "",
-            condition_notes: "",
-          },
-          imagePath,
-        ),
-      );
+      const form: ArtworkFormData = {
+        title: titleFromFilename(item.file.name),
+        artist: "",
+        year: "",
+        medium: "",
+        width_cm: item.width_cm,
+        height_cm: item.height_cm,
+        status: "available",
+        description: "",
+        condition_notes: "",
+      };
+      artworkFormToDbFields(form);
+      const imagePath = await fileToDataUrl(item.file);
+      artworks.push(createDemoArtworkRecord(form, imagePath));
     } catch (err) {
       failures.push({
-        label: file.name,
+        label: item.file.name,
         error: err instanceof Error ? err.message : "Upload failed",
       });
     }

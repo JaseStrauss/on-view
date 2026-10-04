@@ -3,6 +3,7 @@ import {
   titleFromFilename,
   type CsvArtworkRow,
 } from "@/lib/bulk-artwork/parse";
+import { artworkFormToDbFields } from "@/lib/artwork/form";
 import { ARTWORK_IMAGE_BUCKET, supabase } from "@/lib/supabase";
 import type { Artwork, ArtworkFormData } from "@/types/artwork";
 
@@ -14,6 +15,12 @@ export interface BulkArtworkFailure {
 export interface BulkArtworkResult {
   artworks: Artwork[];
   failures: BulkArtworkFailure[];
+}
+
+export interface BulkImageImportInput {
+  file: File;
+  width_cm: string;
+  height_cm: string;
 }
 
 export async function fetchArtworks(): Promise<Artwork[]> {
@@ -50,15 +57,7 @@ export async function createArtwork(
     .from("artworks")
     .insert({
       user_id: userId,
-      title: form.title.trim(),
-      artist: form.artist.trim(),
-      year: form.year ? Number(form.year) : null,
-      medium: form.medium.trim() || null,
-      width_cm: form.width_cm ? Number(form.width_cm) : null,
-      height_cm: form.height_cm ? Number(form.height_cm) : null,
-      status: form.status,
-      description: form.description.trim() || null,
-      condition_notes: form.condition_notes.trim() || null,
+      ...artworkFormToDbFields(form),
       image_path: imagePath,
     })
     .select()
@@ -74,17 +73,7 @@ export async function updateArtwork(
 ): Promise<Artwork> {
   const { data, error } = await supabase
     .from("artworks")
-    .update({
-      title: form.title.trim(),
-      artist: form.artist.trim(),
-      year: form.year ? Number(form.year) : null,
-      medium: form.medium.trim() || null,
-      width_cm: form.width_cm ? Number(form.width_cm) : null,
-      height_cm: form.height_cm ? Number(form.height_cm) : null,
-      status: form.status,
-      description: form.description.trim() || null,
-      condition_notes: form.condition_notes.trim() || null,
-    })
+    .update(artworkFormToDbFields(form))
     .eq("id", id)
     .select()
     .single();
@@ -136,32 +125,32 @@ async function fetchRemoteImageFile(url: string): Promise<File | null> {
 
 export async function createArtworksFromImageFiles(
   userId: string,
-  files: File[],
+  items: BulkImageImportInput[],
 ): Promise<BulkArtworkResult> {
   const artworks: Artwork[] = [];
   const failures: BulkArtworkFailure[] = [];
 
-  for (const file of files) {
+  for (const item of items) {
     try {
       const artwork = await createArtwork(
         userId,
         {
-          title: titleFromFilename(file.name),
+          title: titleFromFilename(item.file.name),
           artist: "",
           year: "",
           medium: "",
-          width_cm: "",
-          height_cm: "",
+          width_cm: item.width_cm,
+          height_cm: item.height_cm,
           status: "available",
           description: "",
           condition_notes: "",
         },
-        file,
+        item.file,
       );
       artworks.push(artwork);
     } catch (err) {
       failures.push({
-        label: file.name,
+        label: item.file.name,
         error: err instanceof Error ? err.message : "Upload failed",
       });
     }

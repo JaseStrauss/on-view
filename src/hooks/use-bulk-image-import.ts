@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { validateDimensionFields } from "@/lib/artwork/form";
 import {
   isAcceptedImageFile,
   MAX_BULK_IMAGE_COUNT,
@@ -9,10 +10,22 @@ export interface SelectedBulkImage {
   id: string;
   file: File;
   previewUrl: string;
+  width_cm: string;
+  height_cm: string;
 }
 
 interface UseBulkImageImportOptions {
   maxImageCount?: number;
+}
+
+export function bulkImagesHaveValidDimensions(
+  images: SelectedBulkImage[],
+): boolean {
+  if (images.length === 0) return false;
+  return images.every(
+    (item) =>
+      validateDimensionFields(item.width_cm, item.height_cm) === null,
+  );
 }
 
 export function useBulkImageImport(options?: UseBulkImageImportOptions) {
@@ -54,8 +67,22 @@ export function useBulkImageImport(options?: UseBulkImageImportOptions) {
         id: crypto.randomUUID(),
         file,
         previewUrl: URL.createObjectURL(file),
+        width_cm: "",
+        height_cm: "",
       })),
     ]);
+  }
+
+  function updateImageDimensions(
+    id: string,
+    field: "width_cm" | "height_cm",
+    value: string,
+  ) {
+    setSelectedImages((current) =>
+      current.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item,
+      ),
+    );
   }
 
   function removeImage(id: string) {
@@ -78,6 +105,7 @@ export function useBulkImageImport(options?: UseBulkImageImportOptions) {
     dragActive,
     setDragActive,
     addImageFiles,
+    updateImageDimensions,
     removeImage,
     clearImages,
   };

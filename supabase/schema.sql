@@ -10,8 +10,8 @@ create table public.artworks (
   artist text not null default '',
   year integer,
   medium text,
-  width_cm numeric(8, 2),
-  height_cm numeric(8, 2),
+  width_cm numeric(8, 2) not null,
+  height_cm numeric(8, 2) not null,
   status text not null default 'available'
     check (status in ('available', 'sold', 'on_loan', 'reserved')),
   condition_notes text,

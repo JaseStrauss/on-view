@@ -46,8 +46,8 @@ describe("parseArtworkCsv", () => {
   });
 
   it("parses a valid row with header aliases", () => {
-    const csv = `name,artist,date,status
-Summer light,Jane Doe,2024,on loan`;
+    const csv = `name,artist,date,width_cm,height_cm,status
+Summer light,Jane Doe,2024,60,80,on loan`;
 
     const { rows, errors } = parseArtworkCsv(csv);
 
@@ -63,8 +63,8 @@ Summer light,Jane Doe,2024,on loan`;
   });
 
   it("handles quoted fields with commas", () => {
-    const csv = `title,artist,description
-"Harbour, dusk",Ann,"A calm scene, at dusk"`;
+    const csv = `title,artist,width_cm,height_cm,description
+"Harbour, dusk",Ann,90,60,"A calm scene, at dusk"`;
 
     const { rows, errors } = parseArtworkCsv(csv);
 
@@ -74,9 +74,9 @@ Summer light,Jane Doe,2024,on loan`;
   });
 
   it("reports missing title", () => {
-    const csv = `title,artist
-,Jane
-Valid,Ann`;
+    const csv = `title,artist,width_cm,height_cm
+,Jane,60,80
+Valid,Ann,60,80`;
 
     const { rows, errors } = parseArtworkCsv(csv);
 
@@ -86,8 +86,8 @@ Valid,Ann`;
   });
 
   it("reports invalid status when title is present", () => {
-    const csv = `title,artist,status
-Work,Jane,bogus`;
+    const csv = `title,artist,width_cm,height_cm,status
+Work,Jane,60,80,bogus`;
 
     const { rows, errors } = parseArtworkCsv(csv);
 
@@ -98,15 +98,30 @@ Work,Jane,bogus`;
   });
 
   it("honors a custom max row count", () => {
-    const csv = `title
-One
-Two
-Three`;
+    const csv = `title,width_cm,height_cm
+One,60,80
+Two,60,80
+Three,60,80`;
 
     const { rows, errors } = parseArtworkCsv(csv, { maxRowCount: 2 });
 
     expect(rows).toHaveLength(2);
     expect(errors).toEqual(["CSV is limited to 2 rows per import."]);
+  });
+
+  it("reports missing width_cm and height_cm", () => {
+    const csv = `title,artist,width_cm,height_cm
+No width,Jane,,80
+No height,Ann,60,
+`;
+
+    const { rows, errors } = parseArtworkCsv(csv);
+
+    expect(rows).toHaveLength(0);
+    expect(errors).toEqual([
+      "Row 2: width_cm is required and must be a positive number.",
+      "Row 3: height_cm is required and must be a positive number.",
+    ]);
   });
 });
 

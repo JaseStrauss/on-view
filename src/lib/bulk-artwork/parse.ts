@@ -1,5 +1,8 @@
 import type { ArtworkStatus } from "@/types/artwork";
-import { ARTWORK_STATUS_OPTIONS } from "@/lib/artwork/form";
+import {
+  ARTWORK_STATUS_OPTIONS,
+  parseDimensionCm,
+} from "@/lib/artwork/form";
 
 export const MAX_BULK_IMAGE_COUNT = 50;
 export const MAX_CSV_ROW_COUNT = 200;
@@ -236,6 +239,20 @@ export function parseArtworkCsv(
     }
 
     row.status = statusResult as ArtworkStatus;
+
+    if (!parseDimensionCm(row.width_cm)) {
+      errors.push(
+        `Row ${rowNumber}: width_cm is required and must be a positive number.`,
+      );
+      continue;
+    }
+
+    if (!parseDimensionCm(row.height_cm)) {
+      errors.push(
+        `Row ${rowNumber}: height_cm is required and must be a positive number.`,
+      );
+      continue;
+    }
 
     if (rows.length >= maxRowCount) {
       errors.push(`CSV is limited to ${maxRowCount} rows per import.`);

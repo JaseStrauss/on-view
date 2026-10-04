@@ -136,6 +136,15 @@ export function WallEditor({
     [room.walls, activeWallId],
   );
 
+  const pendingArtwork = useMemo(
+    () =>
+      pendingArtworkId
+        ? (availableArtworks.find((artwork) => artwork.id === pendingArtworkId) ??
+          null)
+        : null,
+    [availableArtworks, pendingArtworkId],
+  );
+
   const wallPlacementCounts = useMemo(() => {
     const counts = new Map<string, number>();
     for (const wall of room.walls) {
@@ -294,6 +303,7 @@ export function WallEditor({
           placements={placements}
           selectedPlacementId={selectedPlacementId}
           pendingArtworkId={pendingArtworkId}
+          pendingArtwork={pendingArtwork}
           onSelectPlacement={setSelectedPlacementId}
           onPlacementUpdate={onPlacementUpdate}
           onPlacementAdd={handlePlacementAdd}

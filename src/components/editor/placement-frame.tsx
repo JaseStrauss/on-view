@@ -1,7 +1,10 @@
 import { X } from "lucide-react";
 import { getArtworkImageUrl } from "@/services/artworks";
 import {
-  artworkSizeM,
+  placementVisualSizeForArtwork,
+  type ImageDimensionsPx,
+} from "@/lib/artwork/placement-size";
+import {
   worldToFramePixels,
   worldToPixelCenter,
   type WallCanvasRect,
@@ -19,6 +22,7 @@ export interface PlacementTransform {
 interface PlacementFrameProps {
   placement: PlacementWithArtwork;
   canvasRect: WallCanvasRect;
+  imageDimensions: ImageDimensionsPx | null;
   transform: PlacementTransform;
   isSelected: boolean;
   onSelect: () => void;
@@ -31,6 +35,7 @@ interface PlacementFrameProps {
 export function PlacementFrame({
   placement,
   canvasRect,
+  imageDimensions,
   transform,
   isSelected,
   onSelect,
@@ -39,10 +44,10 @@ export function PlacementFrame({
   onRotateStart,
   onRemove,
 }: PlacementFrameProps) {
-  const sizeM = artworkSizeM(
-    placement.artwork.width_cm,
-    placement.artwork.height_cm,
+  const sizeM = placementVisualSizeForArtwork(
+    placement.artwork,
     transform.scale,
+    imageDimensions,
   );
   const frame = worldToFramePixels(transform.position, sizeM, canvasRect);
   const centre = worldToPixelCenter(transform.position, canvasRect);
@@ -83,7 +88,7 @@ export function PlacementFrame({
           <img
             src={imageUrl}
             alt={placement.artwork.title}
-            className="pointer-events-none h-full w-full object-cover"
+            className="pointer-events-none h-full w-full object-contain"
             draggable={false}
           />
         ) : (

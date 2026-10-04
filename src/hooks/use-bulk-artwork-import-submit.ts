@@ -12,12 +12,13 @@ import {
   completeDemoBulkImport,
 } from "@/lib/bulk-artwork/flow";
 import type { CsvArtworkRow } from "@/lib/bulk-artwork/parse";
+import type { BulkImageImportInput } from "@/services/artworks";
 
 interface UseBulkArtworkImportSubmitOptions {
   demoMode: boolean;
   mode: BulkImportMode;
   canSubmit: boolean;
-  imageFiles: File[];
+  imageItems: BulkImageImportInput[];
   csvRows: CsvArtworkRow[];
   addToExhibition: AddToExhibitionValue;
   exhibitionId: string | null;
@@ -28,7 +29,7 @@ export function useBulkArtworkImportSubmit({
   demoMode,
   mode,
   canSubmit,
-  imageFiles,
+  imageItems,
   csvRows,
   addToExhibition,
   exhibitionId,
@@ -54,7 +55,7 @@ export function useBulkArtworkImportSubmit({
         demoMode,
         mode,
         userId,
-        imageFiles,
+        imageItems,
         csvRows,
       });
 

@@ -84,7 +84,10 @@ export function ArtworkDetailSheet({
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    if (!activeForm.title.trim()) return;
+    if (!activeForm.title.trim()) {
+      setError("Title is required.");
+      return;
+    }
 
     setSaving(true);
     setError(null);
@@ -158,12 +161,15 @@ export function ArtworkDetailSheet({
 
           <form id="artwork-edit-form" onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="edit-title">Title</Label>
+              <Label htmlFor="edit-title" requiredMark className="gap-1">
+                Title
+              </Label>
               <Input
                 id="edit-title"
                 value={activeForm.title}
                 onChange={(e) => updateField("title", e.target.value)}
                 required
+                aria-required="true"
                 readOnly={readOnly}
                 disabled={readOnly}
               />
@@ -190,6 +196,51 @@ export function ArtworkDetailSheet({
                 readOnly={readOnly}
                 disabled={readOnly}
               />
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="edit-width" requiredMark className="gap-1">
+                  Width (cm)
+                </Label>
+                {readOnly ? (
+                  <p className="text-sm">
+                    {activeForm.width_cm.trim() || "Not set"}
+                  </p>
+                ) : (
+                  <Input
+                    id="edit-width"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={activeForm.width_cm}
+                    onChange={(e) => updateField("width_cm", e.target.value)}
+                    required
+                    aria-required="true"
+                  />
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-height" requiredMark className="gap-1">
+                  Height (cm)
+                </Label>
+                {readOnly ? (
+                  <p className="text-sm">
+                    {activeForm.height_cm.trim() || "Not set"}
+                  </p>
+                ) : (
+                  <Input
+                    id="edit-height"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={activeForm.height_cm}
+                    onChange={(e) => updateField("height_cm", e.target.value)}
+                    required
+                    aria-required="true"
+                  />
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
