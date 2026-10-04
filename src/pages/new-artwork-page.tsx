@@ -32,6 +32,7 @@ import {
 import { DemoStudioBanner } from '@/components/demo-studio-banner'
 import { PageBackLink } from '@/components/page-back-link'
 import {
+  assertArtworkFormValid,
   ARTWORK_STATUS_OPTIONS,
   formatArtworkStatus,
 } from '@/lib/artwork/form'
@@ -101,6 +102,13 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
+
+    try {
+      assertArtworkFormValid(form)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not save artwork')
+      return
+    }
 
     if (demoMode) {
       setSubmitting(true)
@@ -183,11 +191,8 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="title" className="flex items-baseline gap-2">
+                <Label htmlFor="title" requiredMark className="gap-1">
                   Title
-                  <span className="text-xs font-normal text-muted-foreground">
-                    Required
-                  </span>
                 </Label>
                 <Input
                   id="title"
@@ -231,29 +236,39 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
               <div className="space-y-2">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="width">Width (cm)</Label>
+                    <Label htmlFor="width" requiredMark className="gap-1">
+                      Width (cm)
+                    </Label>
                     <Input
                       id="width"
                       type="number"
                       step="0.1"
+                      min="0"
                       value={form.width_cm}
                       onChange={(e) => updateField('width_cm', e.target.value)}
+                      required
+                      aria-required="true"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="height">Height (cm)</Label>
+                    <Label htmlFor="height" requiredMark className="gap-1">
+                      Height (cm)
+                    </Label>
                     <Input
                       id="height"
                       type="number"
                       step="0.1"
+                      min="0"
                       value={form.height_cm}
                       onChange={(e) => updateField('height_cm', e.target.value)}
+                      required
+                      aria-required="true"
                     />
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Width and height set scale on the wall. Strongly recommended for
-                  hanging and the 3D preview.
+                  Physical size on the wall. Match the work (or photo aspect) so
+                  the wall plan and 3D preview stay aligned.
                 </p>
               </div>
 
