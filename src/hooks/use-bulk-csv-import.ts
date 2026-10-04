@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   CSV_TEMPLATE,
+  MAX_CSV_ROW_COUNT,
   parseArtworkCsv,
   type CsvArtworkRow,
 } from "@/lib/bulk-import";
@@ -25,14 +26,19 @@ const PREVIEW_COLUMNS = [
   "image_url",
 ] as const;
 
-export function useBulkCsvImport() {
+interface UseBulkCsvImportOptions {
+  maxCsvRowCount?: number;
+}
+
+export function useBulkCsvImport(options?: UseBulkCsvImportOptions) {
+  const maxCsvRowCount = options?.maxCsvRowCount ?? MAX_CSV_ROW_COUNT;
   const [csvRows, setCsvRows] = useState<CsvArtworkRow[]>([]);
   const [csvErrors, setCsvErrors] = useState<string[]>([]);
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
 
   async function handleCsvFile(file: File) {
     const text = await file.text();
-    const result = parseArtworkCsv(text);
+    const result = parseArtworkCsv(text, { maxRowCount: maxCsvRowCount });
     setCsvFileName(file.name);
     setCsvRows(result.rows);
     setCsvErrors(result.errors);

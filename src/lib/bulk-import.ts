@@ -3,6 +3,25 @@ import { ARTWORK_STATUS_OPTIONS } from "@/lib/artwork-form";
 
 export const MAX_BULK_IMAGE_COUNT = 50;
 export const MAX_CSV_ROW_COUNT = 200;
+export const MAX_DEMO_BULK_IMAGE_COUNT = 10;
+export const MAX_DEMO_CSV_ROW_COUNT = 10;
+
+export interface BulkImportLimits {
+  maxImageCount: number;
+  maxCsvRowCount: number;
+}
+
+export function getBulkImportLimits(demoMode: boolean): BulkImportLimits {
+  return demoMode
+    ? {
+        maxImageCount: MAX_DEMO_BULK_IMAGE_COUNT,
+        maxCsvRowCount: MAX_DEMO_CSV_ROW_COUNT,
+      }
+    : {
+        maxImageCount: MAX_BULK_IMAGE_COUNT,
+        maxCsvRowCount: MAX_CSV_ROW_COUNT,
+      };
+}
 
 export const ACCEPTED_IMAGE_TYPES = [
   "image/jpeg",
@@ -68,7 +87,11 @@ export function titleFromFilename(filename: string): string {
 }
 
 export function isAcceptedImageFile(file: File): boolean {
-  if (ACCEPTED_IMAGE_TYPES.includes(file.type as (typeof ACCEPTED_IMAGE_TYPES)[number])) {
+  if (
+    ACCEPTED_IMAGE_TYPES.includes(
+      file.type as (typeof ACCEPTED_IMAGE_TYPES)[number],
+    )
+  ) {
     return true;
   }
 
@@ -126,7 +149,15 @@ function parseStatus(value: string, rowNumber: number): ArtworkStatus | string {
   return `Row ${rowNumber}: status must be available, sold, on_loan, or reserved`;
 }
 
-export function parseArtworkCsv(text: string): CsvParseResult {
+export interface ParseArtworkCsvOptions {
+  maxRowCount?: number;
+}
+
+export function parseArtworkCsv(
+  text: string,
+  options?: ParseArtworkCsvOptions,
+): CsvParseResult {
+  const maxRowCount = options?.maxRowCount ?? MAX_CSV_ROW_COUNT;
   const normalizedText = text.replace(/^\uFEFF/, "").trim();
   const errors: string[] = [];
 
@@ -205,12 +236,13 @@ export function parseArtworkCsv(text: string): CsvParseResult {
     }
 
     row.status = statusResult as ArtworkStatus;
-    rows.push(row);
 
-    if (rows.length > MAX_CSV_ROW_COUNT) {
-      errors.push(`CSV is limited to ${MAX_CSV_ROW_COUNT} rows per import.`);
+    if (rows.length >= maxRowCount) {
+      errors.push(`CSV is limited to ${maxRowCount} rows per import.`);
       break;
     }
+
+    rows.push(row);
   }
 
   return { rows, errors };

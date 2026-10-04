@@ -17,6 +17,7 @@ import { useBulkImageImport } from "@/hooks/use-bulk-image-import";
 import { useExhibitions } from "@/hooks/use-exhibitions";
 import { getArtworkFlowPaths } from "@/lib/demo-studio-routes";
 import type { BulkImportMode } from "@/lib/bulk-artwork-import";
+import { getBulkImportLimits } from "@/lib/bulk-import";
 import { Button } from "@/components/ui/button";
 
 interface BulkArtworkImportPageProps {
@@ -41,13 +42,18 @@ export function BulkArtworkImportPage({
     [demoMode, exhibitionId],
   );
 
+  const bulkLimits = useMemo(
+    () => getBulkImportLimits(demoMode),
+    [demoMode],
+  );
+
   const {
     selectedImages,
     dragActive,
     setDragActive,
     addImageFiles,
     removeImage,
-  } = useBulkImageImport();
+  } = useBulkImageImport({ maxImageCount: bulkLimits.maxImageCount });
 
   const {
     csvRows,
@@ -55,7 +61,7 @@ export function BulkArtworkImportPage({
     csvFileName,
     previewColumns,
     handleCsvFile,
-  } = useBulkCsvImport();
+  } = useBulkCsvImport({ maxCsvRowCount: bulkLimits.maxCsvRowCount });
 
   useEffect(() => {
     if (exhibitions.length === 0) return;
@@ -111,6 +117,15 @@ export function BulkArtworkImportPage({
             Upload many images at once, or import a spreadsheet of catalogue
             records. Titles from filenames become draft entries you can refine
             later in your catalogue.
+            {demoMode && (
+              <>
+                {" "}
+                In the demo builder, each import is limited to{" "}
+                {bulkLimits.maxImageCount} images or{" "}
+                {bulkLimits.maxCsvRowCount} CSV rows so data stays in your
+                browser.
+              </>
+            )}
           </p>
         </div>
 
@@ -151,6 +166,8 @@ export function BulkArtworkImportPage({
             setDragActive={setDragActive}
             onAddFiles={onAddImageFiles}
             onRemoveImage={removeImage}
+            maxImageCount={bulkLimits.maxImageCount}
+            demoMode={demoMode}
           />
         ) : (
           <BulkImportCsvPanel
@@ -159,6 +176,7 @@ export function BulkArtworkImportPage({
             csvFileName={csvFileName}
             previewColumns={previewColumns}
             onCsvFile={onCsvFileSelected}
+            maxCsvRowCount={bulkLimits.maxCsvRowCount}
           />
         )}
 
