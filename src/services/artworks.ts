@@ -217,7 +217,8 @@ export function getArtworkImageUrl(imagePath: string | null): string | null {
   if (
     imagePath.startsWith("http://") ||
     imagePath.startsWith("https://") ||
-    imagePath.startsWith("/")
+    imagePath.startsWith("/") ||
+    imagePath.startsWith("data:")
   ) {
     return imagePath;
   }

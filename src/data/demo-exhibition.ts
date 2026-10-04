@@ -14,6 +14,15 @@ export const DEMO_HERO_SNAPSHOT_SRC = "/demo/surface-studies-hero.png";
 
 export const DEMO_EXHIBITION_TITLE = "Surface Studies";
 
+export const DEMO_BUILDER_SAMPLE_TITLE = "Sample Exhibition";
+
+/** Curatorial copy for the builder sample hang (public page and PDF, not UI hints). */
+export const DEMO_BUILDER_SAMPLE_DESCRIPTION =
+  "Nine painters share one room in this study of surface, grid, and saturated color. The hang pairs works on the east and west walls with a north-wall triptych, letting scale and interval carry the walk through the space.";
+
+export const DEMO_BUILDER_SAMPLE_OPENS_AT = "2026-03-01";
+export const DEMO_BUILDER_SAMPLE_CLOSES_AT = "2026-05-31";
+
 export type DemoArtworkDefinition = SampleArtwork;
 
 function definitionsForKeys(keys: readonly string[]): DemoArtworkDefinition[] {
@@ -164,14 +173,14 @@ export function getDemoPublicShow(): {
     user_id: userId,
     title: DEMO_EXHIBITION_TITLE,
     description:
-      "A curated hang of contemporary surfaces and color.\nExplore the 3D gallery, then build your own.",
+      "A curated hang of contemporary surfaces and color, from geometric restraint to full-chroma gesture. Works are grouped to slow the walk and keep sightlines open across the room.",
     slug: DEMO_SLUG,
     room_template_id: "white-cube",
     room_config: {},
     is_published: true,
     featuring_override: null,
-    opens_at: "2026-03-01",
-    closes_at: "2026-05-31",
+    opens_at: DEMO_BUILDER_SAMPLE_OPENS_AT,
+    closes_at: DEMO_BUILDER_SAMPLE_CLOSES_AT,
     created_at: DEMO_NOW,
     updated_at: DEMO_NOW,
   };

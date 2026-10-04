@@ -6,10 +6,9 @@ import { ExhibitionEditorView } from "@/components/editor/exhibition-editor-view
 import { ExhibitionEditorSkeleton } from "@/components/loading-skeletons";
 import { Button } from "@/components/ui/button";
 import {
-  createEmptySandboxState,
   createSampleSandboxState,
+  DEMO_BUILDER_PATH,
   DEMO_BUILDER_SLUG,
-  getDemoSandboxArtworks,
 } from "@/lib/demo-sandbox";
 import { DEMO_STUDIO_PATH } from "@/lib/public-demo";
 import {
@@ -46,10 +45,10 @@ export function DemoSandboxEditorPage() {
     updatePlacement,
     removePlacement,
     resetSandbox,
+    artworks,
   } = useDemoSandbox(init);
 
   const [publishing, setPublishing] = useState(false);
-  const artworks = useMemo(() => getDemoSandboxArtworks(), []);
 
   useEffect(() => {
     if (!searchParams.has("init")) return;
@@ -128,12 +127,7 @@ export function DemoSandboxEditorPage() {
     toast.message("Loaded the sample hang");
   }
 
-  function handleStartFresh() {
-    resetSandbox(() =>
-      createEmptySandboxState("My demo show", "white-cube"),
-    );
-    toast.message("Started a new demo show");
-  }
+  const freshBuilderHref = `${DEMO_BUILDER_PATH}?init=fresh`;
 
   return (
     <>
@@ -163,7 +157,16 @@ export function DemoSandboxEditorPage() {
             <Button type="button" variant="outline" onClick={handleResetSample}>
               Load sample hang
             </Button>
-            <Button type="button" variant="outline" onClick={handleStartFresh}>
+            <Button
+              variant="outline"
+              render={
+                <a
+                  href={freshBuilderHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              }
+            >
               Start new show
             </Button>
           </div>
