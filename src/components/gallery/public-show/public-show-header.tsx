@@ -99,8 +99,8 @@ export function PublicShowHeader({
           />
           {catalogueOnly && defaultedToCatalogueOnly && (
             <p className="max-w-md text-xs text-muted-foreground">
-              Showing catalogue only for easier reading on this device. Switch to
-              3D gallery anytime.
+              Showing catalogue only to respect reduced motion. Switch to 3D
+              gallery anytime.
             </p>
           )}
         </div>
