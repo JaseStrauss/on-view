@@ -5,7 +5,7 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import type { PlacementWithArtwork, RoomTemplate } from "@/types";
 import { useTheme } from "@/contexts/theme-context";
 import { getArtworkImageUrl } from "@/services/artworks";
-import { catalogSizeMForArtwork } from "@/lib/artwork/placement-size";
+import { catalogSizeForArtwork } from "@/lib/artwork/placement-size";
 import type { GalleryRoomProps } from "@/components/gallery/room/gallery-room-types";
 import { cn } from "@/lib/utils";
 import { ArtworkFrame } from "./artwork-frame";
@@ -65,7 +65,7 @@ function ArtworkPlacements({
           const imageUrl = getArtworkImageUrl(placement.artwork.image_path);
           if (!imageUrl) return null;
 
-          const catalog = catalogSizeMForArtwork(
+          const catalog = catalogSizeForArtwork(
             placement.artwork,
             placement.scale,
           );

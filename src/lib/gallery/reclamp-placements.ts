@@ -1,4 +1,4 @@
-import { placementVisualSizeMForArtwork } from "@/lib/artwork/placement-size";
+import { placementVisualSizeForArtwork } from "@/lib/artwork/placement-size";
 import { clampPlacement } from "@/lib/gallery/wall-coordinates";
 import type { PlacementWithArtwork, RoomTemplate } from "@/types";
 
@@ -14,7 +14,7 @@ export function reclampPlacement(
     };
   }
 
-  const sizeM = placementVisualSizeMForArtwork(
+  const sizeM = placementVisualSizeForArtwork(
     placement.artwork,
     placement.scale,
   );

@@ -10,7 +10,7 @@ import {
   pointerToWorld,
   type WallPoint,
 } from "@/lib/gallery/wall-coordinates";
-import { placementVisualSizeMForArtwork } from "@/lib/artwork/placement-size";
+import { placementVisualSizeForArtwork } from "@/lib/artwork/placement-size";
 import { useArtworkImageDimensions } from "@/hooks/use-artwork-image-dimensions";
 import {
   PlacementFrame,
@@ -228,7 +228,7 @@ export function WallCanvas({
         );
         const preview = transformPreviewRef.current[dragState.placementId];
         const scale = preview?.scale ?? placement.scale;
-        const sizeM = placementVisualSizeMForArtwork(
+        const sizeM = placementVisualSizeForArtwork(
           placement.artwork,
           scale,
           imageDimensionsRef.current.get(placement.artwork.id) ?? null,
@@ -343,7 +343,7 @@ export function WallCanvas({
             );
             if (targetWall) {
               const scale = preview?.scale ?? placement.scale;
-              const sizeM = placementVisualSizeMForArtwork(
+              const sizeM = placementVisualSizeForArtwork(
                 placement.artwork,
                 scale,
                 imageDimensionsRef.current.get(placement.artwork.id) ?? null,
@@ -408,16 +408,16 @@ export function WallCanvas({
       wall,
     );
     const sizeM = pendingArtwork
-      ? placementVisualSizeMForArtwork(
-          pendingArtwork,
-          1,
-          imageDimensionsRef.current.get(pendingArtwork.id) ?? null,
-        )
-      : placementVisualSizeMForArtwork(
-          { width_cm: 60, height_cm: 80 },
-          1,
-          null,
-        );
+      ? placementVisualSizeForArtwork(
+        pendingArtwork,
+        1,
+        imageDimensionsRef.current.get(pendingArtwork.id) ?? null,
+      )
+      : placementVisualSizeForArtwork(
+        { width_cm: 60, height_cm: 80 },
+        1,
+        null,
+      );
     return clampPlacement(point, sizeM, wall);
   }
 

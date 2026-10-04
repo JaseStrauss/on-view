@@ -43,6 +43,7 @@ export function snapToGrid(value: number): number {
   return Math.round(value / SNAP_INTERVAL_M) * SNAP_INTERVAL_M;
 }
 
+/** Raw cm to metres; uses 60×80 cm when values are missing. Prefer placement-size for catalogue hang sizing. */
 export function artworkSizeM(
   widthCm: number | null,
   heightCm: number | null,

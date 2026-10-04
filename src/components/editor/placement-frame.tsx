@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { getArtworkImageUrl } from "@/services/artworks";
 import {
-  placementVisualSizeMForArtwork,
+  placementVisualSizeForArtwork,
   type ImageDimensionsPx,
 } from "@/lib/artwork/placement-size";
 import {
@@ -44,7 +44,7 @@ export function PlacementFrame({
   onRotateStart,
   onRemove,
 }: PlacementFrameProps) {
-  const sizeM = placementVisualSizeMForArtwork(
+  const sizeM = placementVisualSizeForArtwork(
     placement.artwork,
     transform.scale,
     imageDimensions,
