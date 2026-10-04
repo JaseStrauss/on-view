@@ -3,7 +3,7 @@ import {
   deriveExhibitionArtists,
   formatExhibitionDates,
   resolveFeaturingLine,
-} from "@/lib/exhibition-details";
+} from "@/lib/exhibition/details";
 import type { Artwork } from "@/types/artwork";
 import type { Exhibition, PlacementWithArtwork } from "@/types";
 

@@ -1,6 +1,6 @@
 import type { jsPDF } from "jspdf";
 import { PDF_COLORS, PDF_CONTENT, PDF_PAGE } from "@/lib/pdf-catalogue/layout";
-import { PDF_SANS, PDF_SERIF } from "@/lib/pdf-fonts";
+import { PDF_SANS, PDF_SERIF } from "@/lib/pdf-catalogue/fonts";
 
 export class CataloguePdfWriter {
   constructor(readonly doc: jsPDF) {}

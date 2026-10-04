@@ -9,8 +9,8 @@ import {
   createSampleSandboxState,
   DEMO_BUILDER_PATH,
   DEMO_BUILDER_SLUG,
-} from "@/lib/demo-sandbox";
-import { DEMO_STUDIO_PATH } from "@/lib/public-demo";
+} from "@/lib/demo/sandbox";
+import { DEMO_STUDIO_PATH } from "@/lib/demo/public-demo";
 import {
   copyPublicExhibitionLink,
   getPublicExhibitionUrl,

@@ -9,7 +9,7 @@ import {
   createEmptySandboxState,
   DEMO_BUILDER_PATH,
   initSandboxState,
-} from "@/lib/demo-sandbox";
+} from "@/lib/demo/sandbox";
 import {
   getDefaultRoomConfig,
   getRoomTemplateMeta,

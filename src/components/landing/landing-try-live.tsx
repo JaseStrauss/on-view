@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, LayoutGrid, ScanEye } from "lucide-react";
 import { DEMO_SLUG } from "@/data/demo-exhibition";
-import { isPublicDemoOnly } from "@/lib/public-demo";
+import { isPublicDemoOnly } from "@/lib/demo/public-demo";
 import { cn } from "@/lib/utils";
 
 const demos = [

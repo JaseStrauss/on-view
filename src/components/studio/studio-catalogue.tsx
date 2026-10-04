@@ -12,7 +12,7 @@ import {
     getCatalogueYearExtent,
     isYearRangeActive,
     organizeCatalogueArtworks,
-} from "@/lib/catalogue-view";
+} from "@/lib/gallery/catalogue-view";
 import type { Artwork, ArtworkStatus } from "@/types/artwork";
 
 interface StudioCatalogueProps {

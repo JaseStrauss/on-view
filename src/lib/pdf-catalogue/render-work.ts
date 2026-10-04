@@ -1,4 +1,4 @@
-import { formatMediumLine, formatTitleLine } from "@/lib/artwork-caption";
+import { formatMediumLine, formatTitleLine } from "@/lib/artwork/caption";
 import {
   PDF_COLORS,
   PDF_PAGE,
@@ -6,7 +6,7 @@ import {
 } from "@/lib/pdf-catalogue/layout";
 import type { CatalogueImage } from "@/lib/pdf-catalogue/types";
 import type { CataloguePdfWriter } from "@/lib/pdf-catalogue/writer";
-import { PDF_SANS, PDF_SERIF } from "@/lib/pdf-fonts";
+import { PDF_SANS, PDF_SERIF } from "@/lib/pdf-catalogue/fonts";
 import type { PlacementWithArtwork } from "@/types";
 
 function renderWorkImage(

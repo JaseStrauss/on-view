@@ -7,7 +7,7 @@ import {
   parseArtworkCsv,
   titleFromFilename,
   type CsvArtworkRow,
-} from "@/lib/bulk-import";
+} from "@/lib/bulk-artwork/parse";
 
 describe("titleFromFilename", () => {
   it("strips extension and normalizes separators", () => {

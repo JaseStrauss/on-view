@@ -2,7 +2,7 @@ import {
   csvRowToFormData,
   titleFromFilename,
   type CsvArtworkRow,
-} from "@/lib/bulk-import";
+} from "@/lib/bulk-artwork/parse";
 import { ARTWORK_IMAGE_BUCKET, supabase } from "@/lib/supabase";
 import type { Artwork, ArtworkFormData } from "@/types/artwork";
 

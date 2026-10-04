@@ -31,4 +31,4 @@ export function formatMediumLine(
   return parts.length > 0 ? parts.join(" · ") : null;
 }
 
-export { formatExhibitionDates } from "@/lib/exhibition-details";
+export { formatExhibitionDates } from "@/lib/exhibition/details";

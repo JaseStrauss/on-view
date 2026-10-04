@@ -1,4 +1,4 @@
-import { DEMO_STUDIO_BANNER } from "@/lib/public-demo";
+import { DEMO_STUDIO_BANNER } from "@/lib/demo/public-demo";
 
 export function DemoStudioBanner() {
   return (

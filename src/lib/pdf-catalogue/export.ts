@@ -1,13 +1,13 @@
 import {
   deriveExhibitionArtists,
   resolveFeaturingLine,
-} from "@/lib/exhibition-details";
+} from "@/lib/exhibition/details";
 import { loadCatalogueImage } from "@/lib/pdf-catalogue/load-image";
 import { renderCoverPage } from "@/lib/pdf-catalogue/render-cover";
 import { renderWorkPage } from "@/lib/pdf-catalogue/render-work";
 import type { ExportCatalogueOptions } from "@/lib/pdf-catalogue/types";
 import { CataloguePdfWriter } from "@/lib/pdf-catalogue/writer";
-import { registerPdfFonts } from "@/lib/pdf-fonts";
+import { registerPdfFonts } from "@/lib/pdf-catalogue/fonts";
 import { getArtworkImageUrl } from "@/services/artworks";
 
 function slugifyFilename(title: string): string {

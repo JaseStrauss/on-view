@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import {
   getAllSandboxArtworks,
   resolveSandboxArtwork,
-} from "@/lib/demo-sandbox-artworks";
+} from "@/lib/demo/sandbox-artworks";
 import {
   applySandboxRoomSettings,
   createEmptySandboxState,
@@ -13,7 +13,7 @@ import {
   loadSandboxState,
   saveSandboxState,
   type DemoSandboxState,
-} from "@/lib/demo-sandbox";
+} from "@/lib/demo/sandbox";
 import type { RoomConfig } from "@/rooms/room-config";
 import type { Exhibition, Placement } from "@/types";
 

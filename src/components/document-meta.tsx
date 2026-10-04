@@ -3,7 +3,7 @@ import {
   applyDocumentMeta,
   resetDocumentMeta,
   type ExhibitionShareMeta,
-} from "@/lib/exhibition-social-meta";
+} from "@/lib/exhibition/social-meta";
 
 interface DocumentMetaProps {
   meta: ExhibitionShareMeta | null;

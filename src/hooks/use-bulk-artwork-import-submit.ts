@@ -2,16 +2,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import type { AddToExhibitionValue } from "@/components/add-to-exhibition-fields";
-import type { CsvArtworkRow } from "@/lib/bulk-import";
 import {
   BULK_IMPORT_EMPTY_MESSAGE,
   executeBulkArtworkImport,
   type BulkImportMode,
-} from "@/lib/bulk-artwork-import";
+} from "@/lib/bulk-artwork/artwork-import";
 import {
   completeBulkArtworkImport,
   completeDemoBulkImport,
-} from "@/lib/bulk-artwork-flow";
+} from "@/lib/bulk-artwork/flow";
+import type { CsvArtworkRow } from "@/lib/bulk-artwork/parse";
 
 interface UseBulkArtworkImportSubmitOptions {
   demoMode: boolean;

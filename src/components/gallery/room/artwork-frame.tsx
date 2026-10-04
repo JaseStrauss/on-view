@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
-import { artworkPlaneSizeM } from "@/lib/artwork-plane-size";
-import { getWallPlacementTransform } from "@/lib/wall-rotation";
+import { artworkPlaneSizeM } from "@/lib/artwork/plane-size";
+import { getWallPlacementTransform } from "@/lib/gallery/wall-rotation";
 import type { WallDefinition } from "@/types";
 
 interface ArtworkFrameProps {

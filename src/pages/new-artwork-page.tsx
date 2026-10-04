@@ -8,9 +8,9 @@ import {
 } from '@/components/add-to-exhibition-fields'
 import { useExhibitions } from '@/hooks/use-exhibitions'
 import { toast } from 'sonner'
-import { completeArtworkSave } from '@/lib/artwork-exhibition-flow'
-import { addDemoSandboxCustomArtwork } from '@/lib/demo-sandbox-artworks'
-import { getArtworkFlowPaths } from '@/lib/demo-studio-routes'
+import { completeArtworkSave } from '@/lib/artwork/exhibition-flow'
+import { addDemoSandboxCustomArtwork } from '@/lib/demo/sandbox-artworks'
+import { getArtworkFlowPaths } from '@/lib/demo/studio-routes'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -34,7 +34,7 @@ import { PageBackLink } from '@/components/page-back-link'
 import {
   ARTWORK_STATUS_OPTIONS,
   formatArtworkStatus,
-} from '@/lib/artwork-form'
+} from '@/lib/artwork/form'
 import { createArtwork } from '@/services/artworks'
 import type { ArtworkFormData, ArtworkStatus } from '@/types/artwork'
 

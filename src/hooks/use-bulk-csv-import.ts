@@ -4,7 +4,7 @@ import {
   MAX_CSV_ROW_COUNT,
   parseArtworkCsv,
   type CsvArtworkRow,
-} from "@/lib/bulk-import";
+} from "@/lib/bulk-artwork/parse";
 
 export function downloadBulkImportCsvTemplate() {
   const blob = new Blob([CSV_TEMPLATE], { type: "text/csv;charset=utf-8" });

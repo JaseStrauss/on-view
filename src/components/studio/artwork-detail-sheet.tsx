@@ -17,7 +17,7 @@ import {
   ARTWORK_STATUS_OPTIONS,
   artworkToFormData,
   formatArtworkStatus,
-} from "@/lib/artwork-form";
+} from "@/lib/artwork/form";
 import { cn } from "@/lib/utils";
 import { getArtworkImageUrl, updateArtwork } from "@/services/artworks";
 import type { Artwork, ArtworkFormData, ArtworkStatus } from "@/types/artwork";

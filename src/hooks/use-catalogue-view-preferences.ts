@@ -4,7 +4,7 @@ import {
   EMPTY_YEAR_RANGE,
   type CatalogueSortKey,
   type CatalogueYearRange,
-} from "@/lib/catalogue-view";
+} from "@/lib/gallery/catalogue-view";
 
 const SORT_STORAGE_KEY = "on-view-catalogue-sort";
 const GROUP_STORAGE_KEY = "on-view-catalogue-group-by-year";

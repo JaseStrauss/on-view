@@ -5,14 +5,14 @@ import { Label } from "@/components/ui/label";
 import {
   ARTWORK_STATUS_OPTIONS,
   formatArtworkStatus,
-} from "@/lib/artwork-form";
+} from "@/lib/artwork/form";
 import {
   CATALOGUE_SORT_OPTIONS,
   type CatalogueFieldFilter,
   type CatalogueSortKey,
   type CatalogueYearExtent,
   type CatalogueYearRange,
-} from "@/lib/catalogue-view";
+} from "@/lib/gallery/catalogue-view";
 import { cn } from "@/lib/utils";
 import type { ArtworkStatus } from "@/types/artwork";
 

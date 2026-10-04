@@ -12,7 +12,7 @@ import {
 import type { User } from "@supabase/supabase-js";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { DEMO_STUDIO_PATH } from "@/lib/public-demo";
+import { DEMO_STUDIO_PATH } from "@/lib/demo/public-demo";
 import { cn } from "@/lib/utils";
 
 interface MobileNavProps {

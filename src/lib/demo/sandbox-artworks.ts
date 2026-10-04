@@ -4,7 +4,7 @@ import {
   MAX_DEMO_CSV_ROW_COUNT,
   titleFromFilename,
   type CsvArtworkRow,
-} from "@/lib/bulk-import";
+} from "@/lib/bulk-artwork/parse";
 import type { Artwork, ArtworkFormData } from "@/types/artwork";
 import type { BulkArtworkFailure } from "@/services/artworks";
 import {
@@ -15,7 +15,7 @@ import {
   saveSandboxState,
   SANDBOX_USER_ID,
   type DemoSandboxState,
-} from "@/lib/demo-sandbox";
+} from "@/lib/demo/sandbox";
 
 const MAX_DEMO_IMAGE_BYTES = 3 * 1024 * 1024;
 

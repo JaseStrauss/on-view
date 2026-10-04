@@ -7,7 +7,7 @@ import {
 } from "@/data/demo-exhibition";
 import { mergeRoomConfig, type RoomConfig } from "@/rooms/room-config";
 import { buildRoomTemplate } from "@/rooms/templates";
-import { reclampPlacement } from "@/lib/reclamp-placements";
+import { reclampPlacement } from "@/lib/gallery/reclamp-placements";
 import type { Artwork } from "@/types/artwork";
 import type { Exhibition, PlacementWithArtwork } from "@/types";
 

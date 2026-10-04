@@ -1,8 +1,8 @@
-import type { CsvArtworkRow } from "@/lib/bulk-import";
+import type { CsvArtworkRow } from "./parse";
 import {
   importDemoSandboxCsvRows,
   importDemoSandboxImageFiles,
-} from "@/lib/demo-sandbox-artworks";
+} from "@/lib/demo/sandbox-artworks";
 import {
   createArtworksFromCsvRows,
   createArtworksFromImageFiles,

@@ -1,9 +1,9 @@
 import type { NavigateFunction } from "react-router-dom";
 import { toast } from "sonner";
 import type { AddToExhibitionValue } from "@/components/add-to-exhibition-fields";
-import { DEMO_BUILDER_PATH } from "@/lib/demo-sandbox";
-import type { BulkImportResult } from "@/lib/bulk-artwork-import";
-import { DEMO_STUDIO_PATH } from "@/lib/public-demo";
+import { DEMO_BUILDER_PATH } from "@/lib/demo/sandbox";
+import type { BulkImportResult } from "./artwork-import";
+import { DEMO_STUDIO_PATH } from "@/lib/demo/public-demo";
 import { addArtworksToExhibitionCatalogue } from "@/services/exhibition-catalogue";
 import type { BulkArtworkFailure } from "@/services/artworks";
 

@@ -6,7 +6,7 @@ import {
   worldToPixelCenter,
   type WallCanvasRect,
   type WallPoint,
-} from "@/lib/wall-coordinates";
+} from "@/lib/gallery/wall-coordinates";
 import type { PlacementWithArtwork } from "@/types";
 import { cn } from "@/lib/utils";
 

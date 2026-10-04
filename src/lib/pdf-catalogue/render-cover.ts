@@ -1,7 +1,7 @@
-import { formatExhibitionDates } from "@/lib/exhibition-details";
+import { formatExhibitionDates } from "@/lib/exhibition/details";
 import { PDF_COLORS } from "@/lib/pdf-catalogue/layout";
 import type { CataloguePdfWriter } from "@/lib/pdf-catalogue/writer";
-import { PDF_SANS, PDF_SERIF } from "@/lib/pdf-fonts";
+import { PDF_SANS, PDF_SERIF } from "@/lib/pdf-catalogue/fonts";
 import type { Exhibition } from "@/types";
 
 export function renderCoverPage(

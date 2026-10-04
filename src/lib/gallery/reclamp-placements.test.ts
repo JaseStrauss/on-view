@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Artwork } from "@/types/artwork";
 import type { PlacementWithArtwork, RoomTemplate } from "@/types";
-import { reclampPlacement } from "@/lib/reclamp-placements";
+import { reclampPlacement } from "@/lib/gallery/reclamp-placements";
 
 const baseArtwork: Artwork = {
   id: "art-1",

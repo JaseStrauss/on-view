@@ -10,8 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DEMO_SLUG, getDemoStudioData } from "@/data/demo-exhibition";
-import { DEMO_BUILDER_PATH } from "@/lib/demo-sandbox";
-import { isPublicDemoOnly } from "@/lib/public-demo";
+import { DEMO_BUILDER_PATH } from "@/lib/demo/sandbox";
+import { isPublicDemoOnly } from "@/lib/demo/public-demo";
 import { cn } from "@/lib/utils";
 
 const { artworks } = getDemoStudioData();

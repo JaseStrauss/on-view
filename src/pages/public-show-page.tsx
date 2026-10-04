@@ -13,7 +13,7 @@ import { usePublicCatalogueLayout } from "@/hooks/use-public-catalogue-layout";
 import { usePublicShowExhibition } from "@/hooks/use-public-show-exhibition";
 import { usePublicShowWorkSelection } from "@/hooks/use-public-show-work-selection";
 import { DEMO_SLUG } from "@/data/demo-exhibition";
-import { parseExhibitionViewQuery } from "@/lib/exhibition-view-mode";
+import { parseExhibitionViewQuery } from "@/lib/exhibition/view-mode";
 
 export function PublicShowPage() {
   const { slug } = useParams<{ slug: string }>();
