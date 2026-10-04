@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
-import { artworkPlaneSizeM } from "@/lib/artwork/plane-size";
+import { placementVisualSizeFromCatalogM } from "@/lib/artwork/placement-size";
 import { getWallPlacementTransform } from "@/lib/gallery/wall-rotation";
 import type { WallDefinition } from "@/types";
 
@@ -62,15 +62,8 @@ export function ArtworkFrame({
   }, [imageUrl]);
 
   const planeSize = useMemo(() => {
-    if (!imageSize) {
-      return { width, height };
-    }
-    return artworkPlaneSizeM(
-      width,
-      height,
-      imageSize.width,
-      imageSize.height,
-    );
+    const fitted = placementVisualSizeFromCatalogM(width, height, imageSize);
+    return { width: fitted.widthM, height: fitted.heightM };
   }, [width, height, imageSize]);
 
   const frameDepth = 0.04;

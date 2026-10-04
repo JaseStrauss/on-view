@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { Artwork } from "@/types/artwork";
 import type { WallDefinition } from "@/types";
 import type { PlacementWithArtwork } from "@/types";
 import {
-  artworkSizeM,
   clampPlacement,
   clampScale,
   DEFAULT_HANG_HEIGHT_M,
@@ -10,6 +10,8 @@ import {
   pointerToWorld,
   type WallPoint,
 } from "@/lib/gallery/wall-coordinates";
+import { placementVisualSizeMForArtwork } from "@/lib/artwork/placement-size";
+import { useArtworkImageDimensions } from "@/hooks/use-artwork-image-dimensions";
 import {
   PlacementFrame,
   type PlacementTransform,
@@ -29,6 +31,7 @@ interface WallCanvasProps {
   placements: PlacementWithArtwork[];
   selectedPlacementId: string | null;
   pendingArtworkId: string | null;
+  pendingArtwork: Artwork | null;
   onSelectPlacement: (placementId: string | null) => void;
   onPlacementUpdate: (
     placementId: string,
@@ -89,6 +92,7 @@ export function WallCanvas({
   placements,
   selectedPlacementId,
   pendingArtworkId,
+  pendingArtwork,
   onSelectPlacement,
   onPlacementUpdate,
   onPlacementAdd,
@@ -136,6 +140,28 @@ export function WallCanvas({
   onPlacementRemoveRef.current = onPlacementRemove;
 
   const wallPlacements = placements.filter((p) => p.wall_id === wall.id);
+
+  const imageDimensionSources = useMemo(() => {
+    const byId = new Map<string, { id: string; image_path: string | null }>();
+    for (const placement of wallPlacements) {
+      byId.set(placement.artwork.id, {
+        id: placement.artwork.id,
+        image_path: placement.artwork.image_path,
+      });
+    }
+    if (pendingArtwork) {
+      byId.set(pendingArtwork.id, {
+        id: pendingArtwork.id,
+        image_path: pendingArtwork.image_path,
+      });
+    }
+    return [...byId.values()];
+  }, [wallPlacements, pendingArtwork]);
+
+  const imageDimensionsByArtworkId =
+    useArtworkImageDimensions(imageDimensionSources);
+  const imageDimensionsRef = useRef(imageDimensionsByArtworkId);
+  imageDimensionsRef.current = imageDimensionsByArtworkId;
 
   const updateCanvasSize = useCallback(() => {
     if (!canvasRef.current) return;
@@ -202,10 +228,10 @@ export function WallCanvas({
         );
         const preview = transformPreviewRef.current[dragState.placementId];
         const scale = preview?.scale ?? placement.scale;
-        const sizeM = artworkSizeM(
-          placement.artwork.width_cm,
-          placement.artwork.height_cm,
+        const sizeM = placementVisualSizeMForArtwork(
+          placement.artwork,
           scale,
+          imageDimensionsRef.current.get(placement.artwork.id) ?? null,
         );
         const next = clampPlacement(
           {
@@ -317,10 +343,10 @@ export function WallCanvas({
             );
             if (targetWall) {
               const scale = preview?.scale ?? placement.scale;
-              const sizeM = artworkSizeM(
-                placement.artwork.width_cm,
-                placement.artwork.height_cm,
+              const sizeM = placementVisualSizeMForArtwork(
+                placement.artwork,
                 scale,
+                imageDimensionsRef.current.get(placement.artwork.id) ?? null,
               );
               const position = clampPlacement(
                 preview?.position ?? {
@@ -381,7 +407,17 @@ export function WallCanvas({
       canvasRef.current,
       wall,
     );
-    const sizeM = artworkSizeM(null, null, 1);
+    const sizeM = pendingArtwork
+      ? placementVisualSizeMForArtwork(
+          pendingArtwork,
+          1,
+          imageDimensionsRef.current.get(pendingArtwork.id) ?? null,
+        )
+      : placementVisualSizeMForArtwork(
+          { width_cm: 60, height_cm: 80 },
+          1,
+          null,
+        );
     return clampPlacement(point, sizeM, wall);
   }
 
@@ -522,6 +558,9 @@ export function WallCanvas({
             <PlacementFrame
               placement={placement}
               canvasRect={canvasRect}
+              imageDimensions={
+                imageDimensionsByArtworkId.get(placement.artwork.id) ?? null
+              }
               transform={getPlacementTransform(
                 placement,
                 transformPreview[placement.id],
