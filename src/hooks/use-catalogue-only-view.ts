@@ -5,19 +5,6 @@ import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 const SESSION_KEY_GLOBAL = "on-view-catalogue-only";
 const SESSION_KEY_DEMO = "on-view-catalogue-only:demo";
 
-function detectLowEndDevice(): boolean {
-  if (typeof navigator === "undefined") return false;
-
-  const cores = navigator.hardwareConcurrency ?? 8;
-  if (cores <= 2) return true;
-
-  const memory = (navigator as Navigator & { deviceMemory?: number })
-    .deviceMemory;
-  if (memory !== undefined && memory <= 4) return true;
-
-  return false;
-}
-
 function sessionStorageKey(slug: string | undefined): string {
   return slug === DEMO_SLUG ? SESSION_KEY_DEMO : SESSION_KEY_GLOBAL;
 }
@@ -68,7 +55,7 @@ function resolveCatalogueOnly({
   const saved = readSessionPreference(slug);
   if (saved !== null) return saved;
 
-  return prefersReducedMotion || detectLowEndDevice();
+  return prefersReducedMotion;
 }
 
 interface UseCatalogueOnlyViewOptions {
@@ -114,7 +101,7 @@ export function useCatalogueOnlyView(
     viewOverride === null &&
     !preferGalleryDefault &&
     readSessionPreference(slug) === null &&
-    (prefersReducedMotion || detectLowEndDevice());
+    prefersReducedMotion;
 
   return {
     catalogueOnly,

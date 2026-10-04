@@ -1,5 +1,5 @@
-import { DEMO_BUILDER_PATH } from "@/lib/demo-sandbox";
-import { DEMO_STUDIO_PATH } from "@/lib/public-demo";
+import { DEMO_BUILDER_PATH } from "@/lib/demo/sandbox";
+import { DEMO_STUDIO_PATH } from "@/lib/demo/public-demo";
 
 export interface ArtworkFlowPaths {
   backTo: string;

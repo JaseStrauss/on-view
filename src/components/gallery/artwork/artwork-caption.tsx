@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import {
   formatMediumLine,
   formatTitleLine,
-} from "@/lib/artwork-caption";
+} from "@/lib/artwork/caption";
 import type { Artwork } from "@/types/artwork";
 
 interface ArtworkCaptionProps {

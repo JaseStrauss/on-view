@@ -1,4 +1,4 @@
-import { artworkSizeM, clampPlacement } from "@/lib/wall-coordinates";
+import { artworkSizeM, clampPlacement } from "@/lib/gallery/wall-coordinates";
 import type { PlacementWithArtwork, RoomTemplate } from "@/types";
 
 export function reclampPlacement(

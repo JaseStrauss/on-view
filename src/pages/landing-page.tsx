@@ -6,7 +6,7 @@ import { LandingTryLive } from "@/components/landing/landing-try-live";
 import { LandingUseCases } from "@/components/landing/landing-use-cases";
 import { LandingShowcase } from "@/components/landing-showcase";
 import { DEMO_SLUG } from "@/data/demo-exhibition";
-import { DEMO_STUDIO_PATH, isPublicDemoOnly } from "@/lib/public-demo";
+import { DEMO_STUDIO_PATH, isPublicDemoOnly } from "@/lib/demo/public-demo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 

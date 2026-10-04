@@ -10,7 +10,7 @@ import { ExhibitionDetailsPanel } from "@/components/editor/exhibition-details-p
 import { RoomConfigPanel } from "@/components/editor/room-config-panel";
 import { buildRoomTemplate } from "@/rooms/templates";
 import { getDefaultRoomConfig, type RoomConfig } from "@/rooms/room-config";
-import { exhibitionDetailsNeedAttention } from "@/lib/exhibition-details";
+import { exhibitionDetailsNeedAttention } from "@/lib/exhibition/details";
 import { filterExhibitionPaletteArtworks } from "@/services/exhibition-catalogue";
 import type { Artwork } from "@/types/artwork";
 import type { Exhibition, PlacementWithArtwork } from "@/types";

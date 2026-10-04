@@ -29,7 +29,7 @@ export function ExportCatalogueButton({
     setError(null);
     try {
       const { exportExhibitionCataloguePdf } = await import(
-        "@/lib/export-exhibition-catalogue"
+        "@/lib/exhibition/export-catalogue"
       );
       await exportExhibitionCataloguePdf({
         exhibition,

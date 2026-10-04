@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   DEMO_STUDIO_PATH,
   isPublicDemoOnly,
-} from "@/lib/public-demo";
+} from "@/lib/demo/public-demo";
 import { cn } from "@/lib/utils";
 
 interface LayoutProps {

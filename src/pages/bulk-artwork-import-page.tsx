@@ -15,9 +15,9 @@ import { useBulkArtworkImportSubmit } from "@/hooks/use-bulk-artwork-import-subm
 import { useBulkCsvImport } from "@/hooks/use-bulk-csv-import";
 import { useBulkImageImport } from "@/hooks/use-bulk-image-import";
 import { useExhibitions } from "@/hooks/use-exhibitions";
-import { getArtworkFlowPaths } from "@/lib/demo-studio-routes";
-import type { BulkImportMode } from "@/lib/bulk-artwork-import";
-import { getBulkImportLimits } from "@/lib/bulk-import";
+import { getArtworkFlowPaths } from "@/lib/demo/studio-routes";
+import type { BulkImportMode } from "@/lib/bulk-artwork/artwork-import";
+import { getBulkImportLimits } from "@/lib/bulk-artwork/parse";
 import { Button } from "@/components/ui/button";
 
 interface BulkArtworkImportPageProps {

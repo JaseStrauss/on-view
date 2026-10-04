@@ -1,5 +1,5 @@
 import type { ArtworkStatus } from "@/types/artwork";
-import { ARTWORK_STATUS_OPTIONS } from "@/lib/artwork-form";
+import { ARTWORK_STATUS_OPTIONS } from "@/lib/artwork/form";
 
 export const MAX_BULK_IMAGE_COUNT = 50;
 export const MAX_CSV_ROW_COUNT = 200;

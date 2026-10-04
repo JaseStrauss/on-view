@@ -3,11 +3,11 @@ import { DEMO_SLUG, getDemoPublicShow } from "@/data/demo-exhibition";
 import {
   DEMO_BUILDER_SLUG,
   getDemoSandboxPublicShow,
-} from "@/lib/demo-sandbox";
+} from "@/lib/demo/sandbox";
 import { supabase } from "@/lib/supabase";
 import { buildRoomTemplate, slugify } from "@/rooms/templates";
 import { mergeRoomConfig, type RoomConfig } from "@/rooms/room-config";
-import { reclampPlacement } from "@/lib/reclamp-placements";
+import { reclampPlacement } from "@/lib/gallery/reclamp-placements";
 import { addArtworkToExhibitionCatalogue } from "@/services/exhibition-catalogue";
 import { duplicateExhibition as duplicateExhibitionRecord } from "@/services/exhibitions";
 import { fetchPublicPresenterName } from "@/services/profile";

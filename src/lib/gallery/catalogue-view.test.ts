@@ -10,7 +10,7 @@ import {
   normalizeYearRange,
   organizeCatalogueArtworks,
   sortArtworks,
-} from "@/lib/catalogue-view";
+} from "@/lib/gallery/catalogue-view";
 
 function artwork(overrides: Partial<Artwork> & Pick<Artwork, "id">): Artwork {
   return {

@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import {
   isAcceptedImageFile,
   MAX_BULK_IMAGE_COUNT,
-} from "@/lib/bulk-import";
+} from "@/lib/bulk-artwork/parse";
 
 export interface SelectedBulkImage {
   id: string;

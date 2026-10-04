@@ -9,7 +9,7 @@ import {
   normalizeRotation,
   pointerToWorld,
   type WallPoint,
-} from "@/lib/wall-coordinates";
+} from "@/lib/gallery/wall-coordinates";
 import {
   PlacementFrame,
   type PlacementTransform,

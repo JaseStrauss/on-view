@@ -16,7 +16,7 @@ import {
   formatArtistList,
   formatExhibitionDates,
   type ExhibitionDetailsPatch,
-} from "@/lib/exhibition-details";
+} from "@/lib/exhibition/details";
 import type { Exhibition, PlacementWithArtwork } from "@/types";
 import type { Artwork } from "@/types/artwork";
 

@@ -1,5 +1,5 @@
 import { DeleteArtworkControl } from "@/components/studio/delete-artwork-control";
-import { ARTWORK_STATUS_LABELS } from "@/lib/artwork-form";
+import { ARTWORK_STATUS_LABELS } from "@/lib/artwork/form";
 import { cn } from "@/lib/utils";
 import { getArtworkImageUrl } from "@/services/artworks";
 import type { Artwork } from "@/types/artwork";

@@ -10,7 +10,7 @@ import {
   MIN_PLACEMENT_SCALE,
   normalizeRotation,
   type WallPoint,
-} from "@/lib/wall-coordinates";
+} from "@/lib/gallery/wall-coordinates";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {

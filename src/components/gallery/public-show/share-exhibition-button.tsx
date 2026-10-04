@@ -1,5 +1,5 @@
 import { Share2 } from "lucide-react";
-import { shareExhibitionWithFeedback } from "@/lib/share-exhibition";
+import { shareExhibitionWithFeedback } from "@/lib/exhibition/share";
 import { useMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 

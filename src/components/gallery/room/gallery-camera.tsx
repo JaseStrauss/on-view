@@ -6,8 +6,8 @@ import {
   getRoomOverviewPreset,
   getViewIntoRoom,
   getWallCameraPreset,
-} from "@/lib/wall-camera-presets";
-import { getWallPlacementTransform } from "@/lib/wall-rotation";
+} from "@/lib/gallery/wall-camera-presets";
+import { getWallPlacementTransform } from "@/lib/gallery/wall-rotation";
 import type { PlacementWithArtwork, RoomTemplate } from "@/types";
 
 interface GalleryCameraProps {

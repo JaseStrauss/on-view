@@ -9,7 +9,7 @@ import {
   worldToFramePixels,
   worldToPixelCenter,
   type WallCanvasRect,
-} from "@/lib/wall-coordinates";
+} from "@/lib/gallery/wall-coordinates";
 
 const sampleRect: WallCanvasRect = {
   wallWidthM: 4,
