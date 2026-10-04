@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useState } from 'react'
+import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/auth-context'
 import {
@@ -7,8 +7,10 @@ import {
   type AddToExhibitionValue,
 } from '@/components/add-to-exhibition-fields'
 import { useExhibitions } from '@/hooks/use-exhibitions'
-import { finishArtworkWithOptionalCatalogue } from '@/lib/artwork-exhibition-flow'
-import { showDemoOnlyToast } from '@/lib/public-demo'
+import { toast } from 'sonner'
+import { completeArtworkSave } from '@/lib/artwork-exhibition-flow'
+import { addDemoSandboxCustomArtwork } from '@/lib/demo-sandbox-artworks'
+import { getArtworkFlowPaths } from '@/lib/demo-studio-routes'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -57,9 +59,14 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const initialExhibitionId = searchParams.get('exhibition')
+  const paths = useMemo(
+    () => getArtworkFlowPaths(demoMode, initialExhibitionId),
+    [demoMode, initialExhibitionId],
+  )
   const { exhibitions, loading: exhibitionsLoading } = useExhibitions(user?.id)
   const [form, setForm] = useState<ArtworkFormData>(initialForm)
   const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [addToExhibition, setAddToExhibition] = useState<AddToExhibitionValue>({
@@ -75,6 +82,16 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
     })
   }, [exhibitions, initialExhibitionId])
 
+  useEffect(() => {
+    if (!imageFile) {
+      setImagePreviewUrl(null)
+      return
+    }
+    const url = URL.createObjectURL(imageFile)
+    setImagePreviewUrl(url)
+    return () => URL.revokeObjectURL(url)
+  }, [imageFile])
+
   function updateField<K extends keyof ArtworkFormData>(
     key: K,
     value: ArtworkFormData[K],
@@ -84,10 +101,28 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
+
     if (demoMode) {
-      showDemoOnlyToast()
+      setSubmitting(true)
+      setError(null)
+      try {
+        if (!imageFile) {
+          setError(
+            'Add an image so the work appears in your catalogue and on walls.',
+          )
+          return
+        }
+        await addDemoSandboxCustomArtwork(form, imageFile)
+        toast.success('Added to your demo catalogue')
+        navigate(paths.backTo)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Could not save artwork')
+      } finally {
+        setSubmitting(false)
+      }
       return
     }
+
     if (!user) return
 
     setSubmitting(true)
@@ -95,7 +130,7 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
 
     try {
       const artwork = await createArtwork(user.id, form, imageFile)
-      await finishArtworkWithOptionalCatalogue(
+      await completeArtworkSave(
         artwork,
         addToExhibition,
         navigate,
@@ -106,20 +141,13 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
     }
   }
 
-  const backTo = initialExhibitionId
-    ? `/studio/exhibitions/${initialExhibitionId}`
-    : demoMode
-      ? '/studio/demo'
-      : '/studio'
-  const backLabel = initialExhibitionId ? 'Exhibition' : 'Exhibitions'
-
   return (
     <>
       {demoMode && <DemoStudioBanner />}
 
       <div className="mx-auto max-w-2xl px-6 py-12">
-        <PageBackLink to={backTo} className="mb-4">
-          {backLabel}
+        <PageBackLink to={paths.backTo} className="mb-4">
+          {paths.backLabel}
         </PageBackLink>
         <Card>
           <CardHeader>
@@ -129,22 +157,22 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
               {demoMode ? (
                 <>
                   You can also{' '}
-                  <Link to="/studio/demo/artworks/bulk" className="underline">
+                  <Link to={paths.bulkImportPath} className="underline">
                     upload many images
                   </Link>{' '}
                   or{' '}
-                  <Link to="/studio/demo/artworks/bulk" className="underline">
+                  <Link to={paths.bulkImportPath} className="underline">
                     import a CSV
                   </Link>
                   .
                 </>
               ) : (
                 <>
-                  <Link to="/studio/artworks/bulk" className="underline">
+                  <Link to={paths.bulkImportPath} className="underline">
                     Upload many images
                   </Link>{' '}
                   or{' '}
-                  <Link to="/studio/artworks/bulk" className="underline">
+                  <Link to={paths.bulkImportPath} className="underline">
                     import a CSV
                   </Link>{' '}
                   instead.
@@ -155,12 +183,18 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title" className="flex items-baseline gap-2">
+                  Title
+                  <span className="text-xs font-normal text-muted-foreground">
+                    Required
+                  </span>
+                </Label>
                 <Input
                   id="title"
                   value={form.title}
                   onChange={(e) => updateField('title', e.target.value)}
                   required
+                  aria-required="true"
                 />
               </div>
 
@@ -194,27 +228,33 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
                 </div>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="width">Width (cm)</Label>
-                  <Input
-                    id="width"
-                    type="number"
-                    step="0.1"
-                    value={form.width_cm}
-                    onChange={(e) => updateField('width_cm', e.target.value)}
-                  />
+              <div className="space-y-2">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="width">Width (cm)</Label>
+                    <Input
+                      id="width"
+                      type="number"
+                      step="0.1"
+                      value={form.width_cm}
+                      onChange={(e) => updateField('width_cm', e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="height">Height (cm)</Label>
+                    <Input
+                      id="height"
+                      type="number"
+                      step="0.1"
+                      value={form.height_cm}
+                      onChange={(e) => updateField('height_cm', e.target.value)}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="height">Height (cm)</Label>
-                  <Input
-                    id="height"
-                    type="number"
-                    step="0.1"
-                    value={form.height_cm}
-                    onChange={(e) => updateField('height_cm', e.target.value)}
-                  />
-                </div>
+                <p className="text-xs text-muted-foreground">
+                  Width and height set scale on the wall. Strongly recommended for
+                  hanging and the 3D preview.
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -267,6 +307,23 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
                   accept="image/*"
                   onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
                 />
+                {imagePreviewUrl && imageFile && (
+                  <div className="overflow-hidden rounded-lg border bg-muted">
+                    <img
+                      src={imagePreviewUrl}
+                      alt={
+                        form.title.trim()
+                          ? `Preview of ${form.title.trim()}`
+                          : `Preview of ${imageFile.name}`
+                      }
+                      className="mx-auto max-h-64 w-full object-contain"
+                    />
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Optional to save, but strongly recommended so the work shows in
+                  your catalogue and on walls.
+                </p>
               </div>
 
               {!demoMode && (
@@ -281,13 +338,13 @@ export function NewArtworkPage({ demoMode = false }: NewArtworkPageProps) {
               {error && <p className="text-sm text-destructive">{error}</p>}
 
               <div className="flex gap-3 pt-2">
-                <Button type="submit" disabled={submitting && !demoMode}>
-                  {demoMode ? 'Save artwork (demo)' : submitting ? 'Saving…' : 'Save artwork'}
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? 'Saving…' : 'Save artwork'}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate(demoMode ? '/studio/demo' : '/studio')}
+                  onClick={() => navigate(paths.cancelPath)}
                 >
                   Cancel
                 </Button>
