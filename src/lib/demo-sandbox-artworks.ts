@@ -1,5 +1,7 @@
 import {
   csvRowToFormData,
+  MAX_DEMO_BULK_IMAGE_COUNT,
+  MAX_DEMO_CSV_ROW_COUNT,
   titleFromFilename,
   type CsvArtworkRow,
 } from "@/lib/bulk-import";
@@ -164,6 +166,18 @@ export async function addDemoSandboxCustomArtwork(
 export async function importDemoSandboxImageFiles(
   files: File[],
 ): Promise<DemoBulkArtworkResult> {
+  if (files.length > MAX_DEMO_BULK_IMAGE_COUNT) {
+    return {
+      artworks: [],
+      failures: [
+        {
+          label: "Import",
+          error: `Demo imports are limited to ${MAX_DEMO_BULK_IMAGE_COUNT} images at once.`,
+        },
+      ],
+    };
+  }
+
   const artworks: Artwork[] = [];
   const failures: BulkArtworkFailure[] = [];
 
@@ -218,6 +232,18 @@ export async function importDemoSandboxImageFiles(
 export async function importDemoSandboxCsvRows(
   rows: CsvArtworkRow[],
 ): Promise<DemoBulkArtworkResult> {
+  if (rows.length > MAX_DEMO_CSV_ROW_COUNT) {
+    return {
+      artworks: [],
+      failures: [
+        {
+          label: "Import",
+          error: `Demo imports are limited to ${MAX_DEMO_CSV_ROW_COUNT} CSV rows at once.`,
+        },
+      ],
+    };
+  }
+
   const artworks: Artwork[] = [];
   const failures: BulkArtworkFailure[] = [];
 

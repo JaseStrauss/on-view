@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   csvRowToFormData,
+  getBulkImportLimits,
+  MAX_DEMO_BULK_IMAGE_COUNT,
+  MAX_DEMO_CSV_ROW_COUNT,
   parseArtworkCsv,
   titleFromFilename,
   type CsvArtworkRow,
@@ -13,6 +16,17 @@ describe("titleFromFilename", () => {
 
   it("returns Untitled for empty basename", () => {
     expect(titleFromFilename(".png")).toBe("Untitled");
+  });
+});
+
+describe("getBulkImportLimits", () => {
+  it("uses tighter caps in demo mode", () => {
+    expect(getBulkImportLimits(true)).toEqual({
+      maxImageCount: MAX_DEMO_BULK_IMAGE_COUNT,
+      maxCsvRowCount: MAX_DEMO_CSV_ROW_COUNT,
+    });
+    expect(getBulkImportLimits(false).maxImageCount).toBe(50);
+    expect(getBulkImportLimits(false).maxCsvRowCount).toBe(200);
   });
 });
 
@@ -81,6 +95,18 @@ Work,Jane,bogus`;
     expect(errors).toEqual([
       "Row 2: status must be available, sold, on_loan, or reserved",
     ]);
+  });
+
+  it("honors a custom max row count", () => {
+    const csv = `title
+One
+Two
+Three`;
+
+    const { rows, errors } = parseArtworkCsv(csv, { maxRowCount: 2 });
+
+    expect(rows).toHaveLength(2);
+    expect(errors).toEqual(["CSV is limited to 2 rows per import."]);
   });
 });
 

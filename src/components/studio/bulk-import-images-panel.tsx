@@ -1,6 +1,5 @@
 import { Upload, X } from "lucide-react";
 import type { SelectedBulkImage } from "@/hooks/use-bulk-image-import";
-import { MAX_BULK_IMAGE_COUNT } from "@/lib/bulk-import";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +17,8 @@ interface BulkImportImagesPanelProps {
   setDragActive: (active: boolean) => void;
   onAddFiles: (files: FileList | File[]) => void;
   onRemoveImage: (id: string) => void;
+  maxImageCount: number;
+  demoMode?: boolean;
 }
 
 export function BulkImportImagesPanel({
@@ -26,14 +27,17 @@ export function BulkImportImagesPanel({
   setDragActive,
   onAddFiles,
   onRemoveImage,
+  maxImageCount,
+  demoMode = false,
 }: BulkImportImagesPanelProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Upload images</CardTitle>
         <CardDescription>
-          Drop up to {MAX_BULK_IMAGE_COUNT} images. Each file becomes a catalogue
-          entry titled from the filename.
+          Drop up to {maxImageCount} images. Each file becomes a catalogue entry
+          titled from the filename.
+          {demoMode && " Images must be under 3 MB each in the demo."}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">

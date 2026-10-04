@@ -11,7 +11,12 @@ export interface SelectedBulkImage {
   previewUrl: string;
 }
 
-export function useBulkImageImport() {
+interface UseBulkImageImportOptions {
+  maxImageCount?: number;
+}
+
+export function useBulkImageImport(options?: UseBulkImageImportOptions) {
+  const maxImageCount = options?.maxImageCount ?? MAX_BULK_IMAGE_COUNT;
   const [selectedImages, setSelectedImages] = useState<SelectedBulkImage[]>([]);
   const [dragActive, setDragActive] = useState(false);
 
@@ -21,7 +26,7 @@ export function useBulkImageImport() {
     };
   }, [selectedImages]);
 
-  const remainingImageSlots = MAX_BULK_IMAGE_COUNT - selectedImages.length;
+  const remainingImageSlots = maxImageCount - selectedImages.length;
 
   function addImageFiles(fileList: FileList | File[]) {
     const incoming = Array.from(fileList);
@@ -40,7 +45,7 @@ export function useBulkImageImport() {
     const filesToAdd = accepted.slice(0, availableSlots);
 
     if (accepted.length > availableSlots) {
-      toast.error(`You can upload up to ${MAX_BULK_IMAGE_COUNT} images at once.`);
+      toast.error(`You can upload up to ${maxImageCount} images at once.`);
     }
 
     setSelectedImages((current) => [
