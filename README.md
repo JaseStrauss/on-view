@@ -1,6 +1,6 @@
 # On View
 
-**Plan the hang. Preview in 3D. Share the show.** On View is a personal side project for independent curators and small galleries: catalogue artworks, lay out walls, preview exhibitions in 3D, and publish shareable links (plus PDF catalogues). v0.1, active development.
+**Plan the hang. Preview in 3D. Share the show.** For artists, curators & small galleries: catalogue works, hang a show in 3D, share one link (plus PDF catalogues). Personal side project; v0.1, active development.
 
 Live demo: [on-view-seven.vercel.app/show/demo](https://on-view-seven.vercel.app/show/demo)
 

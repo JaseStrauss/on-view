@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { LandingHeroVisual } from "@/components/landing/landing-hero-visual";
 import { LANDING_FEATURE_VISUALS } from "@/components/landing/landing-feature-visuals";
 import { LandingTryLive } from "@/components/landing/landing-try-live";
+import { LandingUseCases } from "@/components/landing/landing-use-cases";
 import { LandingShowcase } from "@/components/landing-showcase";
 import { DEMO_SLUG } from "@/data/demo-exhibition";
 import { DEMO_STUDIO_PATH, isPublicDemoOnly } from "@/lib/public-demo";
@@ -24,7 +25,7 @@ const features = [
     eyebrow: "Installation",
     title: "Preview the hang",
     description:
-      "Place works on the walls in a walkable gallery space and adjust scale and spacing before install.",
+      "Place works on the walls in a walkable gallery space and adjust scale and spacing before install day.",
   },
   {
     id: "share" as const,
@@ -90,9 +91,8 @@ export function LandingPage() {
                 </span>
               </h1>
               <p className="mt-6 text-base leading-relaxed text-muted-foreground md:text-lg">
-                Manage your collection and publish shareable virtual
-                exhibitions—a side project by a developer who previously managed
-                galleries.
+                Catalogue works, hang them in a walkable room, and share one
+                exhibition link.
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <LandingTooltipButton tooltip="Walk the 3D show your audience receives">
@@ -155,8 +155,8 @@ export function LandingPage() {
             Catalogue to shareable show
           </h2>
           <p className="mt-4 text-muted-foreground">
-            From catalogue to installation preview to a single exhibition link,
-            for your team, your artists, and your audience.
+            From catalogue to installation preview to a single exhibition link:
+            for your audience, your artists, and your install team.
           </p>
         </div>
 
@@ -201,6 +201,8 @@ export function LandingPage() {
         </p>
       </section>
 
+      <LandingUseCases />
+
       {/* Closing */}
       <section className="border-t border-border/60">
         <div className="mx-auto max-w-3xl px-6 py-16 text-center md:py-20">
@@ -208,26 +210,33 @@ export function LandingPage() {
             Put your next show on view.
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-            Start with the walkable demo show—visitor room and catalogue, no
-            account required.
+            {publicDemoOnly
+              ? "Explore the demos above, then run the full studio from the repo when you are ready to publish."
+              : "Create a studio, catalogue your works, and publish a shareable exhibition link."}
           </p>
-          <div className="mt-8">
-            <Button size="lg" render={<Link to={DEMO_SHOW_PATH} />}>
-              Walk the demo show
-              <ArrowRight className="size-4" />
-            </Button>
-          </div>
           {!publicDemoOnly && (
-            <p className="mt-6 text-sm text-muted-foreground">
-              Ready to publish your own?{" "}
-              <Link
-                to="/signup"
-                className="text-foreground underline-offset-4 hover:underline"
-              >
-                Create an account
-              </Link>
-            </p>
+            <div className="mt-8">
+              <Button size="lg" render={<Link to="/signup" />}>
+                Start your studio
+                <ArrowRight className="size-4" />
+              </Button>
+            </div>
           )}
+          <p className="mt-6 text-sm text-muted-foreground">
+            <Link
+              to={DEMO_SHOW_PATH}
+              className="text-foreground underline-offset-4 hover:underline"
+            >
+              Walk the demo show
+            </Link>
+            {" · "}
+            <Link
+              to={DEMO_STUDIO_PATH}
+              className="text-foreground underline-offset-4 hover:underline"
+            >
+              Open the demo studio
+            </Link>
+          </p>
         </div>
       </section>
     </div>
