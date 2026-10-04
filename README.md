@@ -101,6 +101,7 @@ src/
   contexts/         # auth, theme
   data/             # demo exhibition + starter catalogue
   hooks/
+  lib/              # shared helpers by domain (artwork, gallery, exhibition, demo, bulk-artwork, pdf-catalogue)
   pages/
   rooms/            # gallery templates
   services/
