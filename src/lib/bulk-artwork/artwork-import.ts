@@ -7,6 +7,7 @@ import {
   createArtworksFromCsvRows,
   createArtworksFromImageFiles,
   type BulkArtworkFailure,
+  type BulkImageImportInput,
 } from "@/services/artworks";
 import type { Artwork } from "@/types/artwork";
 
@@ -24,14 +25,14 @@ export async function executeBulkArtworkImport(options: {
   demoMode: boolean;
   mode: BulkImportMode;
   userId: string | undefined;
-  imageFiles: File[];
+  imageItems: BulkImageImportInput[];
   csvRows: CsvArtworkRow[];
 }): Promise<BulkImportResult> {
-  const { demoMode, mode, userId, imageFiles, csvRows } = options;
+  const { demoMode, mode, userId, imageItems, csvRows } = options;
 
   if (demoMode) {
     return mode === "images"
-      ? importDemoSandboxImageFiles(imageFiles)
+      ? importDemoSandboxImageFiles(imageItems)
       : importDemoSandboxCsvRows(csvRows);
   }
 
@@ -43,6 +44,6 @@ export async function executeBulkArtworkImport(options: {
   }
 
   return mode === "images"
-    ? createArtworksFromImageFiles(userId, imageFiles)
+    ? createArtworksFromImageFiles(userId, imageItems)
     : createArtworksFromCsvRows(userId, csvRows);
 }

@@ -2,6 +2,7 @@ import { Upload, X } from "lucide-react";
 import type { SelectedBulkImage } from "@/hooks/use-bulk-image-import";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -17,6 +18,11 @@ interface BulkImportImagesPanelProps {
   setDragActive: (active: boolean) => void;
   onAddFiles: (files: FileList | File[]) => void;
   onRemoveImage: (id: string) => void;
+  onUpdateDimensions: (
+    id: string,
+    field: "width_cm" | "height_cm",
+    value: string,
+  ) => void;
   maxImageCount: number;
   demoMode?: boolean;
 }
@@ -27,6 +33,7 @@ export function BulkImportImagesPanel({
   setDragActive,
   onAddFiles,
   onRemoveImage,
+  onUpdateDimensions,
   maxImageCount,
   demoMode = false,
 }: BulkImportImagesPanelProps) {
@@ -36,7 +43,8 @@ export function BulkImportImagesPanel({
         <CardTitle>Upload images</CardTitle>
         <CardDescription>
           Drop up to {maxImageCount} images. Each file becomes a catalogue entry
-          titled from the filename.
+          titled from the filename. Enter width and height (cm) for each work so
+          wall and 3D previews match.
           {demoMode && " Images must be under 3 MB each in the demo."}
         </CardDescription>
       </CardHeader>
@@ -106,7 +114,7 @@ export function BulkImportImagesPanel({
                     <img
                       src={item.previewUrl}
                       alt=""
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                     />
                     <Button
                       type="button"
@@ -119,13 +127,62 @@ export function BulkImportImagesPanel({
                       <X className="size-3.5" />
                     </Button>
                   </div>
-                  <div className="space-y-1 p-3">
+                  <div className="space-y-2 p-3">
                     <p className="truncate text-sm font-medium">
                       {item.file.name.replace(/\.[^.]+$/, "")}
                     </p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {item.file.name}
-                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label
+                          htmlFor={`bulk-width-${item.id}`}
+                          requiredMark
+                          className="gap-1 text-xs font-normal text-muted-foreground"
+                        >
+                          Width (cm)
+                        </Label>
+                        <Input
+                          id={`bulk-width-${item.id}`}
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          value={item.width_cm}
+                          onChange={(event) =>
+                            onUpdateDimensions(
+                              item.id,
+                              "width_cm",
+                              event.target.value,
+                            )
+                          }
+                          required
+                          aria-required="true"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label
+                          htmlFor={`bulk-height-${item.id}`}
+                          requiredMark
+                          className="gap-1 text-xs font-normal text-muted-foreground"
+                        >
+                          Height (cm)
+                        </Label>
+                        <Input
+                          id={`bulk-height-${item.id}`}
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          value={item.height_cm}
+                          onChange={(event) =>
+                            onUpdateDimensions(
+                              item.id,
+                              "height_cm",
+                              event.target.value,
+                            )
+                          }
+                          required
+                          aria-required="true"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}

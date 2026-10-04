@@ -13,7 +13,7 @@ import { BulkImportImagesPanel } from "@/components/studio/bulk-import-images-pa
 import { useAuth } from "@/contexts/auth-context";
 import { useBulkArtworkImportSubmit } from "@/hooks/use-bulk-artwork-import-submit";
 import { useBulkCsvImport } from "@/hooks/use-bulk-csv-import";
-import { useBulkImageImport } from "@/hooks/use-bulk-image-import";
+import { useBulkImageImport, bulkImagesHaveValidDimensions } from "@/hooks/use-bulk-image-import";
 import { useExhibitions } from "@/hooks/use-exhibitions";
 import { getArtworkFlowPaths } from "@/lib/demo/studio-routes";
 import type { BulkImportMode } from "@/lib/bulk-artwork/artwork-import";
@@ -53,6 +53,7 @@ export function BulkArtworkImportPage({
     setDragActive,
     addImageFiles,
     removeImage,
+    updateImageDimensions,
   } = useBulkImageImport({ maxImageCount: bulkLimits.maxImageCount });
 
   const {
@@ -73,11 +74,16 @@ export function BulkArtworkImportPage({
 
   const canSubmit =
     mode === "images"
-      ? selectedImages.length > 0
+      ? bulkImagesHaveValidDimensions(selectedImages)
       : csvRows.length > 0 && csvErrors.length === 0;
 
-  const imageFiles = useMemo(
-    () => selectedImages.map((item) => item.file),
+  const imageItems = useMemo(
+    () =>
+      selectedImages.map((item) => ({
+        file: item.file,
+        width_cm: item.width_cm,
+        height_cm: item.height_cm,
+      })),
     [selectedImages],
   );
 
@@ -86,7 +92,7 @@ export function BulkArtworkImportPage({
       demoMode,
       mode,
       canSubmit,
-      imageFiles,
+      imageItems,
       csvRows,
       addToExhibition,
       exhibitionId,
@@ -166,6 +172,7 @@ export function BulkArtworkImportPage({
             setDragActive={setDragActive}
             onAddFiles={onAddImageFiles}
             onRemoveImage={removeImage}
+            onUpdateDimensions={updateImageDimensions}
             maxImageCount={bulkLimits.maxImageCount}
             demoMode={demoMode}
           />

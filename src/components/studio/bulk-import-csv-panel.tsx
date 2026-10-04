@@ -38,8 +38,8 @@ export function BulkImportCsvPanel({
         <CardTitle>Import CSV</CardTitle>
         <CardDescription>
           Include a header row with columns like title, artist, year, medium,
-          description, width_cm, height_cm, status, and image_url. Up to{" "}
-          {maxCsvRowCount} data rows per import.
+          description, width_cm (required), height_cm (required), status, and
+          image_url. Up to {maxCsvRowCount} data rows per import.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
