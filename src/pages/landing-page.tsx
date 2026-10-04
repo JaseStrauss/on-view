@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { LandingHeroVisual } from "@/components/landing/landing-hero-visual";
 import { LANDING_FEATURE_VISUALS } from "@/components/landing/landing-feature-visuals";
 import { LandingTryLive } from "@/components/landing/landing-try-live";
+import { LandingUseCases } from "@/components/landing/landing-use-cases";
 import { LandingShowcase } from "@/components/landing-showcase";
 import { DEMO_SLUG } from "@/data/demo-exhibition";
 import { DEMO_STUDIO_PATH, isPublicDemoOnly } from "@/lib/public-demo";
@@ -24,7 +25,7 @@ const features = [
     eyebrow: "Installation",
     title: "Preview the hang",
     description:
-      "Place works on the walls in a walkable gallery space and adjust scale and spacing before install.",
+      "Hang works in a walkable room: plan scale and spacing before install day, or publish the room as the show when you do not have walls yet.",
   },
   {
     id: "share" as const,
@@ -90,9 +91,10 @@ export function LandingPage() {
                 </span>
               </h1>
               <p className="mt-6 text-base leading-relaxed text-muted-foreground md:text-lg">
-                Manage your collection and publish shareable virtual
-                exhibitions—a side project by a developer who previously managed
-                galleries.
+                Catalogue works, hang them in a walkable room, and share one
+                exhibition link. For artists publishing on their own timeline,
+                and for curators and small galleries planning an install or
+                running a show without permanent space.
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <LandingTooltipButton tooltip="Walk the 3D show your audience receives">
@@ -148,6 +150,8 @@ export function LandingPage() {
 
       <LandingTryLive className="border-b border-border/60 bg-muted/20" />
 
+      <LandingUseCases />
+
       {/* Product features */}
       <section className="mx-auto max-w-6xl px-6 py-20 md:py-24">
         <div className="max-w-2xl">
@@ -155,8 +159,8 @@ export function LandingPage() {
             Catalogue to shareable show
           </h2>
           <p className="mt-4 text-muted-foreground">
-            From catalogue to installation preview to a single exhibition link,
-            for your team, your artists, and your audience.
+            From catalogue to installation preview to a single exhibition link:
+            for your audience, your artists, and your install team.
           </p>
         </div>
 
