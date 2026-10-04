@@ -10,6 +10,7 @@ import { ExhibitionDetailsPanel } from "@/components/editor/exhibition-details-p
 import { RoomConfigPanel } from "@/components/editor/room-config-panel";
 import { buildRoomTemplate } from "@/rooms/templates";
 import { getDefaultRoomConfig, type RoomConfig } from "@/rooms/room-config";
+import { exhibitionDetailsNeedAttention } from "@/lib/exhibition-details";
 import { filterExhibitionPaletteArtworks } from "@/services/exhibition-catalogue";
 import type { Artwork } from "@/types/artwork";
 import type { Exhibition, PlacementWithArtwork } from "@/types";
@@ -73,6 +74,19 @@ export function ExhibitionEditorView({
   const [previewRoomConfig, setPreviewRoomConfig] = useState<RoomConfig>(
     exhibition.room_config,
   );
+
+  const detailsNeedAttention = useMemo(
+    () => exhibitionDetailsNeedAttention(exhibition),
+    [exhibition],
+  );
+
+  const [detailsExpanded, setDetailsExpanded] = useState(() =>
+    exhibitionDetailsNeedAttention(exhibition),
+  );
+
+  useEffect(() => {
+    setDetailsExpanded(exhibitionDetailsNeedAttention(exhibition));
+  }, [exhibition.id]);
 
   useEffect(() => {
     setPreviewTemplateId(exhibition.room_template_id);
@@ -146,6 +160,7 @@ export function ExhibitionEditorView({
         onPlacementAdd={onPlacementAdd}
         onPlacementUpdate={onPlacementUpdate}
         onPlacementRemove={onPlacementRemove}
+        studioBasePath={studioBasePath}
       />
     </section>
   );
@@ -174,6 +189,25 @@ export function ExhibitionEditorView({
           onPreview={onPreview}
           studioBasePath={studioBasePath}
         />
+        {detailsNeedAttention && (
+          <p className="mt-3 text-sm text-muted-foreground">
+            <button
+              type="button"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+              onClick={() => {
+                setDetailsExpanded(true);
+                requestAnimationFrame(() => {
+                  document
+                    .getElementById("exhibition-details")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
+              }}
+            >
+              Add dates & description
+            </button>{" "}
+            for your public page.
+          </p>
+        )}
       </div>
 
       <div className="mt-8 space-y-8">
@@ -189,16 +223,6 @@ export function ExhibitionEditorView({
           </>
         )}
 
-        <ExhibitionDetailsPanel
-          exhibition={exhibition}
-          catalogueArtworks={catalogueArtworks}
-          catalogueIsScoped={catalogueIsScoped}
-          placements={placements}
-          onSave={onSaveExhibition}
-          collapsible
-          defaultExpanded={false}
-        />
-
         <RoomConfigPanel
           templateId={previewTemplateId}
           savedTemplateId={exhibition.room_template_id}
@@ -211,6 +235,18 @@ export function ExhibitionEditorView({
           showApplyButton
           collapsible
           defaultExpanded={false}
+        />
+
+        <ExhibitionDetailsPanel
+          id="exhibition-details"
+          exhibition={exhibition}
+          catalogueArtworks={catalogueArtworks}
+          catalogueIsScoped={catalogueIsScoped}
+          placements={placements}
+          onSave={onSaveExhibition}
+          collapsible
+          expanded={detailsExpanded}
+          onExpandedChange={setDetailsExpanded}
         />
 
         {footer}

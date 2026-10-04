@@ -3,10 +3,7 @@ import { Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { LazyExportCatalogueButton } from "@/components/lazy-export-catalogue-button";
 import { Button } from "@/components/ui/button";
-import {
-  copyPublicExhibitionLink,
-  getPublicExhibitionUrl,
-} from "@/lib/copy-to-clipboard";
+import { copyPublicExhibitionLink } from "@/lib/copy-to-clipboard";
 import type { Exhibition, PlacementWithArtwork, RoomTemplate } from "@/types";
 import type { Artwork } from "@/types/artwork";
 
@@ -32,8 +29,6 @@ export function ExhibitionEditorActionBar({
   onPreview,
   studioBasePath = "/studio",
 }: ExhibitionEditorActionBarProps) {
-  const publicUrl = getPublicExhibitionUrl(exhibition.slug);
-
   function handleCopyLink() {
     if (!exhibition.is_published) {
       toast("Open your exhibition first to get a shareable link", {
@@ -104,20 +99,6 @@ export function ExhibitionEditorActionBar({
           />
         </div>
       </div>
-
-      {exhibition.is_published && (
-        <p className="mt-2 truncate text-xs text-muted-foreground">
-          Public link:{" "}
-          <a
-            href={publicUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="underline underline-offset-2 hover:text-foreground"
-          >
-            {publicUrl}
-          </a>
-        </p>
-      )}
     </div>
   );
 }

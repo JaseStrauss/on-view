@@ -1,11 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
+import {
+  getAllSandboxArtworks,
+  resolveSandboxArtwork,
+} from "@/lib/demo-sandbox-artworks";
 import {
   applySandboxRoomSettings,
   createEmptySandboxState,
   createSampleSandboxState,
   ensureSandboxState,
-  getDemoSandboxArtworks,
   initSandboxState,
+  loadSandboxState,
   saveSandboxState,
   type DemoSandboxState,
 } from "@/lib/demo-sandbox";
@@ -15,6 +20,7 @@ import type { Exhibition, Placement } from "@/types";
 export type DemoSandboxInit = "default" | "sample" | "preserve";
 
 export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
+  const location = useLocation();
   const [state, setState] = useState<DemoSandboxState | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -28,14 +34,23 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
         createEmptySandboxState("My demo show", "white-cube"),
       );
     } else {
-      next = ensureSandboxState(() =>
-        createEmptySandboxState("My demo show", "white-cube"),
-      );
+      next = ensureSandboxState(() => createSampleSandboxState());
     }
 
     setState(next);
     setLoading(false);
   }, [init]);
+
+  useEffect(() => {
+    if (loading) return;
+    const stored = loadSandboxState();
+    if (stored) setState(stored);
+  }, [location.key, loading]);
+
+  const artworks = useMemo(
+    () => (state ? getAllSandboxArtworks(state) : []),
+    [state],
+  );
 
   const updateExhibition = useCallback(async (patch: Partial<Exhibition>) => {
     setState((current) => {
@@ -58,9 +73,7 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
     ) => {
       setState((current) => {
         if (!current) return current;
-        const catalogueArtwork =
-          current.placements.find((p) => p.artwork_id === artworkId)?.artwork ??
-          getDemoSandboxArtworks().find((artwork) => artwork.id === artworkId);
+        const catalogueArtwork = resolveSandboxArtwork(current, artworkId);
 
         if (!catalogueArtwork) return current;
 
@@ -157,6 +170,7 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
     exhibition: state?.exhibition ?? null,
     placements: state?.placements ?? [],
     catalogueArtworkIds: state?.catalogueArtworkIds ?? [],
+    artworks,
     loading,
     updateExhibition,
     applyRoomSettings,

@@ -83,3 +83,12 @@ export function emptyToNull(value: string): string | null {
   const trimmed = value.trim();
   return trimmed ? trimmed : null;
 }
+
+/** True when the public page still has no run dates and no curatorial statement. */
+export function exhibitionDetailsNeedAttention(
+  exhibition: Pick<Exhibition, "description" | "opens_at" | "closes_at">,
+): boolean {
+  const hasDescription = Boolean(exhibition.description?.trim());
+  const hasDates = Boolean(exhibition.opens_at || exhibition.closes_at);
+  return !hasDescription && !hasDates;
+}

@@ -4,15 +4,15 @@ import type { Artwork } from "@/types/artwork";
 import type { AddToExhibitionValue } from "@/components/add-to-exhibition-fields";
 import { addArtworkToExhibitionCatalogue } from "@/services/exhibition-catalogue";
 
-interface FinishArtworkOptions {
+interface CompleteArtworkSaveOptions {
   successMessage?: string;
 }
 
-export async function finishArtworkWithOptionalCatalogue(
+export async function completeArtworkSave(
   artwork: Artwork,
   addToExhibition: AddToExhibitionValue,
   navigate: NavigateFunction,
-  options?: FinishArtworkOptions,
+  options?: CompleteArtworkSaveOptions,
 ): Promise<void> {
   if (addToExhibition.enabled && addToExhibition.exhibitionId) {
     await addArtworkToExhibitionCatalogue(
