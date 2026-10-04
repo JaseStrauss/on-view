@@ -1,4 +1,4 @@
-import { ExpandImageButton } from "@/components/gallery/artwork-lightbox";
+import { ExpandImageButton } from "@/components/gallery/artwork/artwork-lightbox";
 import { getArtworkImageUrl } from "@/services/artworks";
 import type { PlacementWithArtwork } from "@/types";
 import { cn } from "@/lib/utils";

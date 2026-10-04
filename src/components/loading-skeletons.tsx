@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { GALLERY_VIEWPORT_CLASS } from "@/components/gallery/gallery-viewport";
+import { GALLERY_VIEWPORT_CLASS } from "@/components/gallery/room/gallery-viewport";
 import { cn } from "@/lib/utils";
 
 export function StudioExhibitionsSkeleton() {
