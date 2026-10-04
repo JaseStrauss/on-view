@@ -25,7 +25,7 @@ const features = [
     eyebrow: "Installation",
     title: "Preview the hang",
     description:
-      "Hang works in a walkable room: plan scale and spacing before install day, or publish the room as the show when you do not have walls yet.",
+      "Place works on the walls in a walkable gallery space and adjust scale and spacing before install day.",
   },
   {
     id: "share" as const,
@@ -92,9 +92,7 @@ export function LandingPage() {
               </h1>
               <p className="mt-6 text-base leading-relaxed text-muted-foreground md:text-lg">
                 Catalogue works, hang them in a walkable room, and share one
-                exhibition link. For artists publishing on their own timeline,
-                and for curators and small galleries planning an install or
-                running a show without permanent space.
+                exhibition link.
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <LandingTooltipButton tooltip="Walk the 3D show your audience receives">
@@ -150,8 +148,6 @@ export function LandingPage() {
 
       <LandingTryLive className="border-b border-border/60 bg-muted/20" />
 
-      <LandingUseCases />
-
       {/* Product features */}
       <section className="mx-auto max-w-6xl px-6 py-20 md:py-24">
         <div className="max-w-2xl">
@@ -205,6 +201,8 @@ export function LandingPage() {
         </p>
       </section>
 
+      <LandingUseCases />
+
       {/* Closing */}
       <section className="border-t border-border/60">
         <div className="mx-auto max-w-3xl px-6 py-16 text-center md:py-20">
@@ -212,26 +210,33 @@ export function LandingPage() {
             Put your next show on view.
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-            Start with the walkable demo show—visitor room and catalogue, no
-            account required.
+            {publicDemoOnly
+              ? "Explore the demos above, then run the full studio from the repo when you are ready to publish."
+              : "Create a studio, catalogue your works, and publish a shareable exhibition link."}
           </p>
-          <div className="mt-8">
-            <Button size="lg" render={<Link to={DEMO_SHOW_PATH} />}>
-              Walk the demo show
-              <ArrowRight className="size-4" />
-            </Button>
-          </div>
           {!publicDemoOnly && (
-            <p className="mt-6 text-sm text-muted-foreground">
-              Ready to publish your own?{" "}
-              <Link
-                to="/signup"
-                className="text-foreground underline-offset-4 hover:underline"
-              >
-                Create an account
-              </Link>
-            </p>
+            <div className="mt-8">
+              <Button size="lg" render={<Link to="/signup" />}>
+                Start your studio
+                <ArrowRight className="size-4" />
+              </Button>
+            </div>
           )}
+          <p className="mt-6 text-sm text-muted-foreground">
+            <Link
+              to={DEMO_SHOW_PATH}
+              className="text-foreground underline-offset-4 hover:underline"
+            >
+              Walk the demo show
+            </Link>
+            {" · "}
+            <Link
+              to={DEMO_STUDIO_PATH}
+              className="text-foreground underline-offset-4 hover:underline"
+            >
+              Open the demo studio
+            </Link>
+          </p>
         </div>
       </section>
     </div>
