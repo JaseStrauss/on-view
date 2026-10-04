@@ -28,6 +28,9 @@ interface ExhibitionDetailsPanelProps {
   onSave: (patch: ExhibitionDetailsPatch) => Promise<void>;
   collapsible?: boolean;
   defaultExpanded?: boolean;
+  expanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
+  id?: string;
 }
 
 interface DetailsDraft {
@@ -54,9 +57,20 @@ export function ExhibitionDetailsPanel({
   onSave,
   collapsible = false,
   defaultExpanded = true,
+  expanded: expandedProp,
+  onExpandedChange,
+  id,
 }: ExhibitionDetailsPanelProps) {
   const [draft, setDraft] = useState<DetailsDraft>(() => toDraft(exhibition));
-  const [expanded, setExpanded] = useState(defaultExpanded);
+  const [expandedInternal, setExpandedInternal] = useState(defaultExpanded);
+  const expanded = expandedProp ?? expandedInternal;
+
+  function setExpanded(next: boolean) {
+    if (expandedProp === undefined) {
+      setExpandedInternal(next);
+    }
+    onExpandedChange?.(next);
+  }
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -108,12 +122,12 @@ export function ExhibitionDetailsPanel({
   ].filter(Boolean);
 
   return (
-    <Card>
+    <Card id={id}>
       <CardHeader className={collapsible ? "pb-3" : undefined}>
         {collapsible ? (
           <button
             type="button"
-            onClick={() => setExpanded((open) => !open)}
+            onClick={() => setExpanded(!expanded)}
             className="flex w-full items-start justify-between gap-3 text-left"
             aria-expanded={expanded}
           >
@@ -131,9 +145,8 @@ export function ExhibitionDetailsPanel({
               )}
             </div>
             <ChevronDownIcon
-              className={`mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform ${
-                expanded ? "rotate-180" : ""
-              }`}
+              className={`mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform ${expanded ? "rotate-180" : ""
+                }`}
               aria-hidden
             />
           </button>

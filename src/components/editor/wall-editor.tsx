@@ -50,6 +50,8 @@ interface WallEditorProps {
     patch: PlacementPatch,
   ) => void | Promise<void>;
   onPlacementRemove: (placementId: string) => void | Promise<void>;
+  /** Studio root for catalogue links (e.g. `/studio/demo` in the demo builder). */
+  studioBasePath?: string;
 }
 
 export function WallEditor({
@@ -60,6 +62,7 @@ export function WallEditor({
   onPlacementAdd,
   onPlacementUpdate,
   onPlacementRemove,
+  studioBasePath = "/studio",
 }: WallEditorProps) {
   const [activeWallId, setActiveWallId] = useState(room.walls[0]?.id ?? "");
   const [selectedPlacementId, setSelectedPlacementId] = useState<string | null>(
@@ -406,8 +409,8 @@ export function WallEditor({
               <Link
                 to={
                   exhibitionId
-                    ? `/studio/artworks/new?exhibition=${exhibitionId}`
-                    : "/studio/artworks/new"
+                    ? `${studioBasePath}/artworks/new?exhibition=${exhibitionId}`
+                    : `${studioBasePath}/artworks/new`
                 }
                 className="underline"
               >
