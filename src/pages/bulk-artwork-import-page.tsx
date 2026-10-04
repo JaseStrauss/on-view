@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { FileSpreadsheet, Images, Loader2, Upload } from "lucide-react";
-import { toast } from "sonner";
 import {
   AddToExhibitionFields,
   getDefaultAddToExhibitionValue,
@@ -12,18 +11,13 @@ import { PageBackLink } from "@/components/page-back-link";
 import { BulkImportCsvPanel } from "@/components/studio/bulk-import-csv-panel";
 import { BulkImportImagesPanel } from "@/components/studio/bulk-import-images-panel";
 import { useAuth } from "@/contexts/auth-context";
+import { useBulkArtworkImportSubmit } from "@/hooks/use-bulk-artwork-import-submit";
 import { useBulkCsvImport } from "@/hooks/use-bulk-csv-import";
 import { useBulkImageImport } from "@/hooks/use-bulk-image-import";
 import { useExhibitions } from "@/hooks/use-exhibitions";
-import { finishBulkArtworksWithOptionalCatalogue } from "@/lib/bulk-artwork-flow";
-import { showDemoOnlyToast } from "@/lib/public-demo";
-import {
-  createArtworksFromCsvRows,
-  createArtworksFromImageFiles,
-} from "@/services/artworks";
+import { getArtworkFlowPaths } from "@/lib/demo-studio-routes";
+import type { BulkImportMode } from "@/lib/bulk-artwork-import";
 import { Button } from "@/components/ui/button";
-
-type ImportMode = "images" | "csv";
 
 interface BulkArtworkImportPageProps {
   demoMode?: boolean;
@@ -33,17 +27,19 @@ export function BulkArtworkImportPage({
   demoMode = false,
 }: BulkArtworkImportPageProps) {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const initialExhibitionId = searchParams.get("exhibition");
+  const exhibitionId = searchParams.get("exhibition");
   const { exhibitions, loading: exhibitionsLoading } = useExhibitions(user?.id);
-  const [mode, setMode] = useState<ImportMode>("images");
+  const [mode, setMode] = useState<BulkImportMode>("images");
   const [addToExhibition, setAddToExhibition] = useState<AddToExhibitionValue>({
     enabled: false,
     exhibitionId: "",
   });
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const paths = useMemo(
+    () => getArtworkFlowPaths(demoMode, exhibitionId),
+    [demoMode, exhibitionId],
+  );
 
   const {
     selectedImages,
@@ -65,83 +61,49 @@ export function BulkArtworkImportPage({
     if (exhibitions.length === 0) return;
     setAddToExhibition((current) => {
       if (current.exhibitionId) return current;
-      return getDefaultAddToExhibitionValue(exhibitions, initialExhibitionId);
+      return getDefaultAddToExhibitionValue(exhibitions, exhibitionId);
     });
-  }, [exhibitions, initialExhibitionId]);
+  }, [exhibitions, exhibitionId]);
 
   const canSubmit =
     mode === "images"
       ? selectedImages.length > 0
       : csvRows.length > 0 && csvErrors.length === 0;
 
+  const imageFiles = useMemo(
+    () => selectedImages.map((item) => item.file),
+    [selectedImages],
+  );
+
+  const { handleSubmit, submitting, error, clearError } =
+    useBulkArtworkImportSubmit({
+      demoMode,
+      mode,
+      canSubmit,
+      imageFiles,
+      csvRows,
+      addToExhibition,
+      exhibitionId,
+      userId: user?.id,
+    });
+
   function onAddImageFiles(files: FileList | File[]) {
     addImageFiles(files);
-    setError(null);
+    clearError();
   }
 
   async function onCsvFileSelected(file: File) {
     await handleCsvFile(file);
-    setError(null);
+    clearError();
   }
-
-  async function handleSubmit() {
-    if (!canSubmit) return;
-    if (demoMode) {
-      showDemoOnlyToast();
-      return;
-    }
-    if (!user) return;
-
-    setSubmitting(true);
-    setError(null);
-
-    try {
-      const result =
-        mode === "images"
-          ? await createArtworksFromImageFiles(
-            user.id,
-            selectedImages.map((item) => item.file),
-          )
-          : await createArtworksFromCsvRows(user.id, csvRows);
-
-      if (result.artworks.length === 0 && result.failures.length > 0) {
-        setError("Nothing was imported. Check the errors below and try again.");
-        toast.error("Import failed", {
-          description: result.failures[0]?.error,
-        });
-        return;
-      }
-
-      await finishBulkArtworksWithOptionalCatalogue(
-        result.artworks,
-        result.failures,
-        addToExhibition,
-        navigate,
-        { itemLabel: "work" },
-      );
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Import failed");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  const cancelPath = demoMode ? "/studio/demo" : "/studio";
-  const addOnePath = demoMode
-    ? "/studio/demo/artworks/new"
-    : "/studio/artworks/new";
-  const backTo = initialExhibitionId
-    ? `/studio/exhibitions/${initialExhibitionId}`
-    : cancelPath;
-  const backLabel = initialExhibitionId ? "Exhibition" : "Exhibitions";
 
   return (
     <>
       {demoMode && <DemoStudioBanner />}
 
       <div className="mx-auto max-w-5xl px-6 py-12">
-        <PageBackLink to={backTo} className="mb-4">
-          {backLabel}
+        <PageBackLink to={paths.backTo} className="mb-4">
+          {paths.backLabel}
         </PageBackLink>
         <div className="mb-8">
           <h1 className="font-serif text-4xl italic">Bulk import</h1>
@@ -205,10 +167,10 @@ export function BulkArtworkImportPage({
         <div className="mt-6 flex flex-wrap gap-3">
           <Button
             type="button"
-            disabled={!canSubmit || (submitting && !demoMode)}
+            disabled={!canSubmit || submitting}
             onClick={() => void handleSubmit()}
           >
-            {submitting && !demoMode ? (
+            {submitting ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
                 Importing…
@@ -218,24 +180,26 @@ export function BulkArtworkImportPage({
                 <Upload className="size-4" />
                 Import {selectedImages.length || ""} image
                 {selectedImages.length === 1 ? "" : "s"}
-                {demoMode ? " (demo)" : ""}
               </>
             ) : (
               <>
                 <FileSpreadsheet className="size-4" />
                 Import {csvRows.length || ""} row
                 {csvRows.length === 1 ? "" : "s"}
-                {demoMode ? " (demo)" : ""}
               </>
             )}
           </Button>
-          <Button type="button" variant="outline" render={<Link to={cancelPath} />}>
+          <Button
+            type="button"
+            variant="outline"
+            render={<Link to={paths.cancelPath} />}
+          >
             Cancel
           </Button>
           <Button
             type="button"
             variant="ghost"
-            render={<Link to={addOnePath} />}
+            render={<Link to={paths.addOnePath} />}
           >
             Add one artwork instead
           </Button>

@@ -1,21 +1,64 @@
 import type { NavigateFunction } from "react-router-dom";
 import { toast } from "sonner";
 import type { AddToExhibitionValue } from "@/components/add-to-exhibition-fields";
+import { DEMO_BUILDER_PATH } from "@/lib/demo-sandbox";
+import type { BulkImportResult } from "@/lib/bulk-artwork-import";
+import { DEMO_STUDIO_PATH } from "@/lib/public-demo";
 import { addArtworksToExhibitionCatalogue } from "@/services/exhibition-catalogue";
-import type { Artwork } from "@/types/artwork";
 import type { BulkArtworkFailure } from "@/services/artworks";
 
-interface FinishBulkArtworksOptions {
+const FAILURE_PREVIEW_LIMIT = 3;
+
+interface CompleteBulkArtworkImportOptions {
   itemLabel?: string;
 }
 
-export async function finishBulkArtworksWithOptionalCatalogue(
-  artworks: Artwork[],
-  failures: BulkArtworkFailure[],
+export function notifyBulkImportFailures(failures: BulkArtworkFailure[]): void {
+  if (failures.length === 0) return;
+
+  const preview = failures
+    .slice(0, FAILURE_PREVIEW_LIMIT)
+    .map((failure) => `${failure.label}: ${failure.error}`)
+    .join("; ");
+
+  toast.error(
+    `${failures.length} ${failures.length === 1 ? "item" : "items"} could not be imported`,
+    {
+      description:
+        failures.length > FAILURE_PREVIEW_LIMIT
+          ? `${preview}…`
+          : preview || undefined,
+    },
+  );
+}
+
+export function completeDemoBulkImport(
+  result: BulkImportResult,
+  navigate: NavigateFunction,
+  exhibitionId: string | null,
+): void {
+  const count = result.artworks.length;
+
+  if (count > 0) {
+    toast.success(
+      `${count} ${count === 1 ? "work" : "works"} added to your demo catalogue`,
+    );
+  }
+
+  notifyBulkImportFailures(result.failures);
+
+  if (count > 0) {
+    navigate(exhibitionId ? DEMO_BUILDER_PATH : DEMO_STUDIO_PATH);
+  }
+}
+
+export async function completeBulkArtworkImport(
+  result: BulkImportResult,
   addToExhibition: AddToExhibitionValue,
   navigate: NavigateFunction,
-  options?: FinishBulkArtworksOptions,
+  options?: CompleteBulkArtworkImportOptions,
 ): Promise<void> {
+  const { artworks, failures } = result;
   const itemLabel = options?.itemLabel ?? "work";
   const pluralLabel = artworks.length === 1 ? itemLabel : `${itemLabel}s`;
 
@@ -35,20 +78,7 @@ export async function finishBulkArtworksWithOptionalCatalogue(
     toast.success(successMessage);
   }
 
-  if (failures.length > 0) {
-    const preview = failures
-      .slice(0, 3)
-      .map((failure) => `${failure.label}: ${failure.error}`)
-      .join("; ");
-
-    toast.error(
-      `${failures.length} ${failures.length === 1 ? "item" : "items"} could not be imported`,
-      {
-        description:
-          failures.length > 3 ? `${preview}…` : preview || undefined,
-      },
-    );
-  }
+  notifyBulkImportFailures(failures);
 
   if (artworks.length === 0) return;
 
