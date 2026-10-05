@@ -1,4 +1,11 @@
-import { Suspense, useCallback, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Canvas } from "@react-three/fiber";
 import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
@@ -7,13 +14,22 @@ import { useTheme } from "@/contexts/theme-context";
 import { getArtworkImageUrl } from "@/services/artworks";
 import { catalogSizeForArtwork } from "@/lib/artwork/placement-size";
 import type { GalleryRoomProps } from "@/components/gallery/room/gallery-room-types";
+import {
+  getGalleryOrbitDistanceLimits,
+  getRoomCameraPresetKey,
+} from "@/lib/gallery/wall-camera-presets";
 import { cn } from "@/lib/utils";
 import { ArtworkFrame } from "./artwork-frame";
 import { GalleryCamera } from "./gallery-camera";
+import { GalleryOrbitTarget } from "./gallery-orbit-target";
+import { GALLERY_CAMERA_FOV } from "@/components/gallery/room/gallery-viewport";
 import { RoomShell } from "./room-shell";
 import { WallCameraControls } from "./wall-camera-controls";
 
-export { GALLERY_VIEWPORT_CLASS } from "@/components/gallery/room/gallery-viewport";
+export {
+  GALLERY_CAMERA_FOV,
+  GALLERY_VIEWPORT_CLASS,
+} from "@/components/gallery/room/gallery-viewport";
 export type { GalleryRoomProps } from "@/components/gallery/room/gallery-room-types";
 
 const CANVAS_BACKGROUND = {
@@ -122,8 +138,36 @@ export function GalleryRoom({
   onOrbitInteract,
 }: GalleryRoomProps) {
   const { theme } = useTheme();
+  const viewportRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
+  const animationCancelRef = useRef<(() => void) | null>(null);
   const [viewingWallId, setViewingWallId] = useState<string | null>(null);
+  const orbitLimits = useMemo(
+    () => getGalleryOrbitDistanceLimits(room),
+    [room],
+  );
+  const canvasCamera = useMemo(
+    () => ({
+      position: room.cameraPosition,
+      fov: GALLERY_CAMERA_FOV,
+      near: 0.1,
+      far: 100,
+    }),
+    [room.cameraPosition],
+  );
+  const roomPresetKey = useMemo(() => getRoomCameraPresetKey(room), [room]);
+  useEffect(() => {
+    const element = viewportRef.current;
+    if (!element || !interactive) return;
+
+    const onWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      animationCancelRef.current?.();
+    };
+
+    element.addEventListener("wheel", onWheel, { passive: false });
+    return () => element.removeEventListener("wheel", onWheel);
+  }, [interactive]);
 
   const handleSelectPlacement = useCallback(
     (placementId: string | null) => {
@@ -149,6 +193,7 @@ export function GalleryRoom({
 
   return (
     <div
+      ref={viewportRef}
       className={cn(
         "relative overflow-hidden rounded-xl border border-border",
         className,
@@ -170,12 +215,7 @@ export function GalleryRoom({
         className="absolute inset-x-0 top-0 bottom-[-1px] block h-[calc(100%+1px)] w-full touch-none"
         shadows
         resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
-        camera={{
-          position: room.cameraPosition,
-          fov: 48,
-          near: 0.1,
-          far: 100,
-        }}
+        camera={canvasCamera}
         onPointerMissed={() => handleSelectPlacement(null)}
       >
         <color attach="background" args={[CANVAS_BACKGROUND[theme]]} />
@@ -193,29 +233,39 @@ export function GalleryRoom({
             selectedPlacementId={selectedPlacementId}
             viewingWallId={viewingWallId}
             controlsRef={controlsRef}
+            animationCancelRef={animationCancelRef}
           />
         )}
         <Suspense fallback={null}>
           <OptionalEffects />
         </Suspense>
         {(interactive || autoRotate) && (
-          <OrbitControls
-            ref={controlsRef}
-            makeDefault
-            target={room.cameraTarget}
-            enablePan={false}
-            enableRotate={interactive}
-            enableZoom={interactive}
-            autoRotate={autoRotate}
-            autoRotateSpeed={0.35}
-            enableDamping
-            dampingFactor={0.08}
-            minDistance={1.4}
-            maxDistance={8}
-            maxPolarAngle={Math.PI / 2.05}
-            minPolarAngle={Math.PI / 4}
-            onStart={() => onOrbitInteract?.()}
-          />
+          <>
+            <OrbitControls
+              ref={controlsRef}
+              makeDefault
+              enablePan={false}
+              enableRotate={interactive}
+              enableZoom={interactive}
+              autoRotate={autoRotate}
+              autoRotateSpeed={0.35}
+              enableDamping
+              dampingFactor={0.08}
+              minDistance={orbitLimits.minDistance}
+              maxDistance={orbitLimits.maxDistance}
+              maxPolarAngle={Math.PI / 2.05}
+              minPolarAngle={Math.PI / 4}
+              onStart={() => {
+                animationCancelRef.current?.();
+                onOrbitInteract?.();
+              }}
+            />
+            <GalleryOrbitTarget
+              controlsRef={controlsRef}
+              cameraTarget={room.cameraTarget}
+              roomPresetKey={roomPresetKey}
+            />
+          </>
         )}
       </Canvas>
     </div>
