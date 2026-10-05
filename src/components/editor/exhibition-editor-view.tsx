@@ -42,6 +42,7 @@ interface ExhibitionEditorViewProps {
     patch: PlacementPatch,
   ) => void | Promise<void>;
   onPlacementRemove: (placementId: string) => void | Promise<void>;
+  onRemoveCatalogueArtwork?: (artworkId: string) => void | Promise<void>;
   studioBasePath?: string;
   previewFirst?: boolean;
   footer?: ReactNode;
@@ -63,6 +64,7 @@ export function ExhibitionEditorView({
   onPlacementAdd,
   onPlacementUpdate,
   onPlacementRemove,
+  onRemoveCatalogueArtwork,
   studioBasePath = "/studio",
   previewFirst = false,
   footer,
@@ -128,6 +130,15 @@ export function ExhibitionEditorView({
     placedArtworkIds,
   );
 
+  const cataloguePaletteArtworks = useMemo(
+    () =>
+      catalogueArtworks.filter((artwork) => Boolean(artwork.image_path)),
+    [catalogueArtworks],
+  );
+
+  const canRemoveFromCatalogue =
+    catalogueIsScoped && Boolean(onRemoveCatalogueArtwork);
+
   const previewSection = (
     <section className="space-y-3" id="preview-your-show">
       <h2 className="font-serif text-2xl italic">Preview your show</h2>
@@ -158,9 +169,14 @@ export function ExhibitionEditorView({
         exhibitionId={exhibition.id}
         placements={placements}
         availableArtworks={availableArtworks}
+        catalogueArtworks={cataloguePaletteArtworks}
+        placedArtworkIds={placedArtworkIds}
         onPlacementAdd={onPlacementAdd}
         onPlacementUpdate={onPlacementUpdate}
         onPlacementRemove={onPlacementRemove}
+        onRemoveFromCatalogue={
+          canRemoveFromCatalogue ? onRemoveCatalogueArtwork : undefined
+        }
         studioBasePath={studioBasePath}
       />
     </section>
