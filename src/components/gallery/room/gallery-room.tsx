@@ -1,19 +1,23 @@
 import {
   Suspense,
+  memo,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import type { PlacementWithArtwork, RoomTemplate } from "@/types";
 import { useTheme } from "@/contexts/theme-context";
 import { getArtworkImageUrl } from "@/services/artworks";
 import { catalogSizeForArtwork } from "@/lib/artwork/placement-size";
-import type { GalleryRoomProps } from "@/components/gallery/room/gallery-room-types";
+import type {
+  GalleryRenderQuality,
+  GalleryRoomProps,
+} from "@/components/gallery/room/gallery-room-types";
 import {
   getGalleryOrbitDistanceLimits,
   getRoomCameraPresetKey,
@@ -30,18 +34,25 @@ export {
   GALLERY_CAMERA_FOV,
   GALLERY_VIEWPORT_CLASS,
 } from "@/components/gallery/room/gallery-viewport";
-export type { GalleryRoomProps } from "@/components/gallery/room/gallery-room-types";
+export type {
+  GalleryRenderQuality,
+  GalleryRoomProps,
+} from "@/components/gallery/room/gallery-room-types";
 
 const CANVAS_BACKGROUND = {
   light: "#d6d3d1",
   dark: "#1c1917",
 } as const;
 
-function RoomLighting() {
+function RoomLighting({ castShadow }: { castShadow: boolean }) {
   return (
     <>
       <ambientLight intensity={0.55} />
-      <directionalLight position={[5, 8, 5]} intensity={0.9} castShadow />
+      <directionalLight
+        position={[5, 8, 5]}
+        intensity={0.9}
+        castShadow={castShadow}
+      />
       <directionalLight position={[-4, 6, -2]} intensity={0.35} />
       <hemisphereLight
         intensity={0.35}
@@ -111,24 +122,110 @@ function ArtworkPlacements({
   );
 }
 
-function OptionalEffects() {
+function GalleryEnvironment() {
+  const invalidate = useThree((state) => state.invalidate);
+
+  useEffect(() => {
+    invalidate();
+  }, [invalidate]);
+
+  return <Environment preset="apartment" />;
+}
+
+function GallerySceneEffects({ quality }: { quality: GalleryRenderQuality }) {
   return (
-    <>
-      <ContactShadows
-        position={[0, 0.01, 0]}
-        opacity={0.35}
-        scale={20}
-        blur={2.5}
-        far={8}
-      />
-      <Environment preset="apartment" />
-    </>
+    <Suspense fallback={null}>
+      <GalleryEnvironment />
+      {quality === "full" && (
+        <ContactShadows
+          position={[0, 0.01, 0]}
+          opacity={0.35}
+          scale={20}
+          blur={2.5}
+          far={8}
+        />
+      )}
+    </Suspense>
   );
 }
 
-export function GalleryRoom({
+function PreviewSceneInvalidator({
+  placements,
+}: {
+  placements: PlacementWithArtwork[];
+}) {
+  const invalidate = useThree((state) => state.invalidate);
+  const placementSignature = useMemo(
+    () =>
+      placements
+        .map(
+          (p) =>
+            `${p.id}:${p.wall_id}:${p.position_x}:${p.position_y}:${p.scale}:${p.rotation_deg}`,
+        )
+        .join("|"),
+    [placements],
+  );
+
+  useEffect(() => {
+    invalidate();
+  }, [invalidate, placementSignature]);
+
+  return null;
+}
+
+function GalleryOrbitControls({
+  controlsRef,
+  quality,
+  interactive,
+  autoRotate,
+  orbitLimits,
+  animationCancelRef,
+  onOrbitInteract,
+}: {
+  controlsRef: React.RefObject<OrbitControlsImpl | null>;
+  quality: GalleryRenderQuality;
+  interactive: boolean;
+  autoRotate: boolean;
+  orbitLimits: { minDistance: number; maxDistance: number };
+  animationCancelRef: React.MutableRefObject<(() => void) | null>;
+  onOrbitInteract?: () => void;
+}) {
+  const invalidate = useThree((state) => state.invalidate);
+  const requestFrame = useCallback(() => {
+    if (quality === "preview") {
+      invalidate();
+    }
+  }, [invalidate, quality]);
+
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      makeDefault
+      enablePan={false}
+      enableRotate={interactive}
+      enableZoom={interactive}
+      autoRotate={autoRotate}
+      autoRotateSpeed={0.35}
+      enableDamping
+      dampingFactor={quality === "preview" ? 0.12 : 0.08}
+      minDistance={orbitLimits.minDistance}
+      maxDistance={orbitLimits.maxDistance}
+      maxPolarAngle={Math.PI / 2.05}
+      minPolarAngle={Math.PI / 4}
+      onChange={requestFrame}
+      onStart={() => {
+        requestFrame();
+        animationCancelRef.current?.();
+        onOrbitInteract?.();
+      }}
+    />
+  );
+}
+
+export const GalleryRoom = memo(function GalleryRoom({
   room,
   placements,
+  quality = "full",
   interactive = true,
   autoRotate = false,
   className = "",
@@ -137,11 +234,13 @@ export function GalleryRoom({
   showWallPresets = false,
   onOrbitInteract,
 }: GalleryRoomProps) {
+  const isPreviewQuality = quality === "preview";
   const { theme } = useTheme();
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const animationCancelRef = useRef<(() => void) | null>(null);
   const [viewingWallId, setViewingWallId] = useState<string | null>(null);
+  const [viewFrameRequest, setViewFrameRequest] = useState(0);
   const orbitLimits = useMemo(
     () => getGalleryOrbitDistanceLimits(room),
     [room],
@@ -182,6 +281,7 @@ export function GalleryRoom({
   const handleViewWall = useCallback(
     (wallId: string | null) => {
       setViewingWallId(wallId);
+      setViewFrameRequest((count) => count + 1);
       if (wallId) {
         onSelectPlacement?.(null);
       }
@@ -213,14 +313,18 @@ export function GalleryRoom({
       )}
       <Canvas
         className="absolute inset-x-0 top-0 bottom-[-1px] block h-[calc(100%+1px)] w-full touch-none"
-        shadows
+        shadows={!isPreviewQuality}
+        frameloop={isPreviewQuality ? "demand" : "always"}
         resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
         camera={canvasCamera}
         onPointerMissed={() => handleSelectPlacement(null)}
       >
         <color attach="background" args={[CANVAS_BACKGROUND[theme]]} />
-        <RoomLighting />
+        <RoomLighting castShadow={!isPreviewQuality} />
         <RoomShell room={room} />
+        {isPreviewQuality && (
+          <PreviewSceneInvalidator placements={placements} />
+        )}
         <ArtworkPlacements
           room={room}
           placements={placements}
@@ -232,33 +336,23 @@ export function GalleryRoom({
             placements={placements}
             selectedPlacementId={selectedPlacementId}
             viewingWallId={viewingWallId}
+            viewFrameRequest={viewFrameRequest}
+            quality={quality}
             controlsRef={controlsRef}
             animationCancelRef={animationCancelRef}
           />
         )}
-        <Suspense fallback={null}>
-          <OptionalEffects />
-        </Suspense>
+        <GallerySceneEffects quality={quality} />
         {(interactive || autoRotate) && (
           <>
-            <OrbitControls
-              ref={controlsRef}
-              makeDefault
-              enablePan={false}
-              enableRotate={interactive}
-              enableZoom={interactive}
+            <GalleryOrbitControls
+              controlsRef={controlsRef}
+              quality={quality}
+              interactive={interactive}
               autoRotate={autoRotate}
-              autoRotateSpeed={0.35}
-              enableDamping
-              dampingFactor={0.08}
-              minDistance={orbitLimits.minDistance}
-              maxDistance={orbitLimits.maxDistance}
-              maxPolarAngle={Math.PI / 2.05}
-              minPolarAngle={Math.PI / 4}
-              onStart={() => {
-                animationCancelRef.current?.();
-                onOrbitInteract?.();
-              }}
+              orbitLimits={orbitLimits}
+              animationCancelRef={animationCancelRef}
+              onOrbitInteract={onOrbitInteract}
             />
             <GalleryOrbitTarget
               controlsRef={controlsRef}
@@ -270,4 +364,4 @@ export function GalleryRoom({
       </Canvas>
     </div>
   );
-}
+});

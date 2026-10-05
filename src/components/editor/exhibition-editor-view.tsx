@@ -135,6 +135,7 @@ export function ExhibitionEditorView({
         room={room}
         placements={placements}
         className={GALLERY_VIEWPORT_CLASS}
+        quality="preview"
         showWallPresets
       />
       <p className="text-center text-xs text-muted-foreground">
