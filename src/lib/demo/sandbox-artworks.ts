@@ -143,6 +143,30 @@ export function resolveSandboxArtwork(
   );
 }
 
+export function removeArtworkFromSandboxCatalogue(
+  state: DemoSandboxState,
+  artworkId: string,
+): DemoSandboxState {
+  const isCustom = (state.customArtworks ?? []).some(
+    (artwork) => artwork.id === artworkId,
+  );
+
+  return {
+    ...state,
+    catalogueArtworkIds: state.catalogueArtworkIds.filter(
+      (id) => id !== artworkId,
+    ),
+    placements: state.placements.filter(
+      (placement) => placement.artwork_id !== artworkId,
+    ),
+    customArtworks: isCustom
+      ? (state.customArtworks ?? []).filter(
+          (artwork) => artwork.id !== artworkId,
+        )
+      : state.customArtworks,
+  };
+}
+
 export async function addDemoSandboxCustomArtwork(
   form: ArtworkFormData,
   imageFile: File | null,

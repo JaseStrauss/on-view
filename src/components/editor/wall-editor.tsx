@@ -39,6 +39,8 @@ interface WallEditorProps {
   exhibitionId?: string;
   placements: PlacementWithArtwork[];
   availableArtworks: Artwork[];
+  catalogueArtworks?: Artwork[];
+  placedArtworkIds?: Set<string>;
   onPlacementAdd: (
     artworkId: string,
     wallId: string,
@@ -50,6 +52,7 @@ interface WallEditorProps {
     patch: PlacementPatch,
   ) => void | Promise<void>;
   onPlacementRemove: (placementId: string) => void | Promise<void>;
+  onRemoveFromCatalogue?: (artworkId: string) => void | Promise<void>;
   /** Studio root for catalogue links (e.g. `/studio/demo` in the demo builder). */
   studioBasePath?: string;
 }
@@ -59,11 +62,15 @@ export function WallEditor({
   exhibitionId,
   placements,
   availableArtworks,
+  catalogueArtworks,
+  placedArtworkIds,
   onPlacementAdd,
   onPlacementUpdate,
   onPlacementRemove,
+  onRemoveFromCatalogue,
   studioBasePath = "/studio",
 }: WallEditorProps) {
+  const paletteArtworks = catalogueArtworks ?? availableArtworks;
   const [activeWallId, setActiveWallId] = useState(room.walls[0]?.id ?? "");
   const [selectedPlacementId, setSelectedPlacementId] = useState<string | null>(
     null,
@@ -157,6 +164,29 @@ export function WallEditor({
   }, [placements, room.walls]);
 
   const selectedPlacement = placements.find((p) => p.id === selectedPlacementId);
+
+  useEffect(() => {
+    if (
+      selectedPlacementId &&
+      !placements.some((placement) => placement.id === selectedPlacementId)
+    ) {
+      setSelectedPlacementId(null);
+    }
+  }, [placements, selectedPlacementId]);
+
+  const handleRemoveFromCatalogue = useCallback(
+    async (artworkId: string) => {
+      if (!onRemoveFromCatalogue) return;
+      await onRemoveFromCatalogue(artworkId);
+      if (pendingArtworkId === artworkId) {
+        setPendingArtworkId(null);
+      }
+      if (placements.some((placement) => placement.artwork_id === artworkId)) {
+        setSelectedPlacementId(null);
+      }
+    },
+    [onRemoveFromCatalogue, pendingArtworkId, placements],
+  );
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -399,7 +429,8 @@ export function WallEditor({
           <CardTitle>Catalogue</CardTitle>
           <CardDescription>
             Drag works onto the wall to place them. Drag placed works back here
-            to remove, or select and press Delete.
+            to remove from a wall, or use the × to remove from this show&apos;s
+            catalogue.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -409,11 +440,13 @@ export function WallEditor({
             </p>
           )}
           <ArtworkPalette
-            artworks={availableArtworks}
+            artworks={paletteArtworks}
             selectedArtworkId={pendingArtworkId}
+            placedArtworkIds={placedArtworkIds}
             onSelectArtwork={setPendingArtworkId}
+            onRemoveFromCatalogue={handleRemoveFromCatalogue}
           />
-          {availableArtworks.length === 0 && (
+          {paletteArtworks.length === 0 && (
             <p className="mt-4 text-sm text-muted-foreground">
               All catalogue works are on walls. Drag a work here to return it, or{" "}
               <Link

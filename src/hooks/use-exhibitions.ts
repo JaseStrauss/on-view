@@ -8,7 +8,10 @@ import { supabase } from "@/lib/supabase";
 import { buildRoomTemplate, slugify } from "@/rooms/templates";
 import { mergeRoomConfig, type RoomConfig } from "@/rooms/room-config";
 import { reclampPlacement } from "@/lib/gallery/reclamp-placements";
-import { addArtworkToExhibitionCatalogue } from "@/services/exhibition-catalogue";
+import {
+  addArtworkToExhibitionCatalogue,
+  removeArtworkFromExhibitionCatalogue,
+} from "@/services/exhibition-catalogue";
 import { duplicateExhibition as duplicateExhibitionRecord } from "@/services/exhibitions";
 import { fetchPublicPresenterName } from "@/services/profile";
 import type { Artwork } from "@/types/artwork";
@@ -232,6 +235,12 @@ export function useExhibitionDetail(exhibitionId: string | undefined) {
     await refresh();
   };
 
+  const removeCatalogueArtwork = async (artworkId: string) => {
+    if (!exhibitionId) return;
+    await removeArtworkFromExhibitionCatalogue(exhibitionId, artworkId);
+    await refresh();
+  };
+
   const applyRoomSettings = async (templateId: string, config: RoomConfig) => {
     if (!exhibitionId || !exhibition) return;
 
@@ -285,6 +294,7 @@ export function useExhibitionDetail(exhibitionId: string | undefined) {
     addPlacement,
     updatePlacement,
     removePlacement,
+    removeCatalogueArtwork,
   };
 }
 

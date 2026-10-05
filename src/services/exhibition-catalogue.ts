@@ -33,6 +33,27 @@ export async function addArtworkToExhibitionCatalogue(
   if (error) throw error;
 }
 
+export async function removeArtworkFromExhibitionCatalogue(
+  exhibitionId: string,
+  artworkId: string,
+): Promise<void> {
+  const { error: placementError } = await supabase
+    .from("placements")
+    .delete()
+    .eq("exhibition_id", exhibitionId)
+    .eq("artwork_id", artworkId);
+
+  if (placementError) throw placementError;
+
+  const { error } = await supabase
+    .from("exhibition_catalogue")
+    .delete()
+    .eq("exhibition_id", exhibitionId)
+    .eq("artwork_id", artworkId);
+
+  if (error) throw error;
+}
+
 export async function fetchExhibitionCatalogueArtworkIds(
   exhibitionId: string,
 ): Promise<string[]> {

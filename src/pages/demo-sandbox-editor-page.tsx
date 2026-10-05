@@ -44,6 +44,7 @@ export function DemoSandboxEditorPage() {
     addPlacement,
     updatePlacement,
     removePlacement,
+    removeCatalogueArtwork,
     resetSandbox,
     artworks,
   } = useDemoSandbox(init);
@@ -149,6 +150,7 @@ export function DemoSandboxEditorPage() {
         onPlacementAdd={addPlacement}
         onPlacementUpdate={updatePlacement}
         onPlacementRemove={removePlacement}
+        onRemoveCatalogueArtwork={removeCatalogueArtwork}
         studioBasePath="/studio/demo"
         previewFirst
         statusNote="Saved in this browser tab"

@@ -30,6 +30,7 @@ export function ExhibitionEditorPage() {
     addPlacement,
     updatePlacement,
     removePlacement,
+    removeCatalogueArtwork,
   } = useExhibitionDetail(id)
 
   const [publishing, setPublishing] = useState(false)
@@ -104,6 +105,7 @@ export function ExhibitionEditorPage() {
       onPlacementAdd={addPlacement}
       onPlacementUpdate={updatePlacement}
       onPlacementRemove={removePlacement}
+      onRemoveCatalogueArtwork={removeCatalogueArtwork}
       footer={
         <>
           <DuplicateExhibitionControl
