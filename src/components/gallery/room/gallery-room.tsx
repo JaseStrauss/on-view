@@ -1,5 +1,4 @@
 import {
-  Suspense,
   memo,
   useCallback,
   useEffect,
@@ -7,17 +6,13 @@ import {
   useRef,
   useState,
 } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
-import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import type { PlacementWithArtwork, RoomTemplate } from "@/types";
 import { useTheme } from "@/contexts/theme-context";
 import { getArtworkImageUrl } from "@/services/artworks";
 import { catalogSizeForArtwork } from "@/lib/artwork/placement-size";
-import type {
-  GalleryRenderQuality,
-  GalleryRoomProps,
-} from "@/components/gallery/room/gallery-room-types";
+import type { GalleryRoomProps } from "@/components/gallery/room/gallery-room-types";
 import {
   getGalleryOrbitDistanceLimits,
   getRoomCameraPresetKey,
@@ -25,7 +20,12 @@ import {
 import { cn } from "@/lib/utils";
 import { ArtworkFrame } from "./artwork-frame";
 import { GalleryCamera } from "./gallery-camera";
+import { GalleryOrbitControls } from "./gallery-orbit-controls";
 import { GalleryOrbitTarget } from "./gallery-orbit-target";
+import {
+  GallerySceneEffects,
+  PreviewSceneInvalidator,
+} from "./gallery-scene-effects";
 import { GALLERY_CAMERA_FOV } from "@/components/gallery/room/gallery-viewport";
 import { RoomShell } from "./room-shell";
 import { WallCameraControls } from "./wall-camera-controls";
@@ -119,106 +119,6 @@ function ArtworkPlacements({
         });
       })}
     </>
-  );
-}
-
-function GalleryEnvironment() {
-  const invalidate = useThree((state) => state.invalidate);
-
-  useEffect(() => {
-    invalidate();
-  }, [invalidate]);
-
-  return <Environment preset="apartment" />;
-}
-
-function GallerySceneEffects({ quality }: { quality: GalleryRenderQuality }) {
-  return (
-    <Suspense fallback={null}>
-      <GalleryEnvironment />
-      {quality === "full" && (
-        <ContactShadows
-          position={[0, 0.01, 0]}
-          opacity={0.35}
-          scale={20}
-          blur={2.5}
-          far={8}
-        />
-      )}
-    </Suspense>
-  );
-}
-
-function PreviewSceneInvalidator({
-  placements,
-}: {
-  placements: PlacementWithArtwork[];
-}) {
-  const invalidate = useThree((state) => state.invalidate);
-  const placementSignature = useMemo(
-    () =>
-      placements
-        .map(
-          (p) =>
-            `${p.id}:${p.wall_id}:${p.position_x}:${p.position_y}:${p.scale}:${p.rotation_deg}`,
-        )
-        .join("|"),
-    [placements],
-  );
-
-  useEffect(() => {
-    invalidate();
-  }, [invalidate, placementSignature]);
-
-  return null;
-}
-
-function GalleryOrbitControls({
-  controlsRef,
-  quality,
-  interactive,
-  autoRotate,
-  orbitLimits,
-  animationCancelRef,
-  onOrbitInteract,
-}: {
-  controlsRef: React.RefObject<OrbitControlsImpl | null>;
-  quality: GalleryRenderQuality;
-  interactive: boolean;
-  autoRotate: boolean;
-  orbitLimits: { minDistance: number; maxDistance: number };
-  animationCancelRef: React.MutableRefObject<(() => void) | null>;
-  onOrbitInteract?: () => void;
-}) {
-  const invalidate = useThree((state) => state.invalidate);
-  const requestFrame = useCallback(() => {
-    if (quality === "preview") {
-      invalidate();
-    }
-  }, [invalidate, quality]);
-
-  return (
-    <OrbitControls
-      ref={controlsRef}
-      makeDefault
-      enablePan={false}
-      enableRotate={interactive}
-      enableZoom={interactive}
-      autoRotate={autoRotate}
-      autoRotateSpeed={0.35}
-      enableDamping
-      dampingFactor={quality === "preview" ? 0.12 : 0.08}
-      minDistance={orbitLimits.minDistance}
-      maxDistance={orbitLimits.maxDistance}
-      maxPolarAngle={Math.PI / 2.05}
-      minPolarAngle={Math.PI / 4}
-      onChange={requestFrame}
-      onStart={() => {
-        requestFrame();
-        animationCancelRef.current?.();
-        onOrbitInteract?.();
-      }}
-    />
   );
 }
 
