@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   getAllSandboxArtworks,
+  removeArtworkFromSandboxCatalogue,
   resolveSandboxArtwork,
 } from "@/lib/demo/sandbox-artworks";
 import {
@@ -169,6 +170,15 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
     setState(next);
   }, []);
 
+  const removeCatalogueArtwork = useCallback(async (artworkId: string) => {
+    setState((current) => {
+      if (!current) return current;
+      const next = removeArtworkFromSandboxCatalogue(current, artworkId);
+      scheduleSandboxStateSave(next);
+      return next;
+    });
+  }, []);
+
   return {
     exhibition: state?.exhibition ?? null,
     placements: state?.placements ?? [],
@@ -180,6 +190,7 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
     addPlacement,
     updatePlacement,
     removePlacement,
+    removeCatalogueArtwork,
     resetSandbox,
   };
 }
