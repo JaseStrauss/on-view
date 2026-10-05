@@ -1,5 +1,6 @@
 import * as THREE from "three";
-import type { WallDefinition } from "@/types";
+import { catalogSizeForArtwork } from "@/lib/artwork/placement-size";
+import type { PlacementWithArtwork, WallDefinition } from "@/types";
 
 const DEFAULT_WALL_VIEW_DISTANCE = 3.2;
 const MIN_WALL_VIEW_DISTANCE = DEFAULT_WALL_VIEW_DISTANCE;
@@ -45,6 +46,21 @@ export function viewDistanceForHorizontalSpan(
 export interface WallPlacementFocus {
   positionX: number;
   halfWidthM: number;
+}
+
+export function wallPlacementFocusList(
+  placements: PlacementWithArtwork[],
+  wallId: string,
+): WallPlacementFocus[] {
+  return placements
+    .filter((p) => p.wall_id === wallId)
+    .map((p) => {
+      const catalog = catalogSizeForArtwork(p.artwork, p.scale);
+      return {
+        positionX: p.position_x,
+        halfWidthM: catalog.widthM / 2,
+      };
+    });
 }
 
 function wallTangent(wall: WallDefinition): THREE.Vector3 {

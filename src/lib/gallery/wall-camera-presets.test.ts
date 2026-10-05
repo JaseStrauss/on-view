@@ -5,7 +5,9 @@ import {
   getWallCameraPreset,
   getWallCameraPresetForPlacements,
   viewDistanceForHorizontalSpan,
+  wallPlacementFocusList,
 } from "@/lib/gallery/wall-camera-presets";
+import type { PlacementWithArtwork } from "@/types";
 
 const northWall: WallDefinition = {
   id: "north",
@@ -32,29 +34,55 @@ describe("getGalleryOrbitDistanceLimits", () => {
   });
 });
 
+describe("wallPlacementFocusList", () => {
+  it("includes half-width from catalogue size for each placement on the wall", () => {
+    const placements = [
+      {
+        wall_id: "north",
+        position_x: 1,
+        scale: 1,
+        artwork: { width_cm: 100, height_cm: 80 },
+      },
+    ] as PlacementWithArtwork[];
+
+    const focus = wallPlacementFocusList(placements, "north");
+    expect(focus).toEqual([{ positionX: 1, halfWidthM: 0.5 }]);
+  });
+});
+
 describe("getWallCameraPresetForPlacements", () => {
   const framing = { verticalFovDeg: 48, viewportAspect: 1.6 };
 
   it("shifts look-at toward off-center hangs on the wall", () => {
-    const centered = getWallCameraPresetForPlacements(northWall, [
-      { positionX: 0, halfWidthM: 0.4 },
-    ], framing);
-    const offCenter = getWallCameraPresetForPlacements(northWall, [
-      { positionX: -2.5, halfWidthM: 0.5 },
-    ], framing);
+    const centered = getWallCameraPresetForPlacements(
+      northWall,
+      [{ positionX: 0, halfWidthM: 0.4 }],
+      framing,
+    );
+    const offCenter = getWallCameraPresetForPlacements(
+      northWall,
+      [{ positionX: -2.5, halfWidthM: 0.5 }],
+      framing,
+    );
 
     expect(offCenter.target.x).toBeLessThan(centered.target.x);
     expect(offCenter.target.z).toBeCloseTo(centered.target.z, 5);
   });
 
   it("backs the camera away for a wider spread of works", () => {
-    const single = getWallCameraPresetForPlacements(northWall, [
-      { positionX: 0, halfWidthM: 0.3 },
-    ], framing);
-    const spread = getWallCameraPresetForPlacements(northWall, [
-      { positionX: -2.8, halfWidthM: 0.4 },
-      { positionX: 2.5, halfWidthM: 0.45 },
-    ], framing);
+    const single = getWallCameraPresetForPlacements(
+      northWall,
+      [{ positionX: 0, halfWidthM: 0.3 }],
+      framing,
+    );
+    const spread = getWallCameraPresetForPlacements(
+      northWall,
+      [
+        { positionX: -2.8, halfWidthM: 0.4 },
+        { positionX: 2.5, halfWidthM: 0.45 },
+      ],
+      framing,
+    );
 
     const singleDistance = single.position.distanceTo(single.target);
     const spreadDistance = spread.position.distanceTo(spread.target);

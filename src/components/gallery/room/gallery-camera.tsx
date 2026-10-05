@@ -8,9 +8,8 @@ import {
   getRoomOverviewPreset,
   getViewIntoRoom,
   getWallCameraPresetForPlacements,
-  type WallPlacementFocus,
+  wallPlacementFocusList,
 } from "@/lib/gallery/wall-camera-presets";
-import { catalogSizeForArtwork } from "@/lib/artwork/placement-size";
 import { getWallPlacementTransform } from "@/lib/gallery/wall-rotation";
 import type { GalleryRenderQuality } from "@/components/gallery/room/gallery-room-types";
 import type { PlacementWithArtwork, RoomTemplate } from "@/types";
@@ -42,21 +41,6 @@ function getArtworkWorldPosition(
     Number(placement.rotation_deg) || 0,
   );
   return position;
-}
-
-function wallPlacementFocusList(
-  placements: PlacementWithArtwork[],
-  wallId: string,
-): WallPlacementFocus[] {
-  return placements
-    .filter((p) => p.wall_id === wallId)
-    .map((p) => {
-      const catalog = catalogSizeForArtwork(p.artwork, p.scale);
-      return {
-        positionX: p.position_x,
-        halfWidthM: catalog.widthM / 2,
-      };
-    });
 }
 
 function beginPresetAnimation(
