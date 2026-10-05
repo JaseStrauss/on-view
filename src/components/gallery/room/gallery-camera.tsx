@@ -2,11 +2,14 @@ import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
+import { GALLERY_CAMERA_FOV } from "@/components/gallery/room/gallery-viewport";
 import {
+  getRoomCameraPresetKey,
   getRoomOverviewPreset,
   getViewIntoRoom,
-  getWallCameraPreset,
+  getWallCameraPresetForPlacements,
 } from "@/lib/gallery/wall-camera-presets";
+import { catalogSizeForArtwork } from "@/lib/artwork/placement-size";
 import { getWallPlacementTransform } from "@/lib/gallery/wall-rotation";
 import type { PlacementWithArtwork, RoomTemplate } from "@/types";
 
@@ -16,6 +19,7 @@ interface GalleryCameraProps {
   selectedPlacementId: string | null;
   viewingWallId: string | null;
   controlsRef: React.RefObject<OrbitControlsImpl | null>;
+  animationCancelRef: React.MutableRefObject<(() => void) | null>;
 }
 
 function getArtworkWorldPosition(
@@ -36,33 +40,73 @@ function getArtworkWorldPosition(
   return position;
 }
 
+function beginPresetAnimation(
+  goalPosition: THREE.Vector3,
+  goalTarget: THREE.Vector3,
+  isAnimating: React.MutableRefObject<boolean>,
+  preset: { position: THREE.Vector3; target: THREE.Vector3 },
+) {
+  goalPosition.copy(preset.position);
+  goalTarget.copy(preset.target);
+  isAnimating.current = true;
+}
+
 export function GalleryCamera({
   room,
   placements,
   selectedPlacementId,
   viewingWallId,
   controlsRef,
+  animationCancelRef,
 }: GalleryCameraProps) {
-  const { camera } = useThree();
+  const { camera, size } = useThree();
+  const viewportAspect = size.width / Math.max(size.height, 1);
+  const cameraFov =
+    camera instanceof THREE.PerspectiveCamera
+      ? camera.fov
+      : GALLERY_CAMERA_FOV;
   const goalPosition = useRef(new THREE.Vector3(...room.cameraPosition));
   const goalTarget = useRef(new THREE.Vector3(...room.cameraTarget));
   const isAnimating = useRef(false);
-  const hasInteracted = useRef(false);
+  const prev = useRef({
+    viewingWallId,
+    selectedPlacementId,
+    roomPresetKey: getRoomCameraPresetKey(room),
+  });
 
   useEffect(() => {
-    if (!selectedPlacementId && !viewingWallId) {
-      if (!hasInteracted.current) return;
+    animationCancelRef.current = () => {
+      isAnimating.current = false;
+    };
+    return () => {
+      animationCancelRef.current = null;
+    };
+  }, [animationCancelRef]);
 
-      const overview = getRoomOverviewPreset(room);
-      goalPosition.current.copy(overview.position);
-      goalTarget.current.copy(overview.target);
-      isAnimating.current = true;
-      return;
-    }
+  useEffect(() => {
+    const {
+      viewingWallId: prevViewingWallId,
+      selectedPlacementId: prevSelectedPlacementId,
+      roomPresetKey: prevRoomPresetKey,
+    } = prev.current;
 
-    hasInteracted.current = true;
+    const nextRoomPresetKey = getRoomCameraPresetKey(room);
+    const modeChanged =
+      prevViewingWallId !== viewingWallId ||
+      prevSelectedPlacementId !== selectedPlacementId;
+    const wallViewChanged = prevViewingWallId !== viewingWallId;
+    const selectionChanged = prevSelectedPlacementId !== selectedPlacementId;
+    const roomPresetChanged = prevRoomPresetKey !== nextRoomPresetKey;
+
+    prev.current = {
+      viewingWallId,
+      selectedPlacementId,
+      roomPresetKey: nextRoomPresetKey,
+    };
 
     if (selectedPlacementId) {
+      if (!selectionChanged) return;
+
       const placement = placements.find((p) => p.id === selectedPlacementId);
       if (!placement) return;
 
@@ -87,15 +131,50 @@ export function GalleryCamera({
     }
 
     if (viewingWallId) {
+      if (!wallViewChanged) return;
+
       const wall = room.walls.find((w) => w.id === viewingWallId);
       if (!wall) return;
 
-      const preset = getWallCameraPreset(wall);
-      goalPosition.current.copy(preset.position);
-      goalTarget.current.copy(preset.target);
-      isAnimating.current = true;
+      const wallPlacements = placements
+        .filter((p) => p.wall_id === wall.id)
+        .map((p) => {
+          const catalog = catalogSizeForArtwork(p.artwork, p.scale);
+          return {
+            positionX: p.position_x,
+            halfWidthM: catalog.widthM / 2,
+          };
+        });
+
+      const preset = getWallCameraPresetForPlacements(wall, wallPlacements, {
+        verticalFovDeg: cameraFov,
+        viewportAspect,
+      });
+      beginPresetAnimation(
+        goalPosition.current,
+        goalTarget.current,
+        isAnimating,
+        preset,
+      );
+      return;
     }
-  }, [placements, room, selectedPlacementId, viewingWallId]);
+
+    if (!modeChanged && !roomPresetChanged) return;
+
+    beginPresetAnimation(
+      goalPosition.current,
+      goalTarget.current,
+      isAnimating,
+      getRoomOverviewPreset(room),
+    );
+  }, [
+    cameraFov,
+    placements,
+    room,
+    selectedPlacementId,
+    viewingWallId,
+    viewportAspect,
+  ]);
 
   useFrame(() => {
     if (!isAnimating.current || !controlsRef.current) return;
