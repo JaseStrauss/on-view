@@ -1,5 +1,5 @@
 import {
-  Suspense,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -7,7 +7,6 @@ import {
   useState,
 } from "react";
 import { Canvas } from "@react-three/fiber";
-import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import type { PlacementWithArtwork, RoomTemplate } from "@/types";
 import { useTheme } from "@/contexts/theme-context";
@@ -21,7 +20,12 @@ import {
 import { cn } from "@/lib/utils";
 import { ArtworkFrame } from "./artwork-frame";
 import { GalleryCamera } from "./gallery-camera";
+import { GalleryOrbitControls } from "./gallery-orbit-controls";
 import { GalleryOrbitTarget } from "./gallery-orbit-target";
+import {
+  GallerySceneEffects,
+  PreviewSceneInvalidator,
+} from "./gallery-scene-effects";
 import { GALLERY_CAMERA_FOV } from "@/components/gallery/room/gallery-viewport";
 import { RoomShell } from "./room-shell";
 import { WallCameraControls } from "./wall-camera-controls";
@@ -30,18 +34,25 @@ export {
   GALLERY_CAMERA_FOV,
   GALLERY_VIEWPORT_CLASS,
 } from "@/components/gallery/room/gallery-viewport";
-export type { GalleryRoomProps } from "@/components/gallery/room/gallery-room-types";
+export type {
+  GalleryRenderQuality,
+  GalleryRoomProps,
+} from "@/components/gallery/room/gallery-room-types";
 
 const CANVAS_BACKGROUND = {
   light: "#d6d3d1",
   dark: "#1c1917",
 } as const;
 
-function RoomLighting() {
+function RoomLighting({ castShadow }: { castShadow: boolean }) {
   return (
     <>
       <ambientLight intensity={0.55} />
-      <directionalLight position={[5, 8, 5]} intensity={0.9} castShadow />
+      <directionalLight
+        position={[5, 8, 5]}
+        intensity={0.9}
+        castShadow={castShadow}
+      />
       <directionalLight position={[-4, 6, -2]} intensity={0.35} />
       <hemisphereLight
         intensity={0.35}
@@ -111,24 +122,10 @@ function ArtworkPlacements({
   );
 }
 
-function OptionalEffects() {
-  return (
-    <>
-      <ContactShadows
-        position={[0, 0.01, 0]}
-        opacity={0.35}
-        scale={20}
-        blur={2.5}
-        far={8}
-      />
-      <Environment preset="apartment" />
-    </>
-  );
-}
-
-export function GalleryRoom({
+export const GalleryRoom = memo(function GalleryRoom({
   room,
   placements,
+  quality = "full",
   interactive = true,
   autoRotate = false,
   className = "",
@@ -137,11 +134,13 @@ export function GalleryRoom({
   showWallPresets = false,
   onOrbitInteract,
 }: GalleryRoomProps) {
+  const isPreviewQuality = quality === "preview";
   const { theme } = useTheme();
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const animationCancelRef = useRef<(() => void) | null>(null);
   const [viewingWallId, setViewingWallId] = useState<string | null>(null);
+  const [viewFrameRequest, setViewFrameRequest] = useState(0);
   const orbitLimits = useMemo(
     () => getGalleryOrbitDistanceLimits(room),
     [room],
@@ -182,6 +181,7 @@ export function GalleryRoom({
   const handleViewWall = useCallback(
     (wallId: string | null) => {
       setViewingWallId(wallId);
+      setViewFrameRequest((count) => count + 1);
       if (wallId) {
         onSelectPlacement?.(null);
       }
@@ -213,14 +213,18 @@ export function GalleryRoom({
       )}
       <Canvas
         className="absolute inset-x-0 top-0 bottom-[-1px] block h-[calc(100%+1px)] w-full touch-none"
-        shadows
+        shadows={!isPreviewQuality}
+        frameloop={isPreviewQuality ? "demand" : "always"}
         resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
         camera={canvasCamera}
         onPointerMissed={() => handleSelectPlacement(null)}
       >
         <color attach="background" args={[CANVAS_BACKGROUND[theme]]} />
-        <RoomLighting />
+        <RoomLighting castShadow={!isPreviewQuality} />
         <RoomShell room={room} />
+        {isPreviewQuality && (
+          <PreviewSceneInvalidator placements={placements} />
+        )}
         <ArtworkPlacements
           room={room}
           placements={placements}
@@ -232,33 +236,23 @@ export function GalleryRoom({
             placements={placements}
             selectedPlacementId={selectedPlacementId}
             viewingWallId={viewingWallId}
+            viewFrameRequest={viewFrameRequest}
+            quality={quality}
             controlsRef={controlsRef}
             animationCancelRef={animationCancelRef}
           />
         )}
-        <Suspense fallback={null}>
-          <OptionalEffects />
-        </Suspense>
+        <GallerySceneEffects quality={quality} />
         {(interactive || autoRotate) && (
           <>
-            <OrbitControls
-              ref={controlsRef}
-              makeDefault
-              enablePan={false}
-              enableRotate={interactive}
-              enableZoom={interactive}
+            <GalleryOrbitControls
+              controlsRef={controlsRef}
+              quality={quality}
+              interactive={interactive}
               autoRotate={autoRotate}
-              autoRotateSpeed={0.35}
-              enableDamping
-              dampingFactor={0.08}
-              minDistance={orbitLimits.minDistance}
-              maxDistance={orbitLimits.maxDistance}
-              maxPolarAngle={Math.PI / 2.05}
-              minPolarAngle={Math.PI / 4}
-              onStart={() => {
-                animationCancelRef.current?.();
-                onOrbitInteract?.();
-              }}
+              orbitLimits={orbitLimits}
+              animationCancelRef={animationCancelRef}
+              onOrbitInteract={onOrbitInteract}
             />
             <GalleryOrbitTarget
               controlsRef={controlsRef}
@@ -270,4 +264,4 @@ export function GalleryRoom({
       </Canvas>
     </div>
   );
-}
+});

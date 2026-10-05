@@ -245,6 +245,34 @@ export function saveSandboxState(state: DemoSandboxState): void {
   );
 }
 
+const SANDBOX_SAVE_DEBOUNCE_MS = 300;
+let pendingSandboxSave: DemoSandboxState | null = null;
+let sandboxSaveTimer: ReturnType<typeof setTimeout> | null = null;
+
+/** Coalesce rapid demo builder edits so sessionStorage does not block the UI thread. */
+export function scheduleSandboxStateSave(state: DemoSandboxState): void {
+  pendingSandboxSave = state;
+  if (sandboxSaveTimer) clearTimeout(sandboxSaveTimer);
+  sandboxSaveTimer = setTimeout(() => {
+    if (pendingSandboxSave) {
+      saveSandboxState(pendingSandboxSave);
+      pendingSandboxSave = null;
+    }
+    sandboxSaveTimer = null;
+  }, SANDBOX_SAVE_DEBOUNCE_MS);
+}
+
+export function flushSandboxStateSave(): void {
+  if (sandboxSaveTimer) {
+    clearTimeout(sandboxSaveTimer);
+    sandboxSaveTimer = null;
+  }
+  if (pendingSandboxSave) {
+    saveSandboxState(pendingSandboxSave);
+    pendingSandboxSave = null;
+  }
+}
+
 export function clearSandboxState(): void {
   if (typeof sessionStorage === "undefined") return;
   sessionStorage.removeItem(STORAGE_KEY);
@@ -262,6 +290,7 @@ export function ensureSandboxState(
 }
 
 export function initSandboxState(state: DemoSandboxState): DemoSandboxState {
+  flushSandboxStateSave();
   saveSandboxState(state);
   return state;
 }

@@ -10,8 +10,9 @@ import {
   createSampleSandboxState,
   ensureSandboxState,
   initSandboxState,
+  flushSandboxStateSave,
   loadSandboxState,
-  saveSandboxState,
+  scheduleSandboxStateSave,
   type DemoSandboxState,
 } from "@/lib/demo/sandbox";
 import type { RoomConfig } from "@/rooms/room-config";
@@ -47,6 +48,8 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
     if (stored) setState(stored);
   }, [location.key, loading]);
 
+  useEffect(() => () => flushSandboxStateSave(), []);
+
   const artworks = useMemo(
     () => (state ? getAllSandboxArtworks(state) : []),
     [state],
@@ -59,7 +62,7 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
         ...current,
         exhibition: { ...current.exhibition, ...patch },
       };
-      saveSandboxState(next);
+      scheduleSandboxStateSave(next);
       return next;
     });
   }, []);
@@ -95,7 +98,7 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
           ...current,
           placements: [...current.placements, placement],
         };
-        saveSandboxState(next);
+        scheduleSandboxStateSave(next);
         return next;
       });
     },
@@ -128,7 +131,7 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
             return updated;
           }),
         };
-        saveSandboxState(next);
+        scheduleSandboxStateSave(next);
         return next;
       });
     },
@@ -144,7 +147,7 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
           (placement) => placement.id !== placementId,
         ),
       };
-      saveSandboxState(next);
+      scheduleSandboxStateSave(next);
       return next;
     });
   }, []);
@@ -154,7 +157,7 @@ export function useDemoSandbox(init: DemoSandboxInit = "preserve") {
       setState((current) => {
         if (!current) return current;
         const next = applySandboxRoomSettings(current, templateId, config);
-        saveSandboxState(next);
+        scheduleSandboxStateSave(next);
         return next;
       });
     },

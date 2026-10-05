@@ -8,9 +8,10 @@ import {
   getRoomOverviewPreset,
   getViewIntoRoom,
   getWallCameraPresetForPlacements,
+  wallPlacementFocusList,
 } from "@/lib/gallery/wall-camera-presets";
-import { catalogSizeForArtwork } from "@/lib/artwork/placement-size";
 import { getWallPlacementTransform } from "@/lib/gallery/wall-rotation";
+import type { GalleryRenderQuality } from "@/components/gallery/room/gallery-room-types";
 import type { PlacementWithArtwork, RoomTemplate } from "@/types";
 
 interface GalleryCameraProps {
@@ -18,6 +19,8 @@ interface GalleryCameraProps {
   placements: PlacementWithArtwork[];
   selectedPlacementId: string | null;
   viewingWallId: string | null;
+  viewFrameRequest: number;
+  quality?: GalleryRenderQuality;
   controlsRef: React.RefObject<OrbitControlsImpl | null>;
   animationCancelRef: React.MutableRefObject<(() => void) | null>;
 }
@@ -56,10 +59,12 @@ export function GalleryCamera({
   placements,
   selectedPlacementId,
   viewingWallId,
+  viewFrameRequest,
+  quality = "full",
   controlsRef,
   animationCancelRef,
 }: GalleryCameraProps) {
-  const { camera, size } = useThree();
+  const { camera, size, invalidate } = useThree();
   const viewportAspect = size.width / Math.max(size.height, 1);
   const cameraFov =
     camera instanceof THREE.PerspectiveCamera
@@ -68,11 +73,14 @@ export function GalleryCamera({
   const goalPosition = useRef(new THREE.Vector3(...room.cameraPosition));
   const goalTarget = useRef(new THREE.Vector3(...room.cameraTarget));
   const isAnimating = useRef(false);
-  const prev = useRef({
+  const prevOverview = useRef({
     viewingWallId,
     selectedPlacementId,
+    viewFrameRequest,
     roomPresetKey: getRoomCameraPresetKey(room),
   });
+  const prevWallFrame = useRef({ viewingWallId, viewFrameRequest });
+  const prevSelectedPlacementId = useRef(selectedPlacementId);
 
   useEffect(() => {
     animationCancelRef.current = () => {
@@ -84,82 +92,33 @@ export function GalleryCamera({
   }, [animationCancelRef]);
 
   useEffect(() => {
+    if (selectedPlacementId || viewingWallId) return;
+
+    const nextRoomPresetKey = getRoomCameraPresetKey(room);
     const {
       viewingWallId: prevViewingWallId,
       selectedPlacementId: prevSelectedPlacementId,
+      viewFrameRequest: prevViewFrameRequest,
       roomPresetKey: prevRoomPresetKey,
-    } = prev.current;
+    } = prevOverview.current;
 
-    const nextRoomPresetKey = getRoomCameraPresetKey(room);
     const modeChanged =
       prevViewingWallId !== viewingWallId ||
       prevSelectedPlacementId !== selectedPlacementId;
-    const wallViewChanged = prevViewingWallId !== viewingWallId;
-    const selectionChanged = prevSelectedPlacementId !== selectedPlacementId;
     const roomPresetChanged = prevRoomPresetKey !== nextRoomPresetKey;
+    const reframed =
+      modeChanged ||
+      roomPresetChanged ||
+      prevViewFrameRequest !== viewFrameRequest;
 
-    prev.current = {
+    prevOverview.current = {
       viewingWallId,
       selectedPlacementId,
+      viewFrameRequest,
       roomPresetKey: nextRoomPresetKey,
     };
 
-    if (selectedPlacementId) {
-      if (!selectionChanged) return;
-
-      const placement = placements.find((p) => p.id === selectedPlacementId);
-      if (!placement) return;
-
-      const wall = room.walls.find((w) => w.id === placement.wall_id);
-      const artworkPosition = getArtworkWorldPosition(room, placement);
-      if (!wall || !artworkPosition) return;
-
-      const intoRoom = getViewIntoRoom(wall.position);
-      const viewDistance = 2.2;
-
-      goalTarget.current.copy(artworkPosition);
-      goalPosition.current
-        .copy(artworkPosition)
-        .add(intoRoom.multiplyScalar(viewDistance));
-      goalPosition.current.y = THREE.MathUtils.clamp(
-        goalPosition.current.y,
-        1.35,
-        2.2,
-      );
-      isAnimating.current = true;
-      return;
-    }
-
-    if (viewingWallId) {
-      if (!wallViewChanged) return;
-
-      const wall = room.walls.find((w) => w.id === viewingWallId);
-      if (!wall) return;
-
-      const wallPlacements = placements
-        .filter((p) => p.wall_id === wall.id)
-        .map((p) => {
-          const catalog = catalogSizeForArtwork(p.artwork, p.scale);
-          return {
-            positionX: p.position_x,
-            halfWidthM: catalog.widthM / 2,
-          };
-        });
-
-      const preset = getWallCameraPresetForPlacements(wall, wallPlacements, {
-        verticalFovDeg: cameraFov,
-        viewportAspect,
-      });
-      beginPresetAnimation(
-        goalPosition.current,
-        goalTarget.current,
-        isAnimating,
-        preset,
-      );
-      return;
-    }
-
-    if (!modeChanged && !roomPresetChanged) return;
+    if (!reframed) return;
 
     beginPresetAnimation(
       goalPosition.current,
@@ -167,17 +126,84 @@ export function GalleryCamera({
       isAnimating,
       getRoomOverviewPreset(room),
     );
+  }, [room, selectedPlacementId, viewingWallId, viewFrameRequest]);
+
+  useEffect(() => {
+    if (!selectedPlacementId) {
+      prevSelectedPlacementId.current = null;
+      return;
+    }
+
+    if (prevSelectedPlacementId.current === selectedPlacementId) return;
+    prevSelectedPlacementId.current = selectedPlacementId;
+
+    const placement = placements.find((p) => p.id === selectedPlacementId);
+    if (!placement) return;
+
+    const wall = room.walls.find((w) => w.id === placement.wall_id);
+    const artworkPosition = getArtworkWorldPosition(room, placement);
+    if (!wall || !artworkPosition) return;
+
+    const intoRoom = getViewIntoRoom(wall.position);
+    const viewDistance = 2.2;
+
+    goalTarget.current.copy(artworkPosition);
+    goalPosition.current
+      .copy(artworkPosition)
+      .add(intoRoom.multiplyScalar(viewDistance));
+    goalPosition.current.y = THREE.MathUtils.clamp(
+      goalPosition.current.y,
+      1.35,
+      2.2,
+    );
+    isAnimating.current = true;
+  }, [placements, room, selectedPlacementId]);
+
+  useEffect(() => {
+    if (!viewingWallId || selectedPlacementId) return;
+
+    const wallViewChanged = prevWallFrame.current.viewingWallId !== viewingWallId;
+    const reframed =
+      wallViewChanged ||
+      prevWallFrame.current.viewFrameRequest !== viewFrameRequest;
+
+    prevWallFrame.current = { viewingWallId, viewFrameRequest };
+
+    if (!reframed) return;
+
+    const wall = room.walls.find((w) => w.id === viewingWallId);
+    if (!wall) return;
+
+    const preset = getWallCameraPresetForPlacements(
+      wall,
+      wallPlacementFocusList(placements, wall.id),
+      {
+        verticalFovDeg: cameraFov,
+        viewportAspect,
+      },
+    );
+    beginPresetAnimation(
+      goalPosition.current,
+      goalTarget.current,
+      isAnimating,
+      preset,
+    );
   }, [
     cameraFov,
     placements,
     room,
     selectedPlacementId,
+    viewFrameRequest,
     viewingWallId,
     viewportAspect,
   ]);
 
   useFrame(() => {
     if (!isAnimating.current || !controlsRef.current) return;
+
+    if (quality === "preview") {
+      invalidate();
+    }
 
     const controls = controlsRef.current;
     const positionDone = camera.position.distanceTo(goalPosition.current) < 0.02;
