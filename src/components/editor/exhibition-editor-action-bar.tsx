@@ -5,6 +5,7 @@ import { EmbedExhibitionButton } from "@/components/gallery/public-show/embed-ex
 import { LazyExportCatalogueButton } from "@/components/lazy-export-catalogue-button";
 import { Button } from "@/components/ui/button";
 import { copyPublicExhibitionLink } from "@/lib/copy-to-clipboard";
+import { normalizeContactEmail } from "@/lib/exhibition/inquiry";
 import type { Exhibition, PlacementWithArtwork, RoomTemplate } from "@/types";
 import type { Artwork } from "@/types/artwork";
 
@@ -30,6 +31,8 @@ export function ExhibitionEditorActionBar({
   onPreview,
   studioBasePath = "/studio",
 }: ExhibitionEditorActionBarProps) {
+  const hasInquiryEmail = Boolean(normalizeContactEmail(exhibition.contact_email));
+
   function handleCopyLink() {
     if (!exhibition.is_published) {
       toast("Open your exhibition first to get a shareable link", {
@@ -106,6 +109,19 @@ export function ExhibitionEditorActionBar({
           />
         </div>
       </div>
+
+      {!hasInquiryEmail && (
+        <p className="mt-2 text-xs text-muted-foreground">
+          Optional:{" "}
+          <a
+            href="#exhibition-details"
+            className="text-foreground underline-offset-4 hover:underline"
+          >
+            Add a contact email
+          </a>{" "}
+          in Exhibition details to enable visitor inquiries on the public show.
+        </p>
+      )}
     </div>
   );
 }

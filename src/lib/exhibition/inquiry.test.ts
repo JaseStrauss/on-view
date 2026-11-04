@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildArtworkInquiryContent,
   buildArtworkInquiryMailto,
   canInquireAboutArtwork,
   normalizeContactEmail,
@@ -29,6 +30,30 @@ describe("canInquireAboutArtwork", () => {
   it("blocks sold works and missing email", () => {
     expect(canInquireAboutArtwork({ status: "sold" }, "a@b.co")).toBe(false);
     expect(canInquireAboutArtwork({ status: "available" }, null)).toBe(false);
+  });
+});
+
+describe("buildArtworkInquiryContent", () => {
+  it("builds subject, body, and recipient", () => {
+    const content = buildArtworkInquiryContent({
+      contactEmail: "curator@gallery.test",
+      exhibitionTitle: "Surface Studies",
+      exhibitionSlug: "demo",
+      artwork: {
+        id: "00000000-0000-0000-0000-000000000001",
+        title: "Halation",
+        artist: "Sample Artist",
+        year: 2024,
+        medium: "Oil on canvas",
+      },
+    });
+
+    expect(content.to).toBe("curator@gallery.test");
+    expect(content.subject).toContain("Halation");
+    expect(content.body).toContain(
+      "Work ID: 00000000-0000-0000-0000-000000000001",
+    );
+    expect(content.body).toContain("/show/demo");
   });
 });
 

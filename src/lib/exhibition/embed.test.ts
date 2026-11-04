@@ -21,8 +21,15 @@ describe("parseEmbedQuery", () => {
 describe("buildExhibitionEmbedIframeHtml", () => {
   it("includes embed query and exhibition title", () => {
     const html = buildExhibitionEmbedIframeHtml("my-show", 'Works "Now"');
-    expect(html).toContain('embed=1');
+    expect(html).toContain("embed=1");
     expect(html).toContain("/show/my-show");
     expect(html).toContain('title="Works &quot;Now&quot; on On View"');
+  });
+
+  it("supports vh height presets", () => {
+    const html = buildExhibitionEmbedIframeHtml("demo", "Demo", {
+      height: "90vh",
+    });
+    expect(html).toContain('height="90vh"');
   });
 });
