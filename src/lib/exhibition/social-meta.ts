@@ -1,4 +1,5 @@
 import { DEMO_CATALOGUE_KEYS, SAMPLE_ARTWORKS } from "@/data/sample-artworks";
+import { DEMO_HERO_SNAPSHOT_SRC } from "@/data/demo-exhibition";
 import {
   deriveExhibitionArtists,
   formatExhibitionDates,
@@ -11,6 +12,9 @@ export const SITE_NAME = "On View";
 export const DEFAULT_SITE_TITLE = `${SITE_NAME} — Virtual Exhibitions`;
 export const DEFAULT_SITE_DESCRIPTION =
   "Catalogue artworks, curate exhibitions, and share them online.";
+
+/** Same still as the landing hero (`public/demo/surface-studies-hero.png`). */
+export const DEFAULT_SITE_OG_IMAGE_PATH = DEMO_HERO_SNAPSHOT_SRC;
 
 /** Fallback when an exhibition has no cover image. */
 export const DEFAULT_OG_IMAGE =
@@ -160,20 +164,27 @@ export function applyDocumentMeta(meta: ExhibitionShareMeta) {
   upsertMeta("name", "twitter:image", meta.imageUrl);
 }
 
+function defaultSiteOgImageUrl(): string {
+  return `${window.location.origin}${DEFAULT_SITE_OG_IMAGE_PATH}`;
+}
+
 export function resetDocumentMeta() {
+  const imageUrl = defaultSiteOgImageUrl();
+
   document.title = DEFAULT_SITE_TITLE;
   upsertMeta("name", "description", DEFAULT_SITE_DESCRIPTION);
   upsertMeta("property", "og:type", "website");
   upsertMeta("property", "og:title", DEFAULT_SITE_TITLE);
   upsertMeta("property", "og:description", DEFAULT_SITE_DESCRIPTION);
   upsertMeta("property", "og:site_name", SITE_NAME);
+  upsertMeta("property", "og:image", imageUrl);
 
   document.head.querySelector('meta[property="og:url"]')?.remove();
-  document.head.querySelector('meta[property="og:image"]')?.remove();
-  document.head.querySelector('meta[name="twitter:card"]')?.remove();
-  document.head.querySelector('meta[name="twitter:title"]')?.remove();
-  document.head.querySelector('meta[name="twitter:description"]')?.remove();
-  document.head.querySelector('meta[name="twitter:image"]')?.remove();
+
+  upsertMeta("name", "twitter:card", "summary_large_image");
+  upsertMeta("name", "twitter:title", DEFAULT_SITE_TITLE);
+  upsertMeta("name", "twitter:description", DEFAULT_SITE_DESCRIPTION);
+  upsertMeta("name", "twitter:image", imageUrl);
 }
 
 export function renderShareMetaHtml(meta: ExhibitionShareMeta): string {
