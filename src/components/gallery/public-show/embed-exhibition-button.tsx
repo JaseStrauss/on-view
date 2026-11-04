@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   buildExhibitionEmbedIframeHtml,
+  EMBED_IFRAME_HEIGHT_PRESETS,
   getPublicExhibitionEmbedUrl,
+  type EmbedIframeHeightPreset,
 } from "@/lib/exhibition/embed";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +20,8 @@ interface EmbedExhibitionButtonProps {
   size?: "default" | "sm" | "lg";
 }
 
+const PREVIEW_IFRAME_HEIGHT_PX = 220;
+
 export function EmbedExhibitionButton({
   slug,
   title,
@@ -28,6 +32,8 @@ export function EmbedExhibitionButton({
 }: EmbedExhibitionButtonProps) {
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<"gallery" | "catalogue">("gallery");
+  const [heightPreset, setHeightPreset] =
+    useState<EmbedIframeHeightPreset>("720");
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -44,7 +50,10 @@ export function EmbedExhibitionButton({
   }, [open]);
 
   const embedUrl = getPublicExhibitionEmbedUrl(slug, { view });
-  const iframeHtml = buildExhibitionEmbedIframeHtml(slug, title, { view });
+  const iframeHtml = buildExhibitionEmbedIframeHtml(slug, title, {
+    view,
+    height: heightPreset,
+  });
 
   async function copyText(value: string, successMessage: string) {
     try {
@@ -78,12 +87,12 @@ export function EmbedExhibitionButton({
       <dialog
         ref={dialogRef}
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 w-[min(100vw-2rem,32rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border bg-background p-0 text-foreground shadow-xl backdrop:bg-black/50",
+          "fixed left-1/2 top-1/2 z-50 w-[min(100vw-2rem,40rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border bg-background p-0 text-foreground shadow-xl backdrop:bg-black/50",
         )}
         onClose={() => setOpen(false)}
         aria-labelledby="embed-exhibition-title"
       >
-        <form method="dialog" className="flex max-h-[min(85vh,640px)] flex-col">
+        <form method="dialog" className="flex max-h-[min(90vh,720px)] flex-col">
           <div className="border-b border-border px-5 py-4">
             <h2 id="embed-exhibition-title" className="font-serif text-lg italic">
               Embed this exhibition
@@ -107,6 +116,42 @@ export function EmbedExhibitionButton({
                 <option value="gallery">3D gallery + catalogue</option>
                 <option value="catalogue">Catalogue only</option>
               </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="embed-height-preset">Iframe height</Label>
+              <select
+                id="embed-height-preset"
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                value={heightPreset}
+                onChange={(event) =>
+                  setHeightPreset(event.target.value as EmbedIframeHeightPreset)
+                }
+              >
+                {EMBED_IFRAME_HEIGHT_PRESETS.map((preset) => (
+                  <option key={preset.value} value={preset.value}>
+                    {preset.label}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Use 90vh on mobile-friendly host pages; fixed pixels when your
+                layout needs a set size.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Preview (embedded chrome)</Label>
+              <div className="overflow-hidden rounded-lg border border-border bg-muted/20">
+                <iframe
+                  src={embedUrl}
+                  title={`${title} embed preview`}
+                  width="100%"
+                  height={PREVIEW_IFRAME_HEIGHT_PX}
+                  className="block border-0"
+                  loading="lazy"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
