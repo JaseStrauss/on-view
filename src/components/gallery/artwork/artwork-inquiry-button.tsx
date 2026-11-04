@@ -48,7 +48,9 @@ export function ArtworkInquiryButton({
       variant={variant}
       size={size}
       className={cn(fullWidth && "w-full", className)}
-      render={<a href={href} />}
+      render={
+        <a href={href} target="_blank" rel="noopener noreferrer" />
+      }
     >
       <Mail className="size-4" />
       Contact about this work
