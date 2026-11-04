@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
 import { ArtworkDetailContent } from "@/components/gallery/artwork/artwork-detail-content";
+import type { ArtworkInquiryContext } from "@/components/gallery/artwork/artwork-inquiry-button";
 import type { PlacementWithArtwork } from "@/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface ArtworkDetailBottomSheetProps {
   placement: PlacementWithArtwork | null;
+  inquiry?: ArtworkInquiryContext | null;
   open: boolean;
   onClose: () => void;
   onExpand?: () => void;
@@ -14,6 +16,7 @@ interface ArtworkDetailBottomSheetProps {
 
 export function ArtworkDetailBottomSheet({
   placement,
+  inquiry = null,
   open,
   onClose,
   onExpand,
@@ -76,6 +79,7 @@ export function ArtworkDetailBottomSheet({
         <div className="overflow-y-auto">
           <ArtworkDetailContent
             placement={placement}
+            inquiry={inquiry}
             onExpand={onExpand}
             expandLabel="Tap image for full screen"
           />
