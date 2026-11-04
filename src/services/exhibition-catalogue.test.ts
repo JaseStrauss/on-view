@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Artwork } from "@/types/artwork";
-import { filterExhibitionPaletteArtworks } from "@/services/exhibition-catalogue";
+import { filterExhibitionPaletteArtworks } from "@/lib/exhibition/palette-artworks";
 
 function artwork(overrides: Partial<Artwork> & Pick<Artwork, "id">): Artwork {
   return {
