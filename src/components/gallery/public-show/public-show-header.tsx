@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { CatalogueViewToggle } from "@/components/gallery/catalogue/catalogue-view-toggle";
+import { EmbedExhibitionButton } from "@/components/gallery/public-show/embed-exhibition-button";
 import { ShareExhibitionButton } from "@/components/gallery/public-show/share-exhibition-button";
 import { LazyExportCatalogueButton } from "@/components/lazy-export-catalogue-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { getPublicExhibitionUrl } from "@/lib/copy-to-clipboard";
 import type { Artwork } from "@/types/artwork";
 import type { Exhibition, PlacementWithArtwork, RoomTemplate } from "@/types";
 
@@ -18,6 +20,7 @@ interface PublicShowHeaderProps {
   catalogueOnly: boolean;
   defaultedToCatalogueOnly: boolean;
   onCatalogueOnlyChange: (catalogueOnly: boolean) => void;
+  embedded?: boolean;
 }
 
 export function PublicShowHeader({
@@ -32,21 +35,40 @@ export function PublicShowHeader({
   catalogueOnly,
   defaultedToCatalogueOnly,
   onCatalogueOnlyChange,
+  embedded = false,
 }: PublicShowHeaderProps) {
+  const fullShowUrl = getPublicExhibitionUrl(exhibition.slug);
+
   return (
     <header className="border-b border-border/60">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-5">
-        <Link
-          to="/"
-          className="font-sans text-xs uppercase tracking-[0.25em] text-muted-foreground transition-colors hover:text-foreground"
-        >
-          On View
-        </Link>
+        {embedded ? (
+          <a
+            href={fullShowUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Open full exhibition
+          </a>
+        ) : (
+          <Link
+            to="/"
+            className="font-sans text-xs uppercase tracking-[0.25em] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            On View
+          </Link>
+        )}
         <div className="flex items-center gap-1">
-          <ShareExhibitionButton
-            slug={exhibition.slug}
-            title={exhibition.title}
-          />
+          {!embedded && (
+            <>
+              <EmbedExhibitionButton slug={exhibition.slug} title={exhibition.title} />
+              <ShareExhibitionButton
+                slug={exhibition.slug}
+                title={exhibition.title}
+              />
+            </>
+          )}
           <LazyExportCatalogueButton
             exhibition={exhibition}
             placements={placements}

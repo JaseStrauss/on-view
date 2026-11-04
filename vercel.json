@@ -1,4 +1,15 @@
 {
+  "headers": [
+    {
+      "source": "/show/:path*",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors *"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/show/:slug",
