@@ -1,6 +1,10 @@
 import { useCallback, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import { ArtworkCaption } from "@/components/gallery/artwork/artwork-caption";
+import {
+  ArtworkInquiryButton,
+  type ArtworkInquiryContext,
+} from "@/components/gallery/artwork/artwork-inquiry-button";
 import { getArtworkImageUrl } from "@/services/artworks";
 import type { PlacementWithArtwork } from "@/types";
 import { cn } from "@/lib/utils";
@@ -8,6 +12,7 @@ import { cn } from "@/lib/utils";
 interface ArtworkLightboxProps {
   placements: PlacementWithArtwork[];
   index: number | null;
+  inquiry?: ArtworkInquiryContext | null;
   onClose: () => void;
   onIndexChange: (index: number) => void;
 }
@@ -15,6 +20,7 @@ interface ArtworkLightboxProps {
 export function ArtworkLightbox({
   placements,
   index,
+  inquiry = null,
   onClose,
   onIndexChange,
 }: ArtworkLightboxProps) {
@@ -128,6 +134,15 @@ export function ArtworkLightbox({
             align="center"
             className="mx-auto max-w-lg [&_p]:text-neutral-100 [&_.text-muted-foreground]:text-neutral-400"
           />
+
+          {inquiry && (
+            <ArtworkInquiryButton
+              artwork={placement.artwork}
+              inquiry={inquiry}
+              variant="outline"
+              className="border-neutral-700 bg-transparent text-neutral-100 hover:bg-white/10 hover:text-white"
+            />
+          )}
         </div>
       </div>
     </div>

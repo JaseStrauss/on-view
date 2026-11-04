@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { normalizeContactEmail } from "@/lib/exhibition/inquiry";
 import {
   deriveExhibitionArtists,
   emptyToNull,
@@ -17,6 +18,8 @@ import {
   formatExhibitionDates,
   type ExhibitionDetailsPatch,
 } from "@/lib/exhibition/details";
+import { toast } from "sonner";
+
 import type { Exhibition, PlacementWithArtwork } from "@/types";
 import type { Artwork } from "@/types/artwork";
 
@@ -38,6 +41,7 @@ interface DetailsDraft {
   opens_at: string;
   closes_at: string;
   featuring_override: string;
+  contact_email: string;
 }
 
 function toDraft(exhibition: Exhibition): DetailsDraft {
@@ -46,6 +50,7 @@ function toDraft(exhibition: Exhibition): DetailsDraft {
     opens_at: exhibition.opens_at ?? "",
     closes_at: exhibition.closes_at ?? "",
     featuring_override: exhibition.featuring_override ?? "",
+    contact_email: exhibition.contact_email ?? "",
   };
 }
 
@@ -83,7 +88,8 @@ export function ExhibitionDetailsPanel({
     draft.description !== savedDraft.description ||
     draft.opens_at !== savedDraft.opens_at ||
     draft.closes_at !== savedDraft.closes_at ||
-    draft.featuring_override !== savedDraft.featuring_override;
+    draft.featuring_override !== savedDraft.featuring_override ||
+    draft.contact_email !== savedDraft.contact_email;
 
   const derivedArtists = useMemo(
     () =>
@@ -102,6 +108,14 @@ export function ExhibitionDetailsPanel({
   );
 
   async function handleSave() {
+    const trimmedContact = draft.contact_email.trim();
+    const contactEmail =
+      trimmedContact === "" ? null : normalizeContactEmail(trimmedContact);
+    if (trimmedContact !== "" && !contactEmail) {
+      toast.error("Enter a valid contact email or leave the field blank.");
+      return;
+    }
+
     setSaving(true);
     try {
       await onSave({
@@ -109,6 +123,7 @@ export function ExhibitionDetailsPanel({
         opens_at: emptyToNull(draft.opens_at),
         closes_at: emptyToNull(draft.closes_at),
         featuring_override: emptyToNull(draft.featuring_override),
+        contact_email: contactEmail,
       });
     } finally {
       setSaving(false);
@@ -119,6 +134,7 @@ export function ExhibitionDetailsPanel({
     dateSummary,
     derivedFeaturing ? `Featuring ${derivedFeaturing}` : null,
     exhibition.description ? "Statement added" : null,
+    exhibition.contact_email ? "Inquiries enabled" : null,
   ].filter(Boolean);
 
   return (
@@ -231,6 +247,30 @@ export function ExhibitionDetailsPanel({
                 Add artist names to catalogue works to generate a featuring line.
               </p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="exhibition-contact-email">
+              Visitor contact email (optional)
+            </Label>
+            <Input
+              id="exhibition-contact-email"
+              type="email"
+              autoComplete="email"
+              value={draft.contact_email}
+              onChange={(event) =>
+                setDraft((current) => ({
+                  ...current,
+                  contact_email: event.target.value,
+                }))
+              }
+              placeholder="studio@example.com"
+            />
+            <p className="text-xs text-muted-foreground">
+              When set, available works on the public show include a
+              &quot;Contact about this work&quot; button (opens the visitor&apos;s
+              email app with work details).
+            </p>
           </div>
 
           <Button

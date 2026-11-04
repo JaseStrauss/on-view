@@ -90,6 +90,7 @@ function buildExhibition(
     title: patch.title,
     description: patch.description ?? null,
     featuring_override: patch.featuring_override ?? null,
+    contact_email: patch.contact_email ?? null,
     slug: DEMO_BUILDER_SLUG,
     room_template_id: patch.room_template_id,
     room_config: roomConfig,

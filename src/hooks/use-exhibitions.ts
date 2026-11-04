@@ -21,6 +21,7 @@ function normalizeExhibition(row: Exhibition): Exhibition {
   return {
     ...row,
     featuring_override: row.featuring_override ?? null,
+    contact_email: row.contact_email ?? null,
     room_config: mergeRoomConfig(row.room_template_id, row.room_config ?? {}),
   };
 }

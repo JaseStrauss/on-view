@@ -1,17 +1,23 @@
 import { Maximize2 } from "lucide-react";
 import { ArtworkCaption } from "@/components/gallery/artwork/artwork-caption";
+import {
+  ArtworkInquiryButton,
+  type ArtworkInquiryContext,
+} from "@/components/gallery/artwork/artwork-inquiry-button";
 import { getArtworkImageUrl } from "@/services/artworks";
 import type { PlacementWithArtwork } from "@/types";
 import { Button } from "@/components/ui/button";
 
 interface ArtworkDetailContentProps {
   placement: PlacementWithArtwork;
+  inquiry?: ArtworkInquiryContext | null;
   onExpand?: () => void;
   expandLabel?: string;
 }
 
 export function ArtworkDetailContent({
   placement,
+  inquiry = null,
   onExpand,
   expandLabel = "Click image for full screen",
 }: ArtworkDetailContentProps) {
@@ -48,6 +54,14 @@ export function ArtworkDetailContent({
             <Maximize2 className="size-4" />
             View full screen
           </Button>
+        )}
+
+        {inquiry && (
+          <ArtworkInquiryButton
+            artwork={artwork}
+            inquiry={inquiry}
+            fullWidth
+          />
         )}
       </div>
     </>

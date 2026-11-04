@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import { EmbedExhibitionButton } from "@/components/gallery/public-show/embed-exhibition-button";
 import { LazyExportCatalogueButton } from "@/components/lazy-export-catalogue-button";
 import { Button } from "@/components/ui/button";
 import { copyPublicExhibitionLink } from "@/lib/copy-to-clipboard";
@@ -60,6 +61,12 @@ export function ExhibitionEditorActionBar({
           <Copy className="size-4" />
           Copy link
         </Button>
+
+        <EmbedExhibitionButton
+          slug={exhibition.slug}
+          title={exhibition.title}
+          disabled={!exhibition.is_published}
+        />
 
         <Button variant="outline" onClick={onPreview}>
           <ExternalLink className="size-4" />

@@ -13,12 +13,15 @@ import { usePublicCatalogueLayout } from "@/hooks/use-public-catalogue-layout";
 import { usePublicShowExhibition } from "@/hooks/use-public-show-exhibition";
 import { usePublicShowWorkSelection } from "@/hooks/use-public-show-work-selection";
 import { DEMO_SLUG } from "@/data/demo-exhibition";
+import { parseEmbedQuery } from "@/lib/exhibition/embed";
 import { parseExhibitionViewQuery } from "@/lib/exhibition/view-mode";
+import type { ArtworkInquiryContext } from "@/components/gallery/artwork/artwork-inquiry-button";
 
 export function PublicShowPage() {
   const { slug } = useParams<{ slug: string }>();
   const [searchParams] = useSearchParams();
   const viewOverride = parseExhibitionViewQuery(searchParams.get("view"));
+  const embedded = parseEmbedQuery(searchParams.get("embed"));
   const isMobile = useMobile();
   const {
     catalogueOnly,
@@ -70,15 +73,23 @@ export function PublicShowPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">
         <p className="font-serif text-xl">This exhibition is not available.</p>
-        <Link
-          to="/"
-          className="mt-6 text-sm uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground"
-        >
-          On View
-        </Link>
+        {!embedded && (
+          <Link
+            to="/"
+            className="mt-6 text-sm uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground"
+          >
+            On View
+          </Link>
+        )}
       </div>
     );
   }
+
+  const inquiry: ArtworkInquiryContext = {
+    contactEmail: exhibition.contact_email,
+    exhibitionTitle: exhibition.title,
+    exhibitionSlug: exhibition.slug,
+  };
 
   const catalogueSection = (
     <PublicShowCatalogueSection
@@ -109,12 +120,14 @@ export function PublicShowPage() {
       <ArtworkLightbox
         placements={sortedPlacements}
         index={lightboxIndex}
+        inquiry={inquiry}
         onClose={() => setLightboxIndex(null)}
         onIndexChange={setLightboxIndex}
       />
 
       <ArtworkDetailBottomSheet
         placement={selectedPlacement}
+        inquiry={inquiry}
         open={isMobile && selectedPlacement !== null && !catalogueOnly}
         onClose={() => selectPlacement(null)}
         onExpand={
@@ -136,6 +149,7 @@ export function PublicShowPage() {
         catalogueOnly={catalogueOnly}
         defaultedToCatalogueOnly={defaultedToCatalogueOnly}
         onCatalogueOnlyChange={handleCatalogueOnlyChange}
+        embedded={embedded}
       />
 
       <PublicShowNav
@@ -155,20 +169,22 @@ export function PublicShowPage() {
         </>
       )}
 
-      <footer className="border-t border-border/60 px-6 py-10">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
-          <p className="font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            On View
-          </p>
-          <button
-            type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground"
-          >
-            Back to top
-          </button>
-        </div>
-      </footer>
+      {!embedded && (
+        <footer className="border-t border-border/60 px-6 py-10">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
+            <p className="font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">
+              On View
+            </p>
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground"
+            >
+              Back to top
+            </button>
+          </div>
+        </footer>
+      )}
     </div>
   );
 }

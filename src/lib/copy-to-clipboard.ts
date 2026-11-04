@@ -1,10 +1,7 @@
 import { toast } from "sonner";
+import { getPublicExhibitionUrl } from "@/lib/public-site-url";
 
-export function getPublicExhibitionUrl(slug: string): string {
-  const path = `/show/${slug}`;
-  if (typeof window === "undefined") return path;
-  return `${window.location.origin}${path}`;
-}
+export { getPublicExhibitionUrl } from "@/lib/public-site-url";
 
 export async function copyPublicExhibitionLink(
   slug: string,

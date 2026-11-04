@@ -34,6 +34,7 @@ create table public.exhibitions (
   is_published boolean not null default false,
   opens_at date,
   closes_at date,
+  contact_email text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (user_id, slug)
