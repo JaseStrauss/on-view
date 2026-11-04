@@ -1,5 +1,7 @@
+import { filterExhibitionPaletteArtworks } from "@/lib/exhibition/palette-artworks";
 import { supabase } from "@/lib/supabase";
-import type { Artwork } from "@/types/artwork";
+
+export { filterExhibitionPaletteArtworks };
 
 export async function addArtworksToExhibitionCatalogue(
   exhibitionId: string,
@@ -65,23 +67,4 @@ export async function fetchExhibitionCatalogueArtworkIds(
 
   if (error) throw error;
   return (data ?? []).map((row) => row.artwork_id as string);
-}
-
-/**
- * Palette works: in exhibition catalogue (when scoped), not on a wall, with an image.
- * If the exhibition has no catalogue rows yet, fall back to the full studio catalogue.
- */
-export function filterExhibitionPaletteArtworks(
-  artworks: Artwork[],
-  catalogueArtworkIds: Set<string>,
-  placedArtworkIds: Set<string>,
-): Artwork[] {
-  const useScopedCatalogue = catalogueArtworkIds.size > 0;
-
-  return artworks.filter((artwork) => {
-    if (!artwork.image_path) return false;
-    if (placedArtworkIds.has(artwork.id)) return false;
-    if (useScopedCatalogue) return catalogueArtworkIds.has(artwork.id);
-    return true;
-  });
 }

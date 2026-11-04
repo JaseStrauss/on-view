@@ -1,5 +1,7 @@
 # On View
 
+![CI](https://github.com/JaseStrauss/on-view/actions/workflows/ci.yml/badge.svg)
+
 **Plan the hang. Preview in 3D. Share the show.** For artists, curators & small galleries: catalogue works, hang a show in 3D, share one link (plus PDF catalogues). Personal side project; v0.1, active development.
 
 Live demo: [on-view-seven.vercel.app/show/demo](https://on-view-seven.vercel.app/show/demo)
@@ -54,6 +56,16 @@ To create your own exhibitions (sign up, upload works, publish links), configure
 
 ---
 
+## Technical highlights
+
+- **Demo vs studio:** Public demo uses bundled data and sessionStorage; full studio uses Supabase (Auth, Postgres, Storage). Production is demo-only; see [SETUP.md](./SETUP.md) to run the studio locally.
+- **3D gallery:** React Three Fiber room templates, lazy-loaded gallery chunk, orbit camera with wall/placement focus helpers.
+- **Editor:** 2D wall plan synced with 3D preview; placement sizing and reclamp logic covered by unit tests.
+- **Public shows:** Combined walkthrough and catalogue; client-side PDF export; install checklist per exhibition.
+- **Link previews:** Bot user-agents on `/show/:slug` hit `api/show-meta` via `vercel.json` rewrites (Open Graph tags without SSR-ing the whole app).
+
+---
+
 ## Quick start (developers)
 
 Prerequisites: Node.js 20+, npm. Full studio setup also needs a Supabase project (see SETUP.md).
@@ -71,6 +83,7 @@ npm run dev
 | `npm run dev`     | Start the dev server                      |
 | `npm run build`   | Typecheck and production build to `dist/` |
 | `npm run preview` | Serve the production build locally        |
+| `npm test`        | Run unit tests (Vitest)                   |
 
 ### Environment (studio only)
 
