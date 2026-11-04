@@ -88,6 +88,17 @@ Open [http://localhost:5173](http://localhost:5173)
 | `/studio/demo`, `/studio/demo/build` | **No**: demo studio hub and in-browser builder |
 | `/signup`, `/studio`, etc.           | **Yes**                                        |
 
+### Share links on localhost
+
+Copy link, embed code, and inquiry mailto include a full exhibition URL. While you use `npm run dev`, the app defaults that host to `https://on-view-seven.vercel.app` so mailto and copied links are usable outside your machine (not `localhost`).
+
+Optional overrides in `.env` (restart the dev server after changes):
+
+- `VITE_PUBLIC_SITE_URL=https://your-domain.com` for a different public host
+- `VITE_PUBLIC_SITE_URL=http://localhost:5173` to keep localhost in links
+
+See `.env.example` and the README env table for a short summary.
+
 ---
 
 ## 6. Typical workflow

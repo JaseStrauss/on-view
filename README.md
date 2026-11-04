@@ -91,11 +91,12 @@ npm run dev
 
 Copy `.env.example` → `.env`. Values are public (embedded in the client); no secrets in this file.
 
-| Variable                 | Where to find it                                                                   |
-| ------------------------ | ---------------------------------------------------------------------------------- |
-| `VITE_SUPABASE_URL`      | Supabase → Project Settings → API                                                  |
-| `VITE_SUPABASE_ANON_KEY` | Same page (`anon` key)                                                             |
-| `VITE_PUBLIC_DEMO_ONLY`  | Optional; defaults to demo-only nav. Set `false` for full studio (local or hosted) |
+| Variable                 | Where to find it                                                                               |
+| ------------------------ | ---------------------------------------------------------------------------------------------- |
+| `VITE_SUPABASE_URL`      | Supabase → Project Settings → API                                                              |
+| `VITE_SUPABASE_ANON_KEY` | Same page (`anon` key)                                                                         |
+| `VITE_PUBLIC_DEMO_ONLY`  | Optional; defaults to demo-only nav. Set `false` for full studio (local or hosted)             |
+| `VITE_PUBLIC_SITE_URL`   | Optional. Canonical site URL for share, embed, and inquiry links. Usually unset on production. |
 
 ### How it fits together
 
