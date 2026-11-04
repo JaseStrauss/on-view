@@ -6,7 +6,15 @@ const INQUIRABLE_STATUSES: ReadonlySet<Artwork["status"]> = new Set([
   "reserved",
 ]);
 
-export function normalizeContactEmail(value: string | null | undefined): string | null {
+export interface ArtworkInquiryContext {
+  contactEmail: string | null;
+  exhibitionTitle: string;
+  exhibitionSlug: string;
+}
+
+export function normalizeContactEmail(
+  value: string | null | undefined,
+): string | null {
   const trimmed = value?.trim();
   if (!trimmed) return null;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return null;
@@ -23,19 +31,23 @@ export function canInquireAboutArtwork(
   );
 }
 
-interface BuildArtworkInquiryMailtoOptions {
+interface BuildArtworkInquiryOptions {
   contactEmail: string;
   exhibitionTitle: string;
   exhibitionSlug: string;
   artwork: Pick<Artwork, "id" | "title" | "artist" | "year" | "medium">;
 }
 
-export function buildArtworkInquiryMailto({
+export function buildArtworkInquiryContent({
   contactEmail,
   exhibitionTitle,
   exhibitionSlug,
   artwork,
-}: BuildArtworkInquiryMailtoOptions): string {
+}: BuildArtworkInquiryOptions): {
+  to: string;
+  subject: string;
+  body: string;
+} {
   const email = normalizeContactEmail(contactEmail);
   if (!email) {
     throw new Error("Invalid contact email");
@@ -44,7 +56,9 @@ export function buildArtworkInquiryMailto({
   const showUrl = getPublicExhibitionUrl(exhibitionSlug);
   const artistLine = artwork.artist.trim() || "Unknown artist";
   const yearPart = artwork.year != null ? ` (${artwork.year})` : "";
-  const mediumPart = artwork.medium?.trim() ? `\nMedium: ${artwork.medium.trim()}` : "";
+  const mediumLine = artwork.medium?.trim()
+    ? `Medium: ${artwork.medium.trim()}`
+    : null;
 
   const subject = `Inquiry: ${artwork.title} — ${exhibitionTitle}`;
   const bodyLines = [
@@ -56,16 +70,27 @@ export function buildArtworkInquiryMailto({
     `Artist: ${artistLine}`,
     `Work ID: ${artwork.id}`,
   ];
-  if (mediumPart) {
-    bodyLines.push(mediumPart.replace(/^\n/, ""));
+  if (mediumLine) {
+    bodyLines.push(mediumLine);
   }
   bodyLines.push("", "Message:", "", "", `Exhibition: ${showUrl}`);
-  const body = bodyLines.join("\n");
+
+  return {
+    to: email,
+    subject,
+    body: bodyLines.join("\n"),
+  };
+}
+
+export function buildArtworkInquiryMailto(
+  options: BuildArtworkInquiryOptions,
+): string {
+  const { to, subject, body } = buildArtworkInquiryContent(options);
 
   const params = new URLSearchParams({
     subject,
     body,
   });
 
-  return `mailto:${email}?${params.toString()}`;
+  return `mailto:${to}?${params.toString()}`;
 }
