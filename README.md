@@ -40,6 +40,8 @@ To create your own exhibitions (sign up, upload works, publish links), configure
 - PDF catalogue export
 - Install checklist per exhibition
 - Publish public exhibition links (`/show/:slug`)
+- Visitor inquiries on public works (mailto with work ID when contact email is set)
+- Embed public shows on your site (`?embed=1` iframe code from the editor or show page)
 
 ---
 
