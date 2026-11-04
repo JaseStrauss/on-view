@@ -3,7 +3,11 @@ import type { Exhibition, PlacementWithArtwork } from "@/types";
 
 export type ExhibitionDetailsPatch = Pick<
   Exhibition,
-  "description" | "opens_at" | "closes_at" | "featuring_override"
+  | "description"
+  | "opens_at"
+  | "closes_at"
+  | "featuring_override"
+  | "contact_email"
 >;
 
 export function uniqueArtistsFromArtworks(

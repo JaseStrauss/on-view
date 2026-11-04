@@ -12,6 +12,7 @@ export interface Exhibition {
   is_published: boolean;
   opens_at: string | null;
   closes_at: string | null;
+  contact_email: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -7,6 +7,7 @@ function normalizeExhibition(row: Exhibition): Exhibition {
   return {
     ...row,
     featuring_override: row.featuring_override ?? null,
+    contact_email: row.contact_email ?? null,
     room_config: mergeRoomConfig(row.room_template_id, row.room_config ?? {}),
   };
 }
@@ -55,6 +56,7 @@ export async function duplicateExhibition(
       room_template_id: source.room_template_id,
       room_config: source.room_config ?? {},
       featuring_override: source.featuring_override,
+      contact_email: source.contact_email,
       opens_at: source.opens_at,
       closes_at: source.closes_at,
       is_published: false,

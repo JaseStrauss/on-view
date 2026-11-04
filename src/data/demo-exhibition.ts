@@ -179,6 +179,7 @@ export function getDemoPublicShow(): {
     room_config: {},
     is_published: true,
     featuring_override: null,
+    contact_email: "inquiries@on-view.demo",
     opens_at: DEMO_BUILDER_SAMPLE_OPENS_AT,
     closes_at: DEMO_BUILDER_SAMPLE_CLOSES_AT,
     created_at: DEMO_NOW,
